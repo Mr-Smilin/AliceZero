@@ -1,5 +1,5 @@
 var request = require('request');
-
+require('dotenv').config();
 // const auth = require('../jsonHome/auth.json');
 
 //#region 攻略組表單相關
@@ -398,13 +398,13 @@ exports.getBoss = function(name, RichEmbed, callback) {
 //#region 請求宣告
 const catImage = {
     'method': 'GET',
-    'url': `https://api.imgur.com/3/album/${auth.imgur.catImage}/images`,
-    'headers': { 'Authorization': 'Bearer ' + auth.imgur.token }
+    'url': `https://api.imgur.com/3/album/${process.env.IMGUR_CATIMAGE}/images`,
+    'headers': { 'Authorization': 'Bearer ' + process.env.IMGUR_TOKEN }
 };
 const foodImage = {
     'method': 'GET',
-    'url': `https://api.imgur.com/3/album/${auth.imgur.foodImage}/images`,
-    'headers': { 'Authorization': 'Bearer ' + auth.imgur.token }
+    'url': `https://api.imgur.com/3/album/${process.env.IMGUR_FOODIMAGE}/images`,
+    'headers': { 'Authorization': 'Bearer ' + process.env.IMGUR_TOKEN }
 };
 //#endregion
 

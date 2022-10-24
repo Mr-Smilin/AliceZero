@@ -2,9 +2,13 @@
 const Discord = require('discord.js');
 //不變的使用者
 const client = new Discord.Client();
+//載入env變量
+require('dotenv').config();
 //播歌
 const ytdl = require('ytdl-core');
 const ytpl = require('ytpl');
+//健康狀態
+require('./sideJS/healthCheck').start();
 //#endregion
 
 //#region 繼承js

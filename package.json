@@ -11,6 +11,7 @@
         "axios": "^0.19.2",
         "discord.js": "^12.5.3",
         "discord.js-commando": "^0.12.3",
+        "dotenv": "^16.0.3",
         "ffmpeg-static": "^4.2.5",
         "got": "^11.8.2",
         "iconv-lite": "^0.6.2",

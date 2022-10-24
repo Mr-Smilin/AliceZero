@@ -1,5 +1,6 @@
 //愛麗絲頻掃地方法
 var request = require('request');
+require('dotenv').config();
 // const auth = require('../jsonHome/auth.json');
 
 const nineGet = {
