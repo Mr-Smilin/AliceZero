@@ -16,6 +16,7 @@
         "got": "^11.8.2",
         "iconv-lite": "^0.6.2",
         "master": "0.0.14",
+        "node-schedule": "^2.1.0",
         "opusscript": "0.0.8",
         "qs": "^6.9.4",
         "request": "^2.88.2",

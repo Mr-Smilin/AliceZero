@@ -16,6 +16,7 @@ const gasApi = require('./sideJS/gasGet.js');
 const messageManager = require('./sideJS/messageManager.js');
 const myDBFunction = require('./sideJS/myDataBase.js');
 const NineFunction = require('./sideJS/NineFunction.js');
+const cornTask = require('./sideJS/cronTask.js');
 //#endregion
 //#region 讀json
 const baseValue = require('./jsonHome/baseValue.json');
@@ -76,6 +77,9 @@ client.on('ready', () => {
                     nineFunctionData = dataED;
                     console.log('3.getNineData');
                 }
+
+                cornTask.cronCallMysell();
+                console.log('cronCallMysell Start');
 
                 // client.user.setAFK(true);
                 client.user.setActivity('請使用 ~ help 查詢使用說明書!', { type: 'WATCHING' });
@@ -739,22 +743,6 @@ function BossFunction(msg, cmd, args) {
     });
 }
 //#endregion
-
-//#region 找資料
-//找根據id找romValue的對應資料
-function findRomValueToID(idName, itemName) {
-    e = romValue.filter(function (item) {
-        return item.id == idName
-    })
-    switch (itemName) {
-        case 'name':
-            return (e[0].name);
-        case 'value':
-            return (e[0].value);
-        case 'canEdit':
-            return (e[0].canEdit);
-    }
-}
 
 //#region status參考
 // 1 = 完全匹配
@@ -1567,14 +1555,6 @@ function getRandomSortArray(msg, cmd, args) {
 //ArrayIsEmpty
 function isEmptyObject(obj) {
     return !Object.keys(obj).length;
-}
-
-//關閉續行方法
-function CloseAllDoingFunction() {
-    nowDoFunction = false;
-    DoingCount = 0;
-    DoUserID = '';
-    DoData = undefined;
 }
 
 //Season生日快樂
