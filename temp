@@ -1,5 +1,0 @@
-//更新資料
-      // var result = JSON.parse(fs.readFileSync(".\\jsonHome\\baseValue.json"));
-      // result.Power.tempPower = '2';
-      // console.log(result.Power, 'test');
-      // fs.writeFileSync(".\\jsonHome\\baseValue.json", JSON.stringify(result));
