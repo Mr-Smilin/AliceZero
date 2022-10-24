@@ -242,6 +242,7 @@ async function DoBaseFunction(msg, cmd, args) {
             break;
         case 'test2':
             msg.channel.send('西西');
+            break;
         case 's': //傳貼圖
             sendEmoji(msg, args);
             break;
