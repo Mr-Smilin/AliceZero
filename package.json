@@ -1,0 +1,25 @@
+{
+    "name": "AliceZero",
+    "version": "2.8.1",
+    "description": "AliceZero",
+    "main": "alice.js",
+    "author": "Double",
+    "scripts": {
+        "start": "node alice.js"
+    },
+    "dependencies": {
+        "axios": "^0.19.2",
+        "discord.js": "^12.5.3",
+        "discord.js-commando": "^0.12.3",
+        "ffmpeg-static": "^4.2.5",
+        "got": "^11.8.2",
+        "iconv-lite": "^0.6.2",
+        "master": "0.0.14",
+        "opusscript": "0.0.8",
+        "qs": "^6.9.4",
+        "request": "^2.88.2",
+        "winston": "^3.2.1",
+        "ytdl-core": "^4.9.0",
+        "ytpl": "^2.2.1"
+    }
+}
