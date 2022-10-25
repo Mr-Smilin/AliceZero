@@ -133,6 +133,21 @@ exports.EditRomValueMessage = function(RichEmbed, channel, romValue, callback) {
     callback(embed);
 }
 
+exports.TwitterEmbed = function(RichEmbed,data,callback){
+    const embed = new RichEmbed()
+        .setColor(color)
+        .setTitle('system call generate Twitter function...')
+        .setAuthor(Author, Author2, Author3)
+        .setDescription('搜尋結果如下')
+        .setThumbnail(Thumbnail)
+        .setTimestamp()
+        .setFooter('似乎從世界盡頭帶回了一些不堪入目的東西...', footerPicture);
+    for(let i = 0;i<data?.length;i=i+2){
+        embed.addField(data[i],data[i+1]);
+    }
+    callback(embed);
+}
+
 
 //RichEmbed演示
 // new RichEmbed()

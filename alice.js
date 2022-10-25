@@ -17,6 +17,7 @@ const messageManager = require('./sideJS/messageManager.js');
 const myDBFunction = require('./sideJS/myDataBase.js');
 const NineFunction = require('./sideJS/NineFunction.js');
 const cornTask = require('./sideJS/cronTask.js');
+const teitterApi = require('./sideJS/twitterApi');
 //#endregion
 //#region 讀json
 const baseValue = require('./jsonHome/baseValue.json');
@@ -244,9 +245,6 @@ async function DoBaseFunction(msg, cmd, args) {
                 msg.channel.send(`${msg.author}`, avatarED);
             }
             break;
-        case 'test2':
-            msg.channel.send('西西');
-            break;
         case 's': //傳貼圖
             sendEmoji(msg, args);
             break;
@@ -256,14 +254,32 @@ async function DoBaseFunction(msg, cmd, args) {
         case '食物':
             getFoodImage(msg);
             break;
+        case 'irasuto':
+            teitterApi.getTweet('?query=from:akr50rt',function (data,state) {
+                if(state === 'error') data !== '' && msg.channel.send(data);
+                messageManager.TwitterEmbed(Discord.MessageEmbed,data, function (embed) {
+                    msg.channel.send(embed);
+                    const picData = [];
+                    for(let i=1;i<data?.length;i=i+2){
+                        picData.push(data[i]);
+                    }
+                    GetReaction(msg,picData,picData?.length,function(i, many, data, msg){
+                        msg.edit(data[i]);
+                    })
+                });
+            });
+            break;
+        case 'test3':
+            let testData = ['test','http://www.google.com'];
+            messageManager.TwitterEmbed(Discord.MessageEmbed,testData, function (embed) {
+                msg.channel.send(embed);
+            });
+            break;
         case 'dice':
             getDice(msg, cmd, args);
             break;
         case 'd':
             getDice(msg, cmd, args);
-            break;
-        case 'v':
-            //getVote(msg, cmd, args);
             break;
         case 'haveAdmin':
             HaveAdmin(msg);
@@ -282,17 +298,6 @@ async function DoBaseFunction(msg, cmd, args) {
                 const sendMessageText = msg.content.substring(msg.content.indexOf(args[0]) + args[0].length, msg.content.length);
                 sendMessageChannelID.send(sendMessageText);
             }
-            break;
-        case 'testD':
-            msg.channel.messages.forEach(x => x.delete());
-            break;
-        case 'testE':
-            let messageED = await msg.channel.messages.fetch(args[0]);
-            console.log('testE');
-            messageED.edits.forEach(ms => { console.log(ms.content); });
-            break;
-        case 'MemberReact':
-            AddMemberReact(msg, args);
             break;
     }
 }
@@ -646,7 +651,7 @@ function EditSkillList(temp, many, reData, msg) {
         .setTitle('獲得方式')
         .setDescription(reData.get('getData'))
         .setTimestamp()
-        .setFooter('有出錯請找 石頭#2873', 'https://i.imgur.com/crrk7I2.png');
+        .setFooter('有出錯請找 微笑#3307', 'https://i.imgur.com/crrk7I2.png');
     //角色圖片
     if (reData.get('authorImg') !== '') embed.setThumbnail(reData.get('authorImg'));
     //備註&角色頻道
@@ -1678,26 +1683,52 @@ async function DeleteAdmin(msg, args) {
     }
 }
 
-//1~8貼圖
-async function AddMemberReact(msg, args) {
-    try {
-        const MessageID = args[0];
-        const CountEd = args[1];
-        const MessageToken = msg.channel.messages.get(MessageID);
+// 讓msg獲得翻頁功能
+function GetReaction(msg,msgs,many,callback){
+    let msgA = msg;
+    msg.channel.send(msgs[0]).then(msg => {
+        msg.react("⏪")
+            .then(msg.react("⏩"))
+        let i = 0; //頁次
 
-        const ReactToken = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣'];
 
-        if (CountEd != 0) {
-            for (i = 1; i <= CountEd; i++) {
-                // let reactionsED = await MessageToken.react(ReactToken[i]);
-                // await reactionsED.removeAll();
-                await MessageToken.react(ReactToken[i]);
+        const filter = (reaction, user) => {
+            return ['⏩', '⏪'].includes(reaction.emoji.name) && user.id === msgA.author.id;
+        };
+
+        const collector = msg.createReactionCollector(filter, { time: 600000 });
+
+        collector.on('collect', (reaction, user) => {
+            switch (reaction.emoji.name) {
+                case '⏩':
+                    if (i >= many - 1) {
+                        msg.channel.send('後面就沒有了喔~~')
+                            .then(msg => {
+                                setTimeout(() => {
+                                    msg.delete();
+                                }, 5000);
+                            })
+                    } else {
+                        i = i + 1;
+                        callback(i, many, msgs, msg);
+                    }
+                    break;
+                case '⏪':
+                    if (i <= 0) {
+                        msg.channel.send('這邊是開頭喔!')
+                            .then(msg => {
+                                setTimeout(() => {
+                                    msg.delete();
+                                }, 5000);
+                            })
+                    } else {
+                        i = i - 1;
+                        callback(i, many, msgs, msg);
+                    }
+                    break;
             }
-        }
-    } catch (err) {
-        console.log('AddMemberReactError ', err);
-        msg.channel.send('參數載入失敗，請確定輸入內容正確喔!');
-    }
+        })
+    })
 }
 
 //#endregion
