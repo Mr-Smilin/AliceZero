@@ -1,7 +1,9 @@
+// 載入env變量
+require('dotenv').config();
 const http = require('http');
 
 const hostName = 'localhost';
-const port = 10000;
+const port = process.env.PORT || 10000;
 
 const server = http.createServer((req,res) => {
     res.statusCode = 200;

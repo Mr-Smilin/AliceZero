@@ -1,5 +1,5 @@
 const schedule = require('node-schedule')
-var request = require('request');
+const request = require('request');
 require('dotenv').config();
 
 // 定時呼叫自己，防止睡眠
