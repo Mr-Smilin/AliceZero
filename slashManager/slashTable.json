@@ -1,0 +1,14 @@
+[
+  {
+    "name": "test",
+    "description": "阿你就輸入點甚麼啦1",
+    "replyType": 0,
+    "reply": "pong!",
+    "options":[{
+      "name":"input",
+      "type":"string",
+      "description":"輸入文字",
+      "required": true
+    }]
+  }
+]
