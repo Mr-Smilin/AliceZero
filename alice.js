@@ -1,15 +1,14 @@
 //#region import
 // 載入env變量
-require('dotenv').config();
-//健康狀態
-require('./baseJS/HealthCheck.js').start();
+require("dotenv").config();
 // Discord
-const DSM = require('./baseJS/DiscordJSmySelf.js');
+const DBD = require("./baseJS/BaseDiscordBot.js");
 // js
-const CornTask = require('./baseJS/CronTask.js');
-const CatchF = require('./baseJS/CatchF.js');
-const slashM = require('./slashManager/slashM.js');
-const messageM = require('./messageManager/messageM.js');
+const CatchF = require("./baseJS/CatchF.js");
+const slashM = require("./slashManager/slashM.js");
+const messageM = require("./messageManager/messageM.js");
+const buttonM = require("./buttonManager/buttonM.js");
+const selectMenuM = require("./selectMenuManager/selectMenuM.js");
 //#endregion
 
 //#region Discord宣告
@@ -17,24 +16,22 @@ const messageM = require('./messageManager/messageM.js');
 let client;
 DoStart();
 async function DoStart() {
-    client = await DSM.Login(process.env.TOKEN);
-    DSM.On(client, 'ready', DiscordReady);
-    DSM.On(client, 'message', messageM.Start);
-    DSM.On(client, 'interaction', slashM.Start);
+	client = await DBD.Login(process.env.TOKEN);
+	DBD.On(client, "ready", DiscordReady);
+	DBD.On(client, "message", messageM.Start);
+	DBD.On(client, "slash", slashM.Start);
+	DBD.On(client, "button", buttonM.Start);
+	DBD.On(client, "selectMenu", selectMenuM.Start);
 }
 //#endregion
 //#region 基本方法
 async function DiscordReady() {
-    // 系統訊息
-    console.log(`Logged in as ${client.user.tag}!`);
-    // 註冊協槓命令
-    CatchF.LogDo('Started refreshing application (/) commands.');
-    const guilds = await client.guilds.fetch();
-    slashM.InsertSlash(guilds);
-    CatchF.LogDo('Successfully reloaded application (/) commands.');
-    // 定時呼叫自己，防止託管平台休眠
-    CornTask.cronCallMysell();
-    CatchF.LogDo('cronCallMysell Start');
+	// 系統訊息
+	console.log(`Logged in as ${client.user.tag}!`);
+	// 註冊協槓命令
+	CatchF.LogDo("Started refreshing application (/) commands.");
+	slashM.InsertSlash();
+	CatchF.LogDo("Successfully reloaded application (/) commands.");
 }
 
 //#endregion
