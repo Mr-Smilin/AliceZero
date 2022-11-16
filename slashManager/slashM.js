@@ -8,21 +8,22 @@ const rest = BDB.SNewRest();
 const CatchF = require("../baseJS/CatchF.js");
 const slashE = require("./slashE.js");
 // json
-const commandDatas = require("./slashTable.json");
+const slashTable = require("./slashTable.json");
 //#endregion
 
 // 監聽斜線事件
 exports.Start = async (interaction) => {
-	if (!BDB.IIsCommand(interaction)) return;
+	if (!BDB.IIsSlash(interaction)) return;
 	if (BDB.IIsBot(interaction)) return;
 	interaction?.user?.id === process.env.MASTER_ID &&
 		console.log("slash: ", interaction);
 
-	for (i of commandDatas) {
+	const slashName = BDB.SGetSlashName(interaction);
+	for (i of slashTable) {
 		if (i === null) continue;
-		if (BDB.SGetCommandName(interaction) === i.name) {
-			const message = slashE.SendMessage(i, interaction);
-			await BDB.SSend(interaction, message);
+		if (slashName === i.name) {
+			const message = slashE.SendMessage(interaction, i);
+			await BDB.ISend(interaction, message);
 		}
 	}
 };

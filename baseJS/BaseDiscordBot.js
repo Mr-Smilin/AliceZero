@@ -9,6 +9,7 @@ const {
 	ActionRowBuilder,
 	ButtonBuilder,
 	SelectMenuBuilder,
+	EmbedBuilder,
 } = require("discord.js");
 const client = new Client({
 	intents: [GatewayIntentBits?.Guilds && 32767],
@@ -77,21 +78,9 @@ exports.MContent = (discordMessage) => discordMessage.content;
 
 //#endregion
 
-//#region 斜線動作 S
+//#region 這些都是斜線還有它的附屬組件
 
-/** 定義斜線命令的訊息傳送方法
- *
- * @param {*} interaction Discord.Interaction
- * @param {string} message 訊息
- * @param {number} replyType 0 = 一般回傳訊息
- * @returns
- */
-exports.SSend = async function (interaction, message, replyType = 0) {
-	switch (replyType) {
-		case 0:
-			return await interaction.reply(message);
-	}
-};
+//#region 斜線動作 S
 
 /** 回傳一個 REST
  *
@@ -116,7 +105,7 @@ exports.SRestPutRoutes = async (rest, body = []) =>
  * @param {*} interaction
  * @return {string}
  */
-exports.SGetCommandName = (interaction) => interaction.commandName;
+exports.SGetSlashName = (interaction) => interaction.commandName;
 
 /** 回傳 斜線指令輸入值物件
  *
@@ -241,6 +230,16 @@ exports.BNewButton = (
 		.setDisabled(disabled);
 };
 
+/** 按鈕獲得所屬指令訊息的 name
+ *
+ * @param {*} interaction
+ * @returns {string}
+ */
+exports.BGetSlashName = (interaction) =>
+	interaction?.message?.interaction?.commandName;
+
+exports.BGetButtonId = (interaction) => interaction?.customId;
+
 // 獲得按鈕類型(顏色)
 function BGetButtonType(type) {
 	switch (type) {
@@ -283,12 +282,42 @@ exports.SMPushOptions = (selectMenuBuilder, options = []) =>
 
 //#region 交互動作 I
 
-/** 回傳 interaction 是否為命令物件
+/** 定義 interaction 的訊息傳送方法
+ *
+ * @param {*} interaction Discord.Interaction
+ * @param {string} message 訊息
+ * @param {number} replyType 0 = 一般回傳訊息
+ * @returns
+ */
+exports.ISend = async function (interaction, message, replyType = 0) {
+	switch (replyType) {
+		case 0:
+			return await interaction.reply(message);
+	}
+};
+
+/** 定義 interaction 編輯訊息的方法
+ * 0 = message, 1 = embed
+ * @param {*} interaction
+ * @param {*} message
+ * @param {*} replyType
+ * @returns
+ */
+exports.IEdit = async function (interaction, message, replyType = 0) {
+	switch (replyType) {
+		case 0:
+			return await interaction.editReply(message);
+		case 1:
+			return await interaction.editReply({ embeds: [message] });
+	}
+};
+
+/** 回傳 interaction 是否為斜線物件
  *
  * @param {*} interaction
  * @return {boolean}
  */
-exports.IIsCommand = (interaction) => interaction.isChatInputCommand();
+exports.IIsSlash = (interaction) => interaction.isChatInputCommand();
 
 /** 回傳 interaction 是否為按鈕物件
  *
@@ -329,6 +358,116 @@ exports.NewActionRow = () => new ActionRowBuilder();
  */
 exports.ActionRowAddComponents = (actionRowBuilder, components) =>
 	actionRowBuilder.addComponents(components);
+
+//#endregion
+
+//#endregion
+
+//#region 嵌入式訊息動作 E
+
+/** 回傳一個 EmbedBuilder
+ *
+ * @returns {EmbedBuilder}
+ */
+exports.ENewEmbed = () => new EmbedBuilder();
+
+/** 設定側欄顏色
+ *
+ * @param {EmbedBuilder} embed
+ * @param {string} color Ex: #fbfbc9
+ * @returns {EmbedBuilder}
+ */
+exports.ESetColor = (embed, color) => embed?.setColor(color);
+
+/** 設定頭像(左上角迷你圖)
+ *
+ * @param {EmbedBuilder} embed
+ * @param {string} name 名字(顯示在圖片右側)
+ * @param {string} iconUrl 頭像網址(圖檔網址)
+ * @param {string} url 名字上的連結
+ * @returns {EmbedBuilder}
+ */
+exports.ESetAuthor = (embed, name, iconUrl, url) =>
+	embed?.setAuthor({ name: name, iconUrl: iconUrl, url: url });
+
+/** 設定標題，在頭像下方
+ *
+ * @param {EmbedBuilder} embed
+ * @param {string} title
+ * @returns {EmbedBuilder}
+ */
+exports.ESetTitle = (embed, title) => embed?.setTitle(title);
+
+/** 設定標題上的 url，需要先設定標題
+ *
+ * @param {EmbedBuilder} embed
+ * @param {string} url
+ * @returns {EmbedBuilder}
+ */
+exports.ESetUrl = (embed, url) => embed?.setUrl(url);
+
+/** 設定簡介，在標題下方
+ *
+ * @param {EmbedBuilder} embed
+ * @param {string} description
+ * @returns {EmbedBuilder}
+ */
+exports.ESetDescription = (embed, description) =>
+	embed?.setDescription(description);
+
+/** 設定縮略圖(右上角小圖)
+ *
+ * @param {EmbedBuilder} embed
+ * @param {string} thumbnail 圖檔網址
+ * @returns {EmbedBuilder}
+ */
+exports.ESetThumbnail = (embed, thumbnail) => embed?.setThumbnail(thumbnail);
+
+/** 添加訊息，嵌入訊息的主要行為
+ *
+ * @param {EmbedBuilder} embed
+ * @param {string} name 訊息標題，在上方，比較小
+ * @param {string} value 訊息內容，大一點
+ * @param {boolean} inline 是否換行，預設否
+ * @returns {EmbedBuilder}
+ */
+exports.EAddField = (embed, name, value, inline = false) =>
+	embed?.addFields({ name: name, value: value, inline: inline });
+
+/** 添加一個空訊息
+ *
+ * @param {EmbedBuilder} embed
+ * @param {boolean} inline 是否換行，預設否
+ * @returns {EmbedBuilder}
+ */
+exports.EAddEmptyField = (embed, inline = false) =>
+	this.EAddField(embed, "\u200b", "\u200b", inline);
+
+/** 設定圖片(下方大圖)
+ *
+ * @param {EmbedBuilder} embed
+ * @param {string} imageUrl 圖檔網址
+ * @returns {EmbedBuilder}
+ */
+exports.ESetImage = (embed, imageUrl) => embed?.setImage(imageUrl);
+
+/** 設定頁尾
+ *
+ * @param {EmbedBuilder} embed
+ * @param {string} text 頁尾文字，在頁尾圖片右邊
+ * @param {string} iconUrl 頁尾圖片，左下角，跟頭像一樣迷你
+ * @returns {EmbedBuilder}
+ */
+exports.ESetFooter = (embed, text, iconUrl) =>
+	embed?.setFooter({ text: text, iconURL: iconUrl });
+
+/** 設定訊息發送時間(在頁尾右邊)
+ *
+ * @param {EmbedBuilder} embed
+ * @returns {EmbedBuilder}
+ */
+exports.ESetTimestamp = (embed) => embed?.setTimestamp();
+
 //#endregion
 
 //#region 監聽

@@ -1,20 +1,20 @@
 [
   {
     "id": 0,
-    "name": "test",
-    "description": "阿你就輸入點甚麼啦1",
+    "name": "help",
+    "description": "查詢指令",
     "replyType": 0,
     "ephemeral": true,
     "options":[{
-      "name":"input",
-      "description":"輸入文字",
-      "required": true,
+      "name":"show",
+      "description":"有其他人要看嗎",
+      "required": false,
       "type":"string",
       "choices":[{
-        "name": "funny","value": "yeee"
+        "name": "所有人看","value": "1"
       },
       {
-        "name": "funny2","value": "yeee2"
+        "name": "我自己看","value": "-1"
       }]
     }]
   }
