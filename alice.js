@@ -651,7 +651,7 @@ function EditSkillList(temp, many, reData, msg) {
         .setTitle('獲得方式')
         .setDescription(reData.get('getData'))
         .setTimestamp()
-        .setFooter('有出錯請找 微笑#3307', 'https://i.imgur.com/crrk7I2.png');
+        .setFooter('有出錯請找 石頭#2873', 'https://i.imgur.com/crrk7I2.png');
     //角色圖片
     if (reData.get('authorImg') !== '') embed.setThumbnail(reData.get('authorImg'));
     //備註&角色頻道

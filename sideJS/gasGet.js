@@ -350,7 +350,7 @@ exports.getBoss = function(name, RichEmbed, callback) {
                     .addField('智力', data[name].mAtk, true)
                     .addField('幸運', data[name].dex, true)
                     .setTimestamp()
-                    .setFooter('有出錯請找 微笑#3307', 'https://i.imgur.com/crrk7I2.png');
+                    .setFooter('有出錯請找 石頭#2873', 'https://i.imgur.com/crrk7I2.png');
                 //角色圖片
                 if (data[name].authorImg !== '') embed.setThumbnail(data[name].authorImg);
                 //備註
