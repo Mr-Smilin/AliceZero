@@ -278,6 +278,14 @@ exports.SMNewSelectMenu = (customId = "", placeholder = "") =>
 exports.SMPushOptions = (selectMenuBuilder, options = []) =>
 	options.map((option) => selectMenuBuilder.addOptions(option));
 
+/** 獲得菜單的指令名稱
+ *
+ * @param {SelectMenuBuilder} selectMenuBuilder
+ * @returns
+ */
+exports.SMGetSelectMenuName = (selectMenuBuilder) =>
+	selectMenuBuilder?.customId;
+
 //#endregion
 
 //#region 交互動作 I
@@ -364,110 +372,117 @@ exports.ActionRowAddComponents = (actionRowBuilder, components) =>
 //#endregion
 
 //#region 嵌入式訊息動作 E
+class EmbedMessage extends EmbedBuilder {
+	/** 設定側欄顏色
+	 *
+	 * @param {string} color Ex: #fbfbc9
+	 * @returns {EmbedMessage}
+	 */
+	ESetColor(color) {
+		this.setColor(color);
+		return this;
+	}
+	/** 設定頭像(左上角迷你圖)
+	 *
+	 * @param {string} name 名字(顯示在圖片右側)
+	 * @param {string} iconUrl 頭像網址(圖檔網址)
+	 * @param {string} url 名字上的連結
+	 * @returns {EmbedMessage}
+	 */
+	ESetAuthor(name, iconUrl, url) {
+		this.setAuthor({ name: name, iconUrl: iconUrl, url: url });
+		return this;
+	}
+	/** 設定標題，在頭像下方
+	 *
+	 * @param {string} title
+	 * @returns {EmbedMessage}
+	 */
+	ESetTitle(title) {
+		this.setTitle(title);
+		return this;
+	}
+	/** 設定標題上的 url，需要先設定標題
+	 *
+	 * @param {string} url
+	 * @returns {EmbedMessage}
+	 */
+	ESetUrl(url) {
+		this.setUrl(url);
+		return this;
+	}
+	/** 設定簡介，在標題下方
+	 *
+	 * @param {string} description
+	 * @returns {EmbedMessage}
+	 */
+	ESetDescription(description) {
+		this.setDescription(description);
+		return this;
+	}
+	/** 設定縮略圖(右上角小圖)
+	 *
+	 * @param {string} thumbnail 圖檔網址
+	 * @returns {EmbedMessage}
+	 */
+	ESetThumbnail(thumbnail) {
+		this.setThumbnail(thumbnail);
+		return this;
+	}
+	/** 添加訊息，嵌入訊息的主要行為
+	 *
+	 * @param {string} name 訊息標題，在上方，比較小
+	 * @param {string} value 訊息內容，大一點
+	 * @param {boolean} inline 是否換行，預設否
+	 * @returns {EmbedMessage}
+	 */
+	EAddField(name, value, inline = false) {
+		this.addFields({ name: name, value: value, inline: inline });
+		return this;
+	}
+	/** 添加一個空訊息
+	 *
+	 * @param {boolean} inline 是否換行，預設否
+	 * @returns {EmbedMessage}
+	 */
+	EAddEmptyField(inline = false) {
+		this.EAddField("\u200b", "\u200b", inline);
+		return this;
+	}
+	/** 設定圖片(下方大圖)
+	 *
+	 * @param {string} imageUrl 圖檔網址
+	 * @returns {EmbedMessage}
+	 */
+	ESetImage(imageUrl) {
+		this.setImage(imageUrl);
+		return this;
+	}
+	/** 設定頁尾
+	 *
+	 * @param {string} text 頁尾文字，在頁尾圖片右邊
+	 * @param {string} iconUrl 頁尾圖片，左下角，跟頭像一樣迷你
+	 * @returns {EmbedMessage}
+	 */
+	ESetFooter(text, iconUrl) {
+		this.setFooter({ text: text, iconURL: iconUrl });
+		return this;
+	}
+	/** 設定訊息發送時間(在頁尾右邊)
+	 *
+	 * @returns {EmbedMessage}
+	 */
+	ESetTimestamp() {
+		this.setTimestamp();
+		return this;
+	}
+}
 
-/** 回傳一個 EmbedBuilder
+/** 回傳一個 EmbedMessage
  *
- * @returns {EmbedBuilder}
+ * @returns {EmbedMessage}
  */
-exports.ENewEmbed = () => new EmbedBuilder();
-
-/** 設定側欄顏色
- *
- * @param {EmbedBuilder} embed
- * @param {string} color Ex: #fbfbc9
- * @returns {EmbedBuilder}
- */
-exports.ESetColor = (embed, color) => embed?.setColor(color);
-
-/** 設定頭像(左上角迷你圖)
- *
- * @param {EmbedBuilder} embed
- * @param {string} name 名字(顯示在圖片右側)
- * @param {string} iconUrl 頭像網址(圖檔網址)
- * @param {string} url 名字上的連結
- * @returns {EmbedBuilder}
- */
-exports.ESetAuthor = (embed, name, iconUrl, url) =>
-	embed?.setAuthor({ name: name, iconUrl: iconUrl, url: url });
-
-/** 設定標題，在頭像下方
- *
- * @param {EmbedBuilder} embed
- * @param {string} title
- * @returns {EmbedBuilder}
- */
-exports.ESetTitle = (embed, title) => embed?.setTitle(title);
-
-/** 設定標題上的 url，需要先設定標題
- *
- * @param {EmbedBuilder} embed
- * @param {string} url
- * @returns {EmbedBuilder}
- */
-exports.ESetUrl = (embed, url) => embed?.setUrl(url);
-
-/** 設定簡介，在標題下方
- *
- * @param {EmbedBuilder} embed
- * @param {string} description
- * @returns {EmbedBuilder}
- */
-exports.ESetDescription = (embed, description) =>
-	embed?.setDescription(description);
-
-/** 設定縮略圖(右上角小圖)
- *
- * @param {EmbedBuilder} embed
- * @param {string} thumbnail 圖檔網址
- * @returns {EmbedBuilder}
- */
-exports.ESetThumbnail = (embed, thumbnail) => embed?.setThumbnail(thumbnail);
-
-/** 添加訊息，嵌入訊息的主要行為
- *
- * @param {EmbedBuilder} embed
- * @param {string} name 訊息標題，在上方，比較小
- * @param {string} value 訊息內容，大一點
- * @param {boolean} inline 是否換行，預設否
- * @returns {EmbedBuilder}
- */
-exports.EAddField = (embed, name, value, inline = false) =>
-	embed?.addFields({ name: name, value: value, inline: inline });
-
-/** 添加一個空訊息
- *
- * @param {EmbedBuilder} embed
- * @param {boolean} inline 是否換行，預設否
- * @returns {EmbedBuilder}
- */
-exports.EAddEmptyField = (embed, inline = false) =>
-	this.EAddField(embed, "\u200b", "\u200b", inline);
-
-/** 設定圖片(下方大圖)
- *
- * @param {EmbedBuilder} embed
- * @param {string} imageUrl 圖檔網址
- * @returns {EmbedBuilder}
- */
-exports.ESetImage = (embed, imageUrl) => embed?.setImage(imageUrl);
-
-/** 設定頁尾
- *
- * @param {EmbedBuilder} embed
- * @param {string} text 頁尾文字，在頁尾圖片右邊
- * @param {string} iconUrl 頁尾圖片，左下角，跟頭像一樣迷你
- * @returns {EmbedBuilder}
- */
-exports.ESetFooter = (embed, text, iconUrl) =>
-	embed?.setFooter({ text: text, iconURL: iconUrl });
-
-/** 設定訊息發送時間(在頁尾右邊)
- *
- * @param {EmbedBuilder} embed
- * @returns {EmbedBuilder}
- */
-exports.ESetTimestamp = (embed) => embed?.setTimestamp();
-
+exports.ENewEmbed = () => new EmbedMessage();
 //#endregion
 
 //#region 監聽

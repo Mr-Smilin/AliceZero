@@ -4,6 +4,13 @@
     "name": "help",
     "description": "查詢指令",
     "replyType": 0,
+    "ephemeral": false
+  },
+  {
+    "id": 1,
+    "name": "test",
+    "description": "測試",
+    "replyType": 0,
     "ephemeral": true,
     "options":[{
       "name":"show",

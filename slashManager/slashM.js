@@ -23,7 +23,8 @@ exports.Start = async (interaction) => {
 		if (i === null) continue;
 		if (slashName === i.name) {
 			const message = slashE.SendMessage(interaction, i);
-			await BDB.ISend(interaction, message);
+			const replyType = i.replyType;
+			await BDB.ISend(interaction, message, replyType);
 		}
 	}
 };
@@ -31,26 +32,28 @@ exports.Start = async (interaction) => {
 // 註冊斜線命令
 exports.InsertSlash = async () => {
 	try {
-		await BDB.SRestPutRoutes(rest, getApplicationCommands(commandDatas));
+		await BDB.SRestPutRoutes(rest, getApplicationCommands(slashTable));
 	} catch (err) {
 		CatchF.ErrorDo(err, "InsertSlash: ");
 	}
 };
 
-function getApplicationCommands(commandDatas) {
+function getApplicationCommands(slashTable) {
 	const returnData = [];
-	for (i of commandDatas) {
+	for (i of slashTable) {
 		const slashCommandBuilder = BDB.SNewSlashCommand(i?.name, i?.description);
-		for (j of i?.options) {
-			const choices = j?.choices || [];
-			BDB.SPushOption(
-				slashCommandBuilder,
-				j?.type,
-				j?.name,
-				j?.description,
-				j?.required,
-				choices
-			);
+		if (i?.options) {
+			for (j of i?.options) {
+				const choices = j?.choices || [];
+				BDB.SPushOption(
+					slashCommandBuilder,
+					j?.type,
+					j?.name,
+					j?.description,
+					j?.required,
+					choices
+				);
+			}
 		}
 		returnData.push(slashCommandBuilder);
 	}
