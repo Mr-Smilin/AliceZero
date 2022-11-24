@@ -23,7 +23,7 @@ exports.Start = async (interaction) => {
 		if (i === null) continue;
 		if (slashName === i.name) {
 			const message = slashE.SendMessage(interaction, i);
-			const replyType = i.replyType;
+			const replyType = i.replyType && 0;
 			await BDB.ISend(interaction, message, replyType);
 		}
 	}

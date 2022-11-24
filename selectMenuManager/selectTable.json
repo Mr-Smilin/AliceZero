@@ -2,6 +2,7 @@
     {
         "slashId":0,
         "replyType":0,
+        "ephemeral":true,
         "options":[
             {
                 "label": "🎧 音樂系統",

@@ -12,11 +12,35 @@ const {
 	EmbedBuilder,
 } = require("discord.js");
 const client = new Client({
-	intents: [GatewayIntentBits?.Guilds && 32767],
+	intents: [
+		GatewayIntentBits?.Guilds && 1,
+		GatewayIntentBits?.GuildMembers && 2,
+		GatewayIntentBits?.GuildBans && 4,
+		GatewayIntentBits?.GuildEmojisAndStickers && 8,
+		GatewayIntentBits?.GuildIntegrations && 16,
+		GatewayIntentBits?.GuildWebhooks && 32,
+		GatewayIntentBits?.GuildInvites && 64,
+		GatewayIntentBits?.GuildVoiceStates && 128,
+		GatewayIntentBits?.GuildPresences && 256,
+		GatewayIntentBits?.GuildMessages && 512,
+		GatewayIntentBits?.GuildMessageReactions && 1024,
+		GatewayIntentBits?.GuildMessageTyping && 2048,
+		GatewayIntentBits?.DirectMessages && 4096,
+		GatewayIntentBits?.DirectMessageReactions && 8192,
+		GatewayIntentBits?.DirectMessageTyping && 16384,
+		GatewayIntentBits?.MessageContent && 32768,
+		GatewayIntentBits?.GuildScheduledEvents && 65536,
+		GatewayIntentBits?.AutoModerationConfiguration && 1048576,
+		GatewayIntentBits?.AutoModerationExecution && 2097152,
+	],
 	partials: [
+		Partials?.User && "USER",
 		Partials?.Message && "MESSAGE",
 		Partials?.Channel && "CHANNEL",
 		Partials?.Reaction && "REACTION",
+		Partials?.GuildMember && "GUILDMEMBER",
+		Partials?.GuildScheduledEvent && "GUILDSCHEDULEDEVENT",
+		Partials?.ThreadMember && "THREADMEMBER",
 	],
 });
 const { REST } = require("@discordjs/rest");
@@ -32,7 +56,7 @@ const buttonType = require("../buttonManager/buttonType.json");
 
 /** 定義 Discord.js 各種類型的訊息傳送
  *
- * @param {} discordObject Discord.Message
+ * @param {*} discordObject Discord.Message
  * @param {string} message 訊息
  * @param {number} type 告知 discordObject 類型 0=Message,1=Channel,2=Guild 預設0
  * @param {string} channelId 頻道ID,當 type 大於等於 1 時為必填
@@ -57,10 +81,10 @@ exports.MSend = async function (
 			case 0:
 				return await discordObject.channel.send(message);
 			case 1:
-				channel = await discordObject.fetch(channelId);
+				channel = await discordObject.channels.fetch(channelId);
 				return await channel.send(message);
 			case 2:
-				guild = await discordObject.fetch(guildId);
+				guild = await discordObject.guilds.fetch(guildId);
 				channel = await guild.channels.fetch(channelId);
 				return await channel.send(message);
 		}
@@ -286,6 +310,13 @@ exports.SMPushOptions = (selectMenuBuilder, options = []) =>
 exports.SMGetSelectMenuName = (selectMenuBuilder) =>
 	selectMenuBuilder?.customId;
 
+/** 獲得菜單的選擇內容(陣列)
+ *
+ * @param {SelectMenuBuilder} selectMenuBuilder
+ * @returns {[string]}
+ */
+exports.SMGetSelectValues = (selectMenuBuilder) => selectMenuBuilder?.values;
+
 //#endregion
 
 //#region 交互動作 I
@@ -502,6 +533,9 @@ exports.On = function (cl, name, doSomeThing) {
 			case "message":
 				cl.on(Events?.MessageCreate && "messageCreate", doSomeThing);
 				break;
+			case "messageUpdate":
+				cl.on(Events?.MessageUpdate && "messageUpdate", doSomeThing);
+				break;
 			case "slash":
 				cl.on(Events?.InteractionCreate && "interactionCreate", doSomeThing);
 				break;
@@ -532,6 +566,10 @@ exports.Login = async function (key) {
 	} catch (err) {
 		catchF.EmptyDo(err, "Login事件失敗!請確認key值:");
 	}
+};
+
+exports.GetMe = function () {
+	return client;
 };
 
 //#endregion

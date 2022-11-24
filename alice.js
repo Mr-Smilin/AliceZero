@@ -7,6 +7,7 @@ const BDB = require("./baseJS/BaseDiscordBot.js");
 const CatchF = require("./baseJS/CatchF.js");
 const slashM = require("./slashManager/slashM.js");
 const messageM = require("./messageManager/messageM.js");
+const messageUpdateM = require("./messageManager/messageUpdateM.js");
 const buttonM = require("./buttonManager/buttonM.js");
 const selectMenuM = require("./selectMenuManager/selectMenuM.js");
 //#endregion
@@ -19,6 +20,7 @@ async function DoStart() {
 	client = await BDB.Login(process.env.TOKEN);
 	BDB.On(client, "ready", DiscordReady);
 	BDB.On(client, "message", messageM.Start);
+	BDB.On(client, "messageUpdate", messageUpdateM.Start);
 	BDB.On(client, "slash", slashM.Start);
 	BDB.On(client, "button", buttonM.Start);
 	BDB.On(client, "selectMenu", selectMenuM.Start);

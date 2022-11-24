@@ -24,8 +24,8 @@ exports.Start = async (interaction) => {
 			for (j of selectTable) {
 				if (j === null) continue;
 				if (j.slashId === i.id) {
-					const message = selectMenuE.SendMessage(interaction, j);
-					const replyType = j.replyType;
+					const message = selectMenuE.SendMessage(interaction, i, j);
+					const replyType = j.replyType && 0;
 					await BDB.ISend(interaction, message, replyType);
 				}
 			}
