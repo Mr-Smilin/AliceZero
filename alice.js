@@ -255,23 +255,23 @@ async function DoBaseFunction(msg, cmd, args) {
             getFoodImage(msg);
             break;
         case 'irasuto':
-            teitterApi.getTweet('?query=from:akr50rt',function (data,state) {
-                if(state === 'error') data !== '' && msg.channel.send(data);
-                messageManager.TwitterEmbed(Discord.MessageEmbed,data, function (embed) {
+            teitterApi.getTweet('?query=from:akr50rt', function (data, state) {
+                if (state === 'error') data !== '' && msg.channel.send(data);
+                messageManager.TwitterEmbed(Discord.MessageEmbed, data, function (embed) {
                     msg.channel.send(embed);
                     const picData = [];
-                    for(let i=1;i<data?.length;i=i+2){
+                    for (let i = 1; i < data?.length; i = i + 2) {
                         picData.push(data[i]);
                     }
-                    GetReaction(msg,picData,picData?.length,function(i, many, data, msg){
+                    GetReaction(msg, picData, picData?.length, function (i, many, data, msg) {
                         msg.edit(data[i]);
                     })
                 });
             });
             break;
         case 'test3':
-            let testData = ['test','http://www.google.com'];
-            messageManager.TwitterEmbed(Discord.MessageEmbed,testData, function (embed) {
+            let testData = ['test', 'http://www.google.com'];
+            messageManager.TwitterEmbed(Discord.MessageEmbed, testData, function (embed) {
                 msg.channel.send(embed);
             });
             break;
@@ -1033,6 +1033,8 @@ function playMusic(msg, nowMusicPlayGuild, nowMusicPlayChanel) {
     ).catch(err => {
         console.log('musicError5');
         console.log('播歌期間發生錯誤');
+        // 2023/05/04
+        msg.channel.send('播歌期間發生錯誤!\n應該是IP被youtube擋住了，只能請過陣子再使用看看喔><!!')
         nowSongName.set(nowMusicPlayGuild, undefined);
         goBackHomeFromMusicHouse(nowMusicPlayGuild, nowMusicPlayChanel);
     });
@@ -1684,7 +1686,7 @@ async function DeleteAdmin(msg, args) {
 }
 
 // 讓msg獲得翻頁功能
-function GetReaction(msg,msgs,many,callback){
+function GetReaction(msg, msgs, many, callback) {
     let msgA = msg;
     msg.channel.send(msgs[0]).then(msg => {
         msg.react("⏪")
