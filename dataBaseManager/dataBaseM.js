@@ -14,7 +14,7 @@ exports.getDataFormBotMessage = function (callback) {
       callback(JSON.parse(JSON.stringify(response.data)));
     })
     .catch(function (error) {
-      console.log('ERROR#MyDataBase#01: ', error);
+      console.log('ERROR#MyDataBase#01');
       callback(undefined);
     });
 }
@@ -33,7 +33,7 @@ exports.getDataFormUserMessage = function (callback) {
       callback(JSON.parse(JSON.stringify(response.data)));
     })
     .catch(function (error) {
-      console.log('ERROR#MyDataBase#02: ', error);
+      console.log('ERROR#MyDataBase#02');
       callback(undefined);
     });
 }

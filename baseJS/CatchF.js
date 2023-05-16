@@ -1,12 +1,14 @@
 exports.ErrorDo = function (data, name = "Error") {
-    const errorDoData = `${name} ${data}`;
+    const errorDoData = ` | ${data} | ${name}`;
     console.error(errorDoData);
+    console.log("==========");
     return errorDoData
 }
 
 exports.LogDo = function (data, name = "") {
-    const logDoData = `${name} ${data}`;
+    const logDoData = ` | ${data} | ${name}`;
     console.log(logDoData);
+    console.log("==========");
     return logDoData;
 }
 

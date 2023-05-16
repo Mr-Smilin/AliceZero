@@ -8,7 +8,7 @@ const {
 	ButtonStyle,
 	ActionRowBuilder,
 	ButtonBuilder,
-	SelectMenuBuilder,
+	StringSelectMenuBuilder,
 	EmbedBuilder,
 } = require("discord.js");
 const client = new Client({
@@ -50,6 +50,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const catchF = require("./CatchF.js");
 // json
 const buttonType = require("../buttonManager/buttonType.json");
+const { exceptions } = require("winston");
 //#endregion
 
 //#region 訊息動作 M
@@ -89,7 +90,7 @@ exports.MSend = async function (
 				return await channel.send(message);
 		}
 	} catch (err) {
-		return catchF.ErrorDo(err, "SendMessage Fail");
+		return catchF.ErrorDo(err, "MSend 方法異常!");
 	}
 };
 
@@ -98,7 +99,7 @@ exports.MSend = async function (
  * @param {*} discordMessage Discord.Message
  * @returns {string}
  */
-exports.MContent = (discordMessage) => discordMessage.content;
+exports.MContent = (discordMessage) => discordMessage?.content == undefined ? new exceptions("MContent 方法異常!") : discordMessage?.content;
 
 //#endregion
 
@@ -110,8 +111,14 @@ exports.MContent = (discordMessage) => discordMessage.content;
  *
  * @returns {REST}
  */
-exports.SNewRest = () =>
-	new REST({ version: "10" }).setToken(process.env.TOKEN);
+exports.SNewRest = () => {
+	try {
+		return new REST({ version: "10" }).setToken(process.env.TOKEN);
+	}
+	catch (err) {
+		new exceptions("SNewRest 方法異常!");
+	}
+}
 
 /** 註冊斜線命令
  *
@@ -119,17 +126,23 @@ exports.SNewRest = () =>
  * @param {*} body
  * @returns
  */
-exports.SRestPutRoutes = async (rest, body = []) =>
-	await rest.put(Routes.applicationCommands(process.env.BOT_ID), {
-		body: body,
-	});
+exports.SRestPutRoutes = async (rest, body = []) => {
+	try {
+		return await rest.put(Routes.applicationCommands(process.env.BOT_ID), {
+			body: body,
+		});
+	}
+	catch (err) {
+		new exceptions("SRestPutRoutes 方法異常!");
+	}
+}
 
 /** 回傳 interaction.commandName
  *
  * @param {*} interaction
  * @return {string}
  */
-exports.SGetSlashName = (interaction) => interaction.commandName;
+exports.SGetSlashName = (interaction) => interaction?.commandName === undefined ? new exceptions("SGetSlashName 方法異常!") : interaction?.commandName;
 
 /** 回傳 斜線指令輸入值物件
  *
@@ -137,8 +150,14 @@ exports.SGetSlashName = (interaction) => interaction.commandName;
  * @param {string} description
  * @returns {SlashCommandBuilder}
  */
-exports.SNewSlashCommand = (name = "", description = "") =>
-	new SlashCommandBuilder().setName(name).setDescription(description);
+exports.SNewSlashCommand = (name = "", description = "") => {
+	try {
+		return new SlashCommandBuilder().setName(name).setDescription(description);
+	}
+	catch (err) {
+		new exceptions("SNewSlashCommand 方法異常!");
+	}
+}
 
 /** 新增選項物件
  *
@@ -157,70 +176,75 @@ exports.SPushOption = (
 	required = false,
 	choices = []
 ) => {
-	switch (type) {
-		case "string":
-			slashCommandBuilder.addStringOption((option) => {
-				option.setName(name).setDescription(description).setRequired(required);
-				choices?.map((choice) => option.addChoices(choice));
-				return option;
-			});
-			break;
-		case "int":
-			slashCommandBuilder.addIntegerOption((option) => {
-				option.setName(name).setDescription(description).setRequired(required);
-				choices?.map((choice) => option.addChoices(choice));
-				return option;
-			});
-			break;
-		case "bool":
-			slashCommandBuilder.addBooleanOption((option) => {
-				option.setName(name).setDescription(description).setRequired(required);
-				choices?.map((choice) => option.addChoices(choice));
-				return option;
-			});
-			break;
-		case "user":
-			slashCommandBuilder.addUserOption((option) => {
-				option.setName(name).setDescription(description).setRequired(required);
-				choices?.map((choice) => option.addChoices(choice));
-				return option;
-			});
-			break;
-		case "channel":
-			slashCommandBuilder.addChannelOption((option) => {
-				option.setName(name).setDescription(description).setRequired(required);
-				choices?.map((choice) => option.addChoices(choice));
-				return option;
-			});
-			break;
-		case "role":
-			slashCommandBuilder.addRoleOption((option) => {
-				option.setName(name).setDescription(description).setRequired(required);
-				choices?.map((choice) => option.addChoices(choice));
-				return option;
-			});
-			break;
-		case "mention":
-			slashCommandBuilder.addMentionableOption((option) => {
-				option.setName(name).setDescription(description).setRequired(required);
-				choices?.map((choice) => option.addChoices(choice));
-				return option;
-			});
-			break;
-		case "number":
-			slashCommandBuilder.addNumberOption((option) => {
-				option.setName(name).setDescription(description).setRequired(required);
-				choices?.map((choice) => option.addChoices(choice));
-				return option;
-			});
-			break;
-		case "attachment":
-			slashCommandBuilder.addAttachmentOption((option) => {
-				option.setName(name).setDescription(description).setRequired(required);
-				choices?.map((choice) => option.addChoices(choice));
-				return option;
-			});
-			break;
+	try {
+		switch (type) {
+			case "string":
+				slashCommandBuilder.addStringOption((option) => {
+					option.setName(name).setDescription(description).setRequired(required);
+					choices?.map((choice) => option.addChoices(choice));
+					return option;
+				});
+				break;
+			case "int":
+				slashCommandBuilder.addIntegerOption((option) => {
+					option.setName(name).setDescription(description).setRequired(required);
+					choices?.map((choice) => option.addChoices(choice));
+					return option;
+				});
+				break;
+			case "bool":
+				slashCommandBuilder.addBooleanOption((option) => {
+					option.setName(name).setDescription(description).setRequired(required);
+					choices?.map((choice) => option.addChoices(choice));
+					return option;
+				});
+				break;
+			case "user":
+				slashCommandBuilder.addUserOption((option) => {
+					option.setName(name).setDescription(description).setRequired(required);
+					choices?.map((choice) => option.addChoices(choice));
+					return option;
+				});
+				break;
+			case "channel":
+				slashCommandBuilder.addChannelOption((option) => {
+					option.setName(name).setDescription(description).setRequired(required);
+					choices?.map((choice) => option.addChoices(choice));
+					return option;
+				});
+				break;
+			case "role":
+				slashCommandBuilder.addRoleOption((option) => {
+					option.setName(name).setDescription(description).setRequired(required);
+					choices?.map((choice) => option.addChoices(choice));
+					return option;
+				});
+				break;
+			case "mention":
+				slashCommandBuilder.addMentionableOption((option) => {
+					option.setName(name).setDescription(description).setRequired(required);
+					choices?.map((choice) => option.addChoices(choice));
+					return option;
+				});
+				break;
+			case "number":
+				slashCommandBuilder.addNumberOption((option) => {
+					option.setName(name).setDescription(description).setRequired(required);
+					choices?.map((choice) => option.addChoices(choice));
+					return option;
+				});
+				break;
+			case "attachment":
+				slashCommandBuilder.addAttachmentOption((option) => {
+					option.setName(name).setDescription(description).setRequired(required);
+					choices?.map((choice) => option.addChoices(choice));
+					return option;
+				});
+				break;
+		}
+	}
+	catch (err) {
+		console.err("SPushOption 方法異常!");
 	}
 };
 
@@ -241,17 +265,22 @@ exports.BNewButton = (
 	type = buttonType.blue,
 	disabled = false
 ) => {
-	if (buttonType.link === type)
+	try {
+		if (buttonType.link === type)
+			return new ButtonBuilder()
+				.setURL(customId)
+				.setLabel(label)
+				.setStyle(BGetButtonType(type))
+				.setDisabled(disabled);
 		return new ButtonBuilder()
-			.setURL(customId)
+			.setCustomId(customId)
 			.setLabel(label)
 			.setStyle(BGetButtonType(type))
 			.setDisabled(disabled);
-	return new ButtonBuilder()
-		.setCustomId(customId)
-		.setLabel(label)
-		.setStyle(BGetButtonType(type))
-		.setDisabled(disabled);
+	}
+	catch (err) {
+		new exceptions("BNewButton 方法異常!")
+	}
 };
 
 /** 按鈕獲得所屬指令訊息的 name
@@ -260,23 +289,28 @@ exports.BNewButton = (
  * @returns {string}
  */
 exports.BGetSlashName = (interaction) =>
-	interaction?.message?.interaction?.commandName;
+	interaction?.message?.interaction?.commandName === undefined ? new exceptions("BGetSlashName 方法異常!") : interaction?.message?.interaction?.commandName;
 
-exports.BGetButtonId = (interaction) => interaction?.customId;
+exports.BGetButtonId = (interaction) => interaction?.customId === undefined ? new exceptions("BGetButtonId 方法異常!") : interaction?.customId;
 
 // 獲得按鈕類型(顏色)
 function BGetButtonType(type) {
-	switch (type) {
-		case buttonType.blue:
-			return ButtonStyle.Primary;
-		case buttonType.gray:
-			return ButtonStyle.Seconday;
-		case buttonType.green:
-			return ButtonStyle.Success;
-		case buttonType.red:
-			return ButtonStyle.Danger;
-		case buttonType.link:
-			return ButtonStyle.Link;
+	try {
+		switch (type) {
+			case buttonType.blue:
+				return ButtonStyle.Primary;
+			case buttonType.gray:
+				return ButtonStyle.Seconday;
+			case buttonType.green:
+				return ButtonStyle.Success;
+			case buttonType.red:
+				return ButtonStyle.Danger;
+			case buttonType.link:
+				return ButtonStyle.Link;
+		}
+	}
+	catch (err) {
+		new exceptions("BGetButtonType 方法異常!")
 	}
 }
 
@@ -290,32 +324,44 @@ function BGetButtonType(type) {
  * @param {string} placeholder 默認值
  * @returns
  */
-exports.SMNewSelectMenu = (customId = "", placeholder = "") =>
-	new SelectMenuBuilder().setCustomId(customId).setPlaceholder(placeholder);
+exports.SMNewSelectMenu = (customId = "", placeholder = "") => {
+	try {
+		return new StringSelectMenuBuilder().setCustomId(customId).setPlaceholder(placeholder);
+	}
+	catch (err) {
+		new exceptions("SMNewSelectMenu 方法異常!");
+	}
+}
 
 /** 新增一個 選項
  *
- * @param {SelectMenuBuilder} selectMenuBuilder
+ * @param {StringSelectMenuBuilder} selectMenuBuilder
  * @param {*} options
  * @returns
  */
-exports.SMPushOptions = (selectMenuBuilder, options = []) =>
-	options.map((option) => selectMenuBuilder.addOptions(option));
+exports.SMPushOptions = (selectMenuBuilder, options = []) => {
+	try {
+		return options.map((option) => selectMenuBuilder.addOptions(option));
+	}
+	catch (err) {
+		new exceptions("SMPushOptions 方法異常!");
+	}
+}
 
 /** 獲得菜單的指令名稱
  *
- * @param {SelectMenuBuilder} selectMenuBuilder
+ * @param {StringSelectMenuBuilder} selectMenuBuilder
  * @returns
  */
 exports.SMGetSelectMenuName = (selectMenuBuilder) =>
-	selectMenuBuilder?.customId;
+	selectMenuBuilder?.customId === undefined ? new exceptions("SMGetSelectMenuName 方法異常!") : selectMenuBuilder?.customId;
 
 /** 獲得菜單的選擇內容(陣列)
  *
- * @param {SelectMenuBuilder} selectMenuBuilder
+ * @param {StringSelectMenuBuilder} selectMenuBuilder
  * @returns {[string]}
  */
-exports.SMGetSelectValues = (selectMenuBuilder) => selectMenuBuilder?.values;
+exports.SMGetSelectValues = (selectMenuBuilder) => selectMenuBuilder?.values === undefined ? new exceptions("SMGetSelectValues 方法異常!") : selectMenuBuilder?.values;
 
 //#endregion
 
@@ -329,9 +375,14 @@ exports.SMGetSelectValues = (selectMenuBuilder) => selectMenuBuilder?.values;
  * @returns
  */
 exports.ISend = async function (interaction, message, replyType = 0) {
-	switch (replyType) {
-		case 0:
-			return await interaction.reply(message);
+	try {
+		switch (replyType) {
+			case 0:
+				return await interaction.reply(message);
+		}
+	}
+	catch (err) {
+		new exceptions("ISend 方法異常!");
 	}
 };
 
@@ -343,11 +394,16 @@ exports.ISend = async function (interaction, message, replyType = 0) {
  * @returns
  */
 exports.IEdit = async function (interaction, message, replyType = 0) {
-	switch (replyType) {
-		case 0:
-			return await interaction.editReply(message);
-		case 1:
-			return await interaction.editReply({ embeds: [message] });
+	try {
+		switch (replyType) {
+			case 0:
+				return await interaction.editReply(message);
+			case 1:
+				return await interaction.editReply({ embeds: [message] });
+		}
+	}
+	catch (err) {
+		new exceptions("IEdit 方法異常!");
 	}
 };
 
@@ -356,28 +412,28 @@ exports.IEdit = async function (interaction, message, replyType = 0) {
  * @param {*} interaction
  * @return {boolean}
  */
-exports.IIsSlash = (interaction) => interaction.isChatInputCommand();
+exports.IIsSlash = (interaction) => interaction?.isChatInputCommand() === undefined ? new exceptions("IIsSlash 方法異常!") : interaction?.isChatInputCommand();
 
 /** 回傳 interaction 是否為按鈕物件
  *
  * @param {*} interaction
  * @return {boolean}
  */
-exports.IIsButton = (interaction) => interaction.isButton();
+exports.IIsButton = (interaction) => interaction?.isButton() === undefined ? new exceptions("IIsButton 方法異常!") : interaction?.isButton();
 
 /** 回傳 interaction 是否為菜單物件
  *
  * @param {*} interaction
  * @returns {boolean}
  */
-exports.IIsSelectMenu = (interaction) => interaction.isSelectMenu();
+exports.IIsSelectMenu = (interaction) => interaction?.isStringSelectMenu() === undefined ? new exceptions("IIsSelectMenu 方法異常!") : interaction?.isStringSelectMenu();
 
 /** 回傳 interaction 是否為是bot發出
  *
  * @param {*} interaction
  * @return {boolean}
  */
-exports.IIsBot = (interaction) => interaction?.user?.bot;
+exports.IIsBot = (interaction) => interaction?.user?.bot === undefined ? new exceptions("IIsBot 方法異常!") : interaction?.user?.bot;
 
 //#endregion
 
@@ -387,16 +443,29 @@ exports.IIsBot = (interaction) => interaction?.user?.bot;
  *
  * @returns {ActionRowBuilder}
  */
-exports.NewActionRow = () => new ActionRowBuilder();
+exports.NewActionRow = () => {
+	try {
+		return new ActionRowBuilder();
+	}
+	catch (err) {
+		new exceptions("NewActionRow 方法異常!")
+	}
+}
 
 /** 新增一個組件到動作組件內
  *
  * @param {ActionRowBuilder} actionRowBuilder
- * @param {ButtonBuilder | SelectMenuBuilder} components
+ * @param {ButtonBuilder | StringSelectMenuBuilder} components
  * @returns {ActionRowBuilder}
  */
-exports.ActionRowAddComponents = (actionRowBuilder, components) =>
-	actionRowBuilder.addComponents(components);
+exports.ActionRowAddComponents = (actionRowBuilder, components) => {
+	try {
+		return actionRowBuilder.addComponents(components);
+	}
+	catch (err) {
+		new exceptions("ActionRowAddComponents 方法異常!");
+	}
+}
 
 //#endregion
 
@@ -506,6 +575,13 @@ class EmbedMessage extends EmbedBuilder {
 	ESetTimestamp() {
 		this.setTimestamp();
 		return this;
+	}
+
+	/** 轉換成 discord.js 傳送訊息兼容的格式
+	 * @returns {EmbedMessage}
+	 */
+	EToMessage() {
+		return { embeds: [this] }
 	}
 }
 

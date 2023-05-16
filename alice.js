@@ -10,6 +10,7 @@ const messageM = require("./messageManager/messageM.js");
 const messageUpdateM = require("./messageManager/messageUpdateM.js");
 const buttonM = require("./buttonManager/buttonM.js");
 const selectMenuM = require("./selectMenuManager/selectMenuM.js");
+const dataBaseM = require('./dataBaseManager/dataBaseM.js');
 //#endregion
 
 //#region Discord宣告
@@ -28,6 +29,7 @@ async function DoStart() {
 //#endregion
 //#region 基本方法
 async function DiscordReady() {
+
 	// 系統訊息
 	console.log(`Logged in as ${client.user.tag}!`);
 	// 註冊協槓命令
@@ -40,5 +42,7 @@ async function DiscordReady() {
 //#endregion
 
 //#region 其餘宣告
+async function getDBData() {
 
+}
 //#endregion
