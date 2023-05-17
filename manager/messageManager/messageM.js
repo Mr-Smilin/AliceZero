@@ -4,6 +4,7 @@ const BDB = require("../../baseJS/BaseDiscordBot.js");
 // js
 const CatchF = require("../../baseJS/CatchF.js");
 const MessageC = require("./messageC.js");
+const musicM = require("../musicManager/musicM.js");
 // json
 const prefix = require("./messagePrefix.json");
 //#endregion
@@ -33,6 +34,12 @@ exports.Start = async (msg) => {
 	}
 };
 
+/**
+ * 
+ * @param {*} msg discord.message
+ * @param {*} cmd 0 - 前綴字 1 - 指令 
+ * @param {*} args 參數
+ */
 async function SelectFunctionWithPrefix(msg, cmd, args = []) {
 	let nowPrefix = -1;
 	const allPrefix = Object.keys(prefix);
@@ -60,7 +67,7 @@ async function SelectFunctionWithPrefix(msg, cmd, args = []) {
 			break;
 		// 音樂方法
 		case "1":
-			BDB.MSend(msg, "ok");
+			musicM.DoStart(msg, cmd[1], args);
 			break;
 	}
 }

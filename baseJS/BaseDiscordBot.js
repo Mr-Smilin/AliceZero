@@ -101,6 +101,62 @@ exports.MSend = async function (
  */
 exports.MContent = (discordMessage) => discordMessage?.content == undefined ? new exceptions("MContent 方法異常!") : discordMessage?.content;
 
+class MessageBuilder {
+	constructor(text) {
+		this.text = text;
+		this.ephemeral = false;
+		this.embeds = [];
+		this.components = [];
+	}
+	/** 修改文字訊息
+	 * 
+	 * @param {string} text 文字訊息 
+	 */
+	setText(text) {
+		this.text = text;
+	}
+	/** 設定他人是否可見
+	 * 
+	 * @param {boolean} ephemeral false = 他人可見 | true = 僅自己 
+	 */
+	setEphemeral(ephemeral) {
+		this.ephemeral = ephemeral;
+	}
+	/** 添加 embed
+	 * 
+	 * @param {*} embed 
+	 */
+	addEmbed(embed) {
+		this.embeds.push(embed);
+	}
+	/** 添加組件
+	 * 
+	 * @param {*} component 選單 or 按鈕
+	 */
+	addComponents(component) {
+		this.components.push(component);
+	}
+	/** 回傳 discord 訊息格式
+	 * 
+	 * @returns {object}
+	 */
+	toMessage() {
+		return {
+			content: this.text,
+			embeds: this.embeds,
+			ephemeral: this.ephemeral,
+			components: this.components,
+		}
+	}
+}
+
+/** 回傳一個 MessageBuilder
+ * 
+ * @param {string} message 訊息 
+ * @returns {MessageBuilder} 訊息格式產生器
+ */
+exports.MNewMessage = (message = "") => new MessageBuilder(message);
+
 //#endregion
 
 //#region 這些都是斜線還有它的附屬組件
