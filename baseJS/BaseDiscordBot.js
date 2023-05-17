@@ -46,8 +46,9 @@ const client = new Client({
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { joinVoiceChannel } = require('@discordjs/voice');
 // js
-const catchF = require("./CatchF.js");
+const CatchF = require("./CatchF.js");
 // json
 const buttonType = require("../manager/buttonManager/buttonType.json");
 const { exceptions } = require("winston");
@@ -70,11 +71,11 @@ exports.MSend = async function (
 	channelId = "",
 	guildId = ""
 ) {
-	if (!/^[0-9]*$/.test(type)) return new Error(catchF.ErrorDo("type Error"));
+	if (!/^[0-9]*$/.test(type)) return new Error(CatchF.ErrorDo("type Error"));
 	if (type >= 1 && channelId === "")
-		return new Error(catchF.ErrorDo("channelId Error"));
+		return new Error(CatchF.ErrorDo("channelId Error"));
 	if (type >= 2 && guildId === "")
-		return new Error(catchF.ErrorDo("guildId Error"));
+		return new Error(CatchF.ErrorDo("guildId Error"));
 	try {
 		let guild;
 		let channel;
@@ -90,7 +91,7 @@ exports.MSend = async function (
 				return await channel.send(message);
 		}
 	} catch (err) {
-		return catchF.ErrorDo(err, "MSend 方法異常!");
+		return CatchF.ErrorDo(err, "MSend 方法異常!");
 	}
 };
 
@@ -103,7 +104,7 @@ exports.MReply = async function (discordObject, message) {
 	try {
 		return await discordObject.reply(message);
 	} catch (err) {
-		return catchF.ErrorDo(err, "MReply 方法異常!");
+		return CatchF.ErrorDo(err, "MReply 方法異常!");
 	}
 }
 
@@ -683,10 +684,10 @@ exports.MuIsVoicing = (msg) => {
  */
 exports.MuIsVoicingMySelf = (msg) => {
 	try {
-		// client?.voice?.connections.get(msg?.guild?.id)
-		console.log(client?.voice);
+		return client?.voice?.adapters.has(msg?.guild?.id)
 	} catch (err) {
-		catchF.ErrorDo(err, "MuIsVoicingMySelf 方法異常!");
+		CatchF.ErrorDo(err, "MuIsVoicingMySelf 方法異常!");
+		return false;
 	}
 }
 
@@ -694,10 +695,39 @@ exports.MuIsVoicingMySelf = (msg) => {
  * 
  * @param {*} msg 
  */
-exports.MuJoinVoiceChannel = async (msg) => {
-	if (msg?.member?.voice?.channel === undefined)
-		new exceptions("MuJoinVoiceChannel 方法異常!");
-	return await msg?.member?.voice?.channel.join();
+exports.MuJoinVoiceChannel = (msg) => {
+	try {
+		return joinVoiceChannel({
+			channelId: msg?.member?.voice?.channelId,
+			guildId: msg?.guild?.id,
+			adapterCreator: msg?.guild?.voiceAdapterCreator,
+		});
+	}
+	catch (err) {
+		CatchF.ErrorDo(err, "MuJoinVoiceChannel 方法異常!");
+	}
+}
+
+/** 獲得群組ID
+ * 
+ * @param {} msg 
+ */
+exports.MuGetGuildId = (msg) => {
+	return msg?.guild?.id === undefined ? new exceptions("MuGetGuildId 方法異常!") : msg?.guild?.id;
+}
+
+/** 音樂系統用的訊息回傳方式
+ * 
+ * @param {*} discordObject 
+ * @param {*} message 
+ * @param {*} type 0 = message, 1 = slash
+ */
+exports.MuReply = (discordObject, message, type = 0) => {
+	if (type === 0) {
+		this.MReply(discordObject, message);
+	} else if (type === 1) {
+		this.ISend(discordObject, message);
+	}
 }
 
 //#endregion
@@ -733,7 +763,7 @@ exports.On = function (cl, name, doSomeThing) {
 				break;
 		}
 	} catch (err) {
-		catchF.ErrorDo(err, "on啟動失敗: ");
+		CatchF.ErrorDo(err, "on啟動失敗: ");
 	}
 };
 
@@ -750,7 +780,7 @@ exports.Login = async function (key) {
 		client.login(key);
 		return client;
 	} catch (err) {
-		catchF.EmptyDo(err, "Login事件失敗!請確認key值:");
+		CatchF.EmptyDo(err, "Login事件失敗!請確認key值:");
 	}
 };
 

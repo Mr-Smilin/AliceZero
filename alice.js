@@ -13,6 +13,12 @@ const selectMenuM = require("./manager/selectMenuManager/selectMenuM.js");
 const dataBaseM = require('./manager/dataBaseManager/dataBaseM.js');
 //#endregion
 
+//#region 參數
+global.songList = new Map(); // 歌單
+global.songInfo = new Map(); // 歌曲資訊
+global.songLoop = new Map(); // 循環開關 0 = 不循環 1 = 單曲循環 2 = 歌單循環
+//#endregion
+
 //#region Discord宣告
 //#region 基本行為
 let client;
