@@ -94,6 +94,19 @@ exports.MSend = async function (
 	}
 };
 
+/** 回傳訊息
+ * 
+ * @param {*} discordObject 
+ * @param {*} message 
+ */
+exports.MReply = async function (discordObject, message) {
+	try {
+		return await discordObject.reply(message);
+	} catch (err) {
+		return catchF.ErrorDo(err, "MReply 方法異常!");
+	}
+}
+
 /** 回傳 Discord.Message 的訊息
  *
  * @param {*} discordMessage Discord.Message
@@ -114,6 +127,7 @@ class MessageBuilder {
 	 */
 	setText(text) {
 		this.text = text;
+		return this;
 	}
 	/** 設定他人是否可見
 	 * 
@@ -121,6 +135,7 @@ class MessageBuilder {
 	 */
 	setEphemeral(ephemeral) {
 		this.ephemeral = ephemeral;
+		return this;
 	}
 	/** 添加 embed
 	 * 
@@ -128,6 +143,7 @@ class MessageBuilder {
 	 */
 	addEmbed(embed) {
 		this.embeds.push(embed);
+		return this;
 	}
 	/** 添加組件
 	 * 
@@ -135,6 +151,7 @@ class MessageBuilder {
 	 */
 	addComponents(component) {
 		this.components.push(component);
+		return this;
 	}
 	/** 回傳 discord 訊息格式
 	 * 
@@ -646,6 +663,43 @@ class EmbedMessage extends EmbedBuilder {
  * @returns {EmbedMessage}
  */
 exports.ENewEmbed = () => new EmbedMessage();
+//#endregion
+
+//#region 音樂系統動作 Mu
+
+/** 判斷使用者是否在語音中
+ * 
+ * @param {*} msg
+ */
+exports.MuIsVoicing = (msg) => {
+	if (msg?.member?.voice === undefined)
+		new exceptions("MuIsVoicing 方法異常!");
+	return msg?.member?.voice?.channelId === null ? false : true;
+}
+
+/** 判斷 bot 在不在這個群組的語音頻道
+ * 
+ * @param {*} msg 
+ */
+exports.MuIsVoicingMySelf = (msg) => {
+	try {
+		// client?.voice?.connections.get(msg?.guild?.id)
+		console.log(client?.voice);
+	} catch (err) {
+		catchF.ErrorDo(err, "MuIsVoicingMySelf 方法異常!");
+	}
+}
+
+/** 加入使用者的語音頻道
+ * 
+ * @param {*} msg 
+ */
+exports.MuJoinVoiceChannel = async (msg) => {
+	if (msg?.member?.voice?.channel === undefined)
+		new exceptions("MuJoinVoiceChannel 方法異常!");
+	return await msg?.member?.voice?.channel.join();
+}
+
 //#endregion
 
 //#region 監聽
