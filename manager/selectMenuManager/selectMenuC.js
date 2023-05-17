@@ -1,8 +1,8 @@
 //#region import
 // Discord
-const BDB = require("../baseJS/BaseDiscordBot.js");
+const BDB = require("../../baseJS/BaseDiscordBot.js");
 // js
-const CatchF = require("../baseJS/CatchF.js");
+const CatchF = require("../../baseJS/CatchF.js");
 // json
 const selectTable = require("./selectTable.json");
 //#endregion

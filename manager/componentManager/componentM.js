@@ -1,13 +1,13 @@
 // 整合 discord 組件為固定方法的控制器
 // js
-const CatchF = require("../baseJS/CatchF.js");
-const embedE = require("../embedManager/embedE.js");
-const selectMenuE = require("../selectMenuManager/selectMenuE.js");
+const CatchF = require("../../baseJS/CatchF.js");
+const embedC = require("../embedManager/embedC.js");
+const selectMenuC = require("../selectMenuManager/selectMenuC.js");
 
 exports.GetHelpMessage = (ephemeral = false) => {
   try {
-    let embed = embedE.HelpMessage();
-    let selectMenu = selectMenuE.GetHelpSelectMenu();
+    let embed = embedC.HelpMessage();
+    let selectMenu = selectMenuC.GetHelpSelectMenu();
     return {
       embeds: [embed],
       ephemeral: ephemeral,

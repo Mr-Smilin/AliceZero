@@ -2,10 +2,10 @@
 // 載入env變量
 require("dotenv").config();
 // Discord
-const BDB = require("../baseJS/BaseDiscordBot.js");
+const BDB = require("../../baseJS/BaseDiscordBot.js");
 // js
-const CatchF = require("../baseJS/CatchF.js");
-const selectMenuE = require("./selectMenuE.js");
+const CatchF = require("../../baseJS/CatchF.js");
+const selectMenuC = require("./selectMenuC.js");
 // json
 const selectTable = require("./selectTable.json");
 const slashTable = require("../slashManager/slashTable.json");
@@ -24,7 +24,7 @@ exports.Start = async (interaction) => {
 			for (j of selectTable) {
 				if (j === null) continue;
 				if (j.slashId === i.id) {
-					const message = selectMenuE.SendMessage(interaction, i, j);
+					const message = selectMenuC.SendMessage(interaction, i, j);
 					const replyType = j.replyType && 0;
 					await BDB.ISend(interaction, message, replyType);
 				}

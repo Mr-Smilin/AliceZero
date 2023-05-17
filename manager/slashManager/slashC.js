@@ -1,8 +1,8 @@
 //#region import
 // Discord
-const BDB = require("../baseJS/BaseDiscordBot.js");
+const BDB = require("../../baseJS/BaseDiscordBot.js");
 // js
-const componentE = require("../componentManager/componentE.js");
+const componentM = require("../componentManager/componentM.js");
 // json
 const buttonType = require("../buttonManager/buttonType.json");
 //#endregion
@@ -27,7 +27,7 @@ exports.SendMessage = function (interaction, command) {
 			// 	ephemeral: command.ephemeral,
 			// 	components: [selectMenuAction],
 			// };
-			return componentE.GetHelpMessage(command.ephemeral);
+			return componentM.GetHelpMessage(command.ephemeral);
 		default:
 			return {
 				content: "預期外的指令!!",

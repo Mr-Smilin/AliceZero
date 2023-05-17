@@ -1,9 +1,9 @@
 //#region import
 // Discord
-const BDB = require("../baseJS/BaseDiscordBot.js");
+const BDB = require("../../baseJS/BaseDiscordBot.js");
 // js
-const CatchF = require("../baseJS/CatchF.js");
-const MessageE = require("./messageE.js");
+const CatchF = require("../../baseJS/CatchF.js");
+const MessageC = require("./messageC.js");
 // json
 const prefix = require("./messagePrefix.json");
 //#endregion
@@ -56,7 +56,7 @@ async function SelectFunctionWithPrefix(msg, cmd, args = []) {
 	switch (nowPrefix) {
 		// 基本方法
 		case "0":
-			MessageE.DoBaseFunction(msg, cmd[1], args)
+			MessageC.DoBaseFunction(msg, cmd[1], args)
 			break;
 		// 音樂方法
 		case "1":

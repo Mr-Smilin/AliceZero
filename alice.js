@@ -5,12 +5,12 @@ require("dotenv").config();
 const BDB = require("./baseJS/BaseDiscordBot.js");
 // js
 const CatchF = require("./baseJS/CatchF.js");
-const slashM = require("./slashManager/slashM.js");
-const messageM = require("./messageManager/messageM.js");
-const messageUpdateM = require("./messageManager/messageUpdateM.js");
-const buttonM = require("./buttonManager/buttonM.js");
-const selectMenuM = require("./selectMenuManager/selectMenuM.js");
-const dataBaseM = require('./dataBaseManager/dataBaseM.js');
+const slashM = require("./manager/slashManager/slashM.js");
+const messageM = require("./manager/messageManager/messageM.js");
+const messageUpdateM = require("./manager/messageManager/messageUpdateM.js");
+const buttonM = require("./manager/buttonManager/buttonM.js");
+const selectMenuM = require("./manager/selectMenuManager/selectMenuM.js");
+const dataBaseM = require('./manager/dataBaseManager/dataBaseM.js');
 //#endregion
 
 //#region Discord宣告

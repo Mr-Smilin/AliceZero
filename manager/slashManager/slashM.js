@@ -2,11 +2,11 @@
 // 載入env變量
 require("dotenv").config();
 // Discord
-const BDB = require("../baseJS/BaseDiscordBot.js");
+const BDB = require("../../baseJS/BaseDiscordBot.js");
 const rest = BDB.SNewRest();
 // js
-const CatchF = require("../baseJS/CatchF.js");
-const slashE = require("./slashE.js");
+const CatchF = require("../../baseJS/CatchF.js");
+const slashC = require("./slashC.js");
 // json
 const slashTable = require("./slashTable.json");
 //#endregion
@@ -22,7 +22,7 @@ exports.Start = async (interaction) => {
 	for (i of slashTable) {
 		if (i === null) continue;
 		if (slashName === i.name) {
-			const message = slashE.SendMessage(interaction, i);
+			const message = slashC.SendMessage(interaction, i);
 			const replyType = i.replyType && 0;
 			await BDB.ISend(interaction, message, replyType);
 		}

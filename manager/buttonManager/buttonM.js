@@ -2,10 +2,10 @@
 // 載入env變量
 require("dotenv").config();
 // Discord
-const BDB = require("../baseJS/BaseDiscordBot.js");
+const BDB = require("../../baseJS/BaseDiscordBot.js");
 // js
-const CatchF = require("../baseJS/CatchF.js");
-const buttonE = require("./buttonE.js");
+const CatchF = require("../../baseJS/CatchF.js");
+const buttonC = require("./buttonC.js");
 // json
 const buttonTable = require("./buttonTable.json");
 //#endregion
@@ -20,7 +20,7 @@ exports.Start = async (interaction) => {
 	for (i of buttonTable) {
 		if (i === null) continue;
 		if (buttonId === i.id) {
-			buttonE.GetButtonAction(interaction);
+			buttonC.GetButtonAction(interaction);
 		}
 	}
 };

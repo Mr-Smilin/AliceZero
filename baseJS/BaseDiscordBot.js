@@ -49,7 +49,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 // js
 const catchF = require("./CatchF.js");
 // json
-const buttonType = require("../buttonManager/buttonType.json");
+const buttonType = require("../manager/buttonManager/buttonType.json");
 const { exceptions } = require("winston");
 //#endregion
 
