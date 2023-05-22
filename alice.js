@@ -14,9 +14,10 @@ const dataBaseM = require('./manager/dataBaseManager/dataBaseM.js');
 //#endregion
 
 //#region 參數
+global.isPlaying = new Map(); // 是否正在播放音樂
 global.songList = new Map(); // 歌單
-global.songInfo = new Map(); // 歌曲資訊
-global.songLoop = new Map(); // 循環開關 0 = 不循環 1 = 單曲循環 2 = 歌單循環
+global.connection = new Map(); // https://discord.js.org/#/docs/voice/main/class/VoiceConnection
+global.dispatcher = new Map(); // https://discord.js.org/#/docs/voice/main/class/AudioPlayer
 //#endregion
 
 //#region Discord宣告

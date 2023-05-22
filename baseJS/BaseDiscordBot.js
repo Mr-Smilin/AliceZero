@@ -46,7 +46,7 @@ const client = new Client({
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { joinVoiceChannel } = require('@discordjs/voice');
+const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, NoSubscriberBehavior } = require('@discordjs/voice');
 // js
 const CatchF = require("./CatchF.js");
 // json
@@ -71,11 +71,11 @@ exports.MSend = async function (
 	channelId = "",
 	guildId = ""
 ) {
-	if (!/^[0-9]*$/.test(type)) return new Error(CatchF.ErrorDo("type Error"));
+	if (!/^[0-9]*$/.test(type)) new exceptions("type Error");
 	if (type >= 1 && channelId === "")
-		return new Error(CatchF.ErrorDo("channelId Error"));
+		new exceptions("channelId Error");
 	if (type >= 2 && guildId === "")
-		return new Error(CatchF.ErrorDo("guildId Error"));
+		new exceptions("guildId Error");
 	try {
 		let guild;
 		let channel;
@@ -91,7 +91,7 @@ exports.MSend = async function (
 				return await channel.send(message);
 		}
 	} catch (err) {
-		return CatchF.ErrorDo(err, "MSend 方法異常!");
+		CatchF.ErrorDo(err, "MSend 方法異常!");
 	}
 };
 
@@ -331,6 +331,7 @@ exports.SPushOption = (
  * @param {string} customId 傳遞的id || 當 type 為 link 時，customId 傳遞 url
  * @param {string} label 按鈕顯示的文字
  * @param {string} type buttonType.json
+ * @param {boolean} disabled ture = 按鈕禁用(不能按)，默認 false
  * @returns {ButtonBuilder}
  */
 exports.BNewButton = (
@@ -374,7 +375,7 @@ function BGetButtonType(type) {
 			case buttonType.blue:
 				return ButtonStyle.Primary;
 			case buttonType.gray:
-				return ButtonStyle.Seconday;
+				return ButtonStyle.Secondary;
 			case buttonType.green:
 				return ButtonStyle.Success;
 			case buttonType.red:
@@ -670,21 +671,31 @@ exports.ENewEmbed = () => new EmbedMessage();
 
 /** 判斷使用者是否在語音中
  * 
- * @param {*} msg
+ * @param {*} discordObject
+ * @param {*} type 0 = message 1 = interaction
  */
-exports.MuIsVoicing = (msg) => {
-	if (msg?.member?.voice === undefined)
+exports.MuIsVoicing = (discordObject, type = 0) => {
+	if (discordObject?.member?.voice === undefined)
 		new exceptions("MuIsVoicing 方法異常!");
-	return msg?.member?.voice?.channelId === null ? false : true;
+	if (type === 0) {
+		return discordObject?.member?.voice?.channel === null ? true : false;
+	} else {
+		return discordObject?.member?.voice?.channel === null ? true : false;
+	}
 }
 
 /** 判斷 bot 在不在這個群組的語音頻道
  * 
- * @param {*} msg 
+ * @param {*} discordObject
+ * @param {*} type 0 = message 1 = interaction
  */
-exports.MuIsVoicingMySelf = (msg) => {
+exports.MuIsVoicingMySelf = (discordObject, type = 0) => {
 	try {
-		return client?.voice?.adapters.has(msg?.guild?.id)
+		if (type === 0)
+			return global.connection.has(discordObject?.guild?.id) && !(global.connection.get(discordObject?.guild?.id) === undefined);
+		else
+			// TODO
+			return global.connection.has(discordObject?.guild?.id) && !(global.connection.get(discordObject?.guild?.id) === undefined);
 	} catch (err) {
 		CatchF.ErrorDo(err, "MuIsVoicingMySelf 方法異常!");
 		return false;
@@ -693,27 +704,79 @@ exports.MuIsVoicingMySelf = (msg) => {
 
 /** 加入使用者的語音頻道
  * 
- * @param {*} msg 
+ * @param {*} discordObject 
+ * @param {} type 0 = message 1 = interaction
  */
-exports.MuJoinVoiceChannel = (msg) => {
+exports.MuJoinVoiceChannel = (discordObject, type = 0) => {
 	try {
-		return joinVoiceChannel({
-			channelId: msg?.member?.voice?.channelId,
-			guildId: msg?.guild?.id,
-			adapterCreator: msg?.guild?.voiceAdapterCreator,
-		});
+		if (type === 0) {
+			const connection = joinVoiceChannel({
+				channelId: discordObject?.member?.voice?.channel?.id,
+				guildId: discordObject?.guild?.id,
+				adapterCreator: discordObject?.guild?.voiceAdapterCreator,
+			});
+			global.connection.set(discordObject?.guild?.id, connection);
+			return connection;
+		}
+		else {
+			// TODO
+			const connection = joinVoiceChannel({
+				channelId: discordObject?.member?.voice?.channel?.id,
+				guildId: discordObject?.guild?.id,
+				adapterCreator: discordObject?.guild?.voiceAdapterCreator,
+			});
+			global.connection.set(discordObject?.guild?.id, connection);
+			return connection;
+		}
 	}
 	catch (err) {
-		CatchF.ErrorDo(err, "MuJoinVoiceChannel 方法異常!");
+		CatchF.ErrorDo(err, "type = " + type + " MuJoinVoiceChannel 方法異常!");
 	}
+}
+
+/** 獲得全域 connection
+ * 
+ * @param {*} guildId 
+ * @returns 
+ */
+exports.MuGetConnection = (guildId) => {
+	return global.connection.get(guildId);
+}
+
+/** 判斷是否正在播放歌曲
+ * 
+ * @param {*} guildId 
+ * @returns 
+ */
+exports.MuIsPlaying = (guildId) => {
+	return global.isPlaying.get(guildId);
 }
 
 /** 獲得群組ID
  * 
- * @param {} msg 
+ * @param {} discordObject 
+ * @param {} type 0 = message 1 = interaction
  */
-exports.MuGetGuildId = (msg) => {
-	return msg?.guild?.id === undefined ? new exceptions("MuGetGuildId 方法異常!") : msg?.guild?.id;
+exports.MuGetGuildId = (discordObject, type = 0) => {
+	if (type === 0)
+		return discordObject?.guild?.id === undefined ? new exceptions("MuGetGuildId 方法異常!") : discordObject?.guild?.id;
+	else
+		// TODO
+		return discordObject?.guild?.id === undefined ? new exceptions("MuGetGuildId 方法異常!") : discordObject?.guild?.id;
+}
+
+/** 獲得頻道ID 沒用到
+ * 
+ * @param {*} discordObject 
+ * @param {} type 0 = message 1 = interaction
+ * @returns 
+ */
+exports.MuGetChannelId = (discordObject, type = 0) => {
+	if (type === 0)
+		return discordObject?.channel?.id === undefined ? new exceptions("MuGetChannelId 方法異常!") : discordObject?.channel?.id;
+	else
+		// TODO
+		return discordObject?.channel?.id === undefined ? new exceptions("MuGetChannelId 方法異常!") : discordObject?.channel?.id;
 }
 
 /** 音樂系統用的訊息回傳方式
@@ -722,11 +785,72 @@ exports.MuGetGuildId = (msg) => {
  * @param {*} message 
  * @param {*} type 0 = message, 1 = slash
  */
-exports.MuReply = (discordObject, message, type = 0) => {
+exports.MuMessageSend = (discordObject, message, type = 0) => {
 	if (type === 0) {
 		this.MReply(discordObject, message);
 	} else if (type === 1) {
 		this.ISend(discordObject, message);
+	}
+}
+
+/** 創建音樂播放器(訂閱目標)
+ * 
+ * @returns 
+ */
+exports.MuGetAudioPlay = () => {
+	try {
+		return createAudioPlayer({
+			behaviors: {
+				noSubscriber: NoSubscriberBehavior.Play
+			}
+		});
+	}
+	catch (err) {
+		CatchF.ErrorDo(err, "MuGetAudioPlay 方法異常!");
+	}
+}
+
+exports.MuPlayMusic = (audioPlay, stream) => {
+	try {
+		const resource = createAudioResource(stream, { inputType: stream.type });
+		audioPlay.play(resource);
+	}
+	catch (err) {
+		CatchF.ErrorDo(err, "MuPlayMusic 方法異常!");
+	}
+}
+
+/** 獲得 audioPlayer 狀態
+ * url: https://discordjs.guide/voice/audio-player.html#life-cycle
+ * @param {*} status 
+ * @returns 
+ */
+exports.MuGetAudioPlayerStatus = (status = 0) => {
+	try {
+		switch (status) {
+			case 0:
+				// the initial state of an audio player. The audio player will be in this state when there is no audio resource for it to play.
+				return AudioPlayerStatus?.Idle === undefined ? new exceptions("State Idle Error") : AudioPlayerStatus?.Idle;
+			case 1:
+				// the state an audio player will be in while it is waiting for an audio resource to become playable.
+				// The audio player may transition from this state to either the Playing state (success) or the Idle state (failure).
+				return AudioPlayerStatus?.Buffering === undefined ? new exceptions("State Buffering Error") : AudioPlayerStatus?.Buffering;
+			case 2:
+				// the state a voice connection enters when it is actively playing an audio resource.
+				// When the audio resource comes to an end, the audio player will transition to the Idle state.
+				return AudioPlayerStatus?.Playing === undefined ? new exceptions("State Playing Error") : AudioPlayerStatus?.Playing;
+			case 3:
+				// the state a voice connection will enter when the player has paused itself because there are no active voice connections to play to.
+				// This is only possible with the noSubscriber behavior set to Pause.
+				// It will automatically transition back to Playing once at least one connection becomes available again.
+				return AudioPlayerStatus?.AutoPaused === undefined ? new exceptions("State AutoPaused Error") : AudioPlayerStatus?.AutoPaused;
+			case 4:
+				// the state a voice connection enters when it is paused by the user.
+				return AudioPlayerStatus?.Paused === undefined ? new exceptions("State Paused Error") : AudioPlayerStatus?.Paused;
+		}
+	}
+	catch (err) {
+		CatchF.ErrorDo(err, "MuGetAudioPlayerStatus 方法異常!");
 	}
 }
 

@@ -5,6 +5,7 @@ const { disableValidators } = require("discord.js");
 // Discord
 const BDB = require("../../baseJS/BaseDiscordBot.js");
 // js
+const CatchF = require("../../baseJS/CatchF.js");
 // json
 // constants
 const color = "#fbfbc9";
@@ -28,7 +29,7 @@ exports.HelpMessage = () => {
 	embedMessage
 		.EAddField(
 			"自我檢測執行..",
-			" 🔨 版本復原進度 10%\n 🎧 音樂系統 ✅\n 🍻 派對指令 ❌\n ⚔️ mykirito系統 ✅\n ... \n ...\n ☄️ 隱藏功能 ✅ ✅"
+			" 🔨 版本復原進度 20%\n 🎧 音樂系統 ✅\n 🍻 派對指令 ❌\n ⚔️ mykirito系統 ✅\n ... \n ...\n ☄️ 隱藏功能 ✅ ✅"
 		)
 		.EAddField(
 			"模組加載完畢，請根據需求選擇對應系統說明",
@@ -40,9 +41,28 @@ exports.HelpMessage = () => {
 
 exports.MusicMessage = () => {
 	const embedMessage = baseEmbed();
-	embedMessage.EAddField("test", "test2");
+	embedMessage.EAddField("Alice", "");
+	embedMessage.EAddField("test", "test2", true);
 	return embedMessage;
 };
+
+//▬▬▬▬▬▬▬▬▬🔘▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+// function streamString(songLength, nowSongLength) {
+// 	let mainText = '🔘';
+// 	const secondText = '▬';
+// 	const whereMain = Math.floor((nowSongLength / songLength) * 100);
+// 	let message = '';
+// 	for (i = 1; i <= 30; i++) {
+// 		if (i * 3.3 + 1 >= whereMain) {
+// 			message = message + mainText;
+// 			mainText = secondText;
+// 		} else {
+// 			message = message + secondText;
+// 		}
+// 	}
+// 	return message;
+// }
+
 
 function baseEmbed() {
 	const embedMessage = BDB.ENewEmbed();
