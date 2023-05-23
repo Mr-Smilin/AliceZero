@@ -113,6 +113,30 @@ exports.DoAlice = (discordObject, type = 0) => {
   BDB.MuMessageSend(discordObject, content, type);
 }
 
+// 暫停播放
+exports.DoPause = (discordObject, type = 0) => {
+  const guildID = BDB.MuGetGuildId(discordObject, type);
+  musicC.Pause(guildId, discordObject, type);
+}
+
+// 恢復播放
+exports.DoResume = (discordObject, type = 0) => {
+  const guildId = BDB.MuGetGuildId(discordObject, type);
+  musicC.Resume(guildId, discordObject, type);
+}
+
+// 跳過目前歌曲
+exports.DoSkip = (discordObject, type = 0) => {
+  const guildId = BDB.MuGetGuildId(discordObject, type);
+  musicC.Skip(guildId, discordObject, type);
+}
+
+// 取得目前隊列中的歌曲
+exports.DoNowQueue = (discordObject, type = 0) => {
+  const guildId = BDB.MuGetGuildId(discordObject, type);
+  musicC.NowQueue(guildId, discordObject, type);
+}
+
 //#endregion
 
 //#region 內部方法

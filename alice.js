@@ -15,6 +15,13 @@ const dataBaseM = require('./manager/dataBaseManager/dataBaseM.js');
 
 //#region 參數
 global.isPlaying = new Map(); // 是否正在播放音樂
+/**
+ * let listData = {
+			id: musicId,
+			name: musicName,
+			url: musicUrl
+		};
+ */
 global.songList = new Map(); // 歌單
 global.connection = new Map(); // https://discord.js.org/#/docs/voice/main/class/VoiceConnection
 global.dispatcher = new Map(); // https://discord.js.org/#/docs/voice/main/class/AudioPlayer

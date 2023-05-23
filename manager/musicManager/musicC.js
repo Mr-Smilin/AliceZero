@@ -144,7 +144,68 @@ exports.SetIsPlaying = (guildId, state = false) => {
   global.isPlaying.set(guildId, state)
 }
 
-//TODO 下一首歌的事件，如果歌單沒歌了，執行callback方法
+exports.Pause = (guildId, discordObject, type) => {
+  if (global.dispatcher.get(guildId)) {
+    global.dispatcher.get(guildId).pause();
+    BDB.MuMessageSend(discordObject, { content: '暫停播放！' }, type);
+  } else {
+    // 機器人目前未加入頻道
+    BDB.MuMessageSend(discordObject, { content: '要先點歌喔:3...' }, type);
+  }
+}
+
+/** 恢復播放
+ * 
+ * @param {*} guildId 
+ * @param {*} discordObject 
+ * @param {*} type 
+ * @returns 
+ */
+exports.Resume = (guildId, discordObject, type) => {
+  if (global.dispatcher.get(guildId)) {
+    global.dispatcher.get(guildId).unpause();
+    BDB.MuMessageSend(discordObject, { content: '那就繼續囉~' }, type);
+  } else {
+    // 機器人目前未加入頻道
+    BDB.MuMessageSend(discordObject, { content: '要先點歌喔:3...' }, type);
+  }
+}
+
+/** 跳過歌曲
+ * 
+ * @param {*} guildId 
+ * @param {*} discordObject 
+ * @param {*} type 
+ */
+exports.Skip = (guildId, discordObject, type) => {
+  if (global.dispatcher.get(guildId)) {
+    global.dispatcher.get(guildId).stop();
+    BDB.MuMessageSend(discordObject, { content: '咖！的一聲\n跳過了一首歌！' }, type);
+  } else {
+    // 機器人目前未加入頻道
+    BDB.MuMessageSend(discordObject, { content: '要先點歌喔:3...' }, type);
+  }
+}
+
+exports.NowQueue = (guildId, discordObject, type) => {
+  // 如果隊列中有歌曲就顯示
+  if (global.songList.get(guildId) && global.songList.get(guildId).length > 0) {
+    let queueString = '';
+
+    // 字串處理，將 Object 組成字串
+    let queue = global.songList.get(guildId).map((item, index) => `[${index + 1}] ${item.name}`);
+    if (queue.length > 10) {
+      queue = queue.slice(0, 10);
+      queueString = `目前歌單：\n${queue.join('\n')}\n……與其他 ${global.songList.get(guildId).length - 10} 首歌`;
+    } else {
+      queueString = `目前歌單：\n${queue.join('\n')}`;
+    }
+
+    BDB.MuMessageSend(discordObject, { content: queueString }, type);
+  } else {
+    BDB.MuMessageSend(discordObject, { content: '要先點歌喔:3...' }, type);
+  }
+}
 
 //#endregion
 
