@@ -7,6 +7,7 @@ const BDB = require("../../baseJS/BaseDiscordBot.js");
 // js
 const CatchF = require("../../baseJS/CatchF.js");
 // json
+const messagePrefix = require("../messageManager/messagePrefix.json");
 // constants
 const color = "#fbfbc9";
 const title = "A.L.I.C.E.";
@@ -41,8 +42,8 @@ exports.HelpMessage = () => {
 
 exports.MusicMessage = () => {
 	const embedMessage = baseEmbed();
-	embedMessage.EAddField("Alice", "");
-	embedMessage.EAddField("test", "test2", true);
+	embedMessage.EAddField("音樂指令~", "點擊按鈕可以看到詳細說明喔!");
+	embedMessage.EAddField("指令一覽", `\`點歌\`\n\`插播\` - 先播這首\n\`暫停\` - Pause\n\`恢復\` - Resume\n\`跳過\` - Skip\n\`歌單\` - NowQueue\n\`休息\` - Sleep`);
 	return embedMessage;
 };
 
@@ -63,6 +64,21 @@ exports.MusicMessage = () => {
 // 	return message;
 // }
 
+/**
+ * 
+ * @param {*} helpNumber 0 = 播放 1 = 插播 2 = 暫停 3 = 恢復 4 = 跳過 5 = 歌單 6 = 休息 
+ * @returns 
+ */
+exports.HelpMusicMessage = (helpNumber) => {
+	const embedMessage = baseEmbed();
+	const musicPrefix = Object.keys(messagePrefix).find(e => console.log("ee " + e));
+	switch (helpNumber) {
+		case 0:
+			embedMessage.EAddField("文字指令", "");
+			break;
+	}
+	return embedMessage;
+}
 
 function baseEmbed() {
 	const embedMessage = BDB.ENewEmbed();

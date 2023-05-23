@@ -7,11 +7,11 @@ const embedC = require("../embedManager/embedC.js");
 const selectMenuC = require("../selectMenuManager/selectMenuC.js");
 const buttonC = require("../buttonManager/buttonC.js");
 
-exports.GetHelpMessage = (command, ephemeral = false) => {
+exports.GetHelpMessage = (ephemeral = false) => {
   try {
     const returnMessage = BDB.MNewMessage();
     let embed = embedC.HelpMessage();
-    let selectMenu = selectMenuC.GetHelpSelectMenu(command);
+    let selectMenu = selectMenuC.GetHelpSelectMenu();
     returnMessage
       .setEphemeral(ephemeral)
       .addEmbed(embed)
@@ -23,11 +23,46 @@ exports.GetHelpMessage = (command, ephemeral = false) => {
   }
 }
 
+exports.GetMusicMessage = (ephemeral = false) => {
+  try {
+    const returnMessage = BDB.MNewMessage();
+    let embed = embedC.MusicMessage();
+    returnMessage
+      .setEphemeral(ephemeral)
+      .addEmbed(embed)
+      .addComponents(buttonC.GetMusicHelpButtons(0))
+      .addComponents(buttonC.GetMusicHelpButtons(1));
+    return returnMessage.toMessage();
+  }
+  catch (err) {
+    CatchF.ErrorDo(err, "GetMusicMessage 方法異常!");
+  }
+}
+
 exports.GetMusicAliceMessage = (ephemeral = false) => {
-  const returnMessage = BDB.MNewMessage();
-  let buttonComponents = buttonC.GetMusicAliceButtons();
-  returnMessage
-    .setEphemeral(ephemeral)
-    .addComponents(buttonComponents);
-  return returnMessage.toMessage();
+  try {
+    const returnMessage = BDB.MNewMessage();
+    let buttonComponents = buttonC.GetMusicAliceButtons();
+    returnMessage
+      .setEphemeral(ephemeral)
+      .addComponents(buttonComponents);
+    return returnMessage.toMessage();
+  }
+  catch (err) {
+    CatchF.ErrorDo(err, "GetMusicAliceMessage 方法異常!");
+  }
+}
+
+exports.GetHelpMusicMessage = (helpNumber = 0, ephemeral = false) => {
+  try {
+    const returnMessage = BDB.MNewMessage();
+    let embed = embedC.HelpMusicMessage(helpNumber);
+    returnMessage
+      .setEphemeral(ephemeral)
+      .addEmbed(embed);
+    return returnMessage.toMessage();
+  }
+  catch (err) {
+    CatchF.ErrorDo(err, "GetHelpPlayMessage 方法異常!");
+  }
 }

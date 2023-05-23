@@ -10,6 +10,7 @@ const {
 	ActionRowBuilder,
 	ButtonBuilder,
 	StringSelectMenuBuilder,
+	StringSelectMenuOptionBuilder,
 	EmbedBuilder,
 } = require("discord.js");
 const client = new Client({
@@ -408,6 +409,28 @@ function BGetButtonType(type) {
 
 //#region 菜單動作 SM
 
+// 複寫菜單選項產生器
+class SMStringSelectMenuOptionBuilder extends StringSelectMenuOptionBuilder {
+	SMSetLabel(label) {
+		this.setLabel(label);
+		return this;
+	}
+	SMSetDescription(description) {
+		this.setDescription(description);
+		return this;
+	}
+	SMSetValue(value) {
+		this.setValue(value);
+		return this;
+	}
+}
+
+/** 回傳一個選單產生器
+ * 
+ * @returns 
+ */
+exports.SMNewOption = () => new SMStringSelectMenuOptionBuilder();
+
 /** 回傳一個 菜單
  *
  * @param {string} customId 菜單參數
@@ -423,7 +446,7 @@ exports.SMNewSelectMenu = (customId = "", placeholder = "") => {
 	}
 }
 
-/** 新增一個 選項
+/** 新增多個 選項
  *
  * @param {StringSelectMenuBuilder} selectMenuBuilder
  * @param {*} options
@@ -463,7 +486,7 @@ exports.SMGetSelectMenuId = (interaction) => interaction?.customId === undefined
  *
  * @param {*} interaction Discord.Interaction
  * @param {string} message 訊息
- * @param {number} replyType 0 = 一般回傳訊息
+ * @param {number} replyType 0 = 一般回傳訊息 1 = 延遲傳送訊息(Ex: 程序 catch error 時)
  * @returns
  */
 exports.ISend = async function (interaction, message, replyType = 0) {

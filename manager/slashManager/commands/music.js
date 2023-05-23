@@ -6,21 +6,22 @@ const componentM = require("../../componentManager/componentM.js");
 //#endregion
 
 module.exports = {
-  data: BDB.SNewSlashCommand("help", "查詢指令"),
+  data: BDB.SNewSlashCommand("music", "音樂指令"),
   async execute(interaction) {
     // 使用者輸入指令後程式要做的事
-    BDB.ISend(interaction, componentM.GetHelpMessage(this));
+    BDB.ISend(interaction, componentM.GetMusicMessage());
   },
-  selectMenu: {
-    music: {
+  button: {
+    helpPlay: {
       async execute(interaction) {
-        BDB.ISend(interaction, "music");
+        BDB.ISend(interaction, componentM.GetHelpMusicMessage(0));
       }
     },
-    second_option: {
-      async execute(interaction) {
-        BDB.ISend(interaction, "music", 1);
-      }
-    },
+    helpPlayFirst: {},
+    helpPause: {},
+    helpResume: {},
+    helpSkip: {},
+    helpNowQueue: {},
+    helpSleep: {},
   }
 };

@@ -18,19 +18,19 @@ exports.Start = async (interaction) => {
 	const command = interaction?.client?.commands?.get(BDB.SMGetSelectMenuId(interaction));
 
 	if (!command) {
-		CatchF.ErrorDo(`找不到指令 ${BDB.SMGetSelectMenuId(interaction)}。`);
+		CatchF.ErrorDo(`找不到選項 ${BDB.SMGetSelectMenuId(interaction)}。`);
 		return;
 	}
 
 	if (command.data.name !== BDB.SMGetSelectMenuName(interaction)) {
-		CatchF.ErrorDo(`找不到指令 ${BDB.SMGetSelectMenuId(interaction)}`);
+		CatchF.ErrorDo(`找不到選項 ${BDB.SMGetSelectMenuId(interaction)}`);
 		return;
 	}
 
 	const selectMenu = command?.selectMenu[BDB.SMGetSelectValue(interaction)];
 
-	if (!command) {
-		CatchF.ErrorDo(`找不到指令 ${BDB.SMGetSelectValue(interaction)}！`);
+	if (!selectMenu) {
+		CatchF.ErrorDo(`找不到選項 ${BDB.SMGetSelectValue(interaction)}！`);
 		return;
 	}
 

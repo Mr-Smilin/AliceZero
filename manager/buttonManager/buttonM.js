@@ -13,8 +13,25 @@ const buttonTable = require("./buttonTable.json");
 exports.Start = async (interaction) => {
 	if (!BDB.IIsButton(interaction)) return;
 	if (BDB.IIsBot(interaction)) return;
-	interaction?.user?.id === process.env.MASTER_ID &&
-		console.log("button: ", interaction);
+
+	const command = interaction?.client?.commands?.get(BDB.BGetButtonId(interaction));
+
+	if (!command) {
+		CatchF.ErrorDo(`找不到按鈕 ${BDB.BGetButtonId(interaction)}。`);
+		return;
+	}
+
+	if (command.data.name !== BDB.BGetButtonId(interaction)) {
+		CatchF.ErrorDo(`找不到按鈕 ${BDB.BGetButtonId(interaction)}`);
+		return;
+	}
+
+	// const buttonCommand = command?.selectMenu[BDB.SMGetSelectValue(interaction)];
+
+	// if (!command) {
+	// 	CatchF.ErrorDo(`找不到選項 ${BDB.SMGetSelectValue(interaction)}！`);
+	// 	return;
+	// }
 
 	const buttonId = BDB.BGetButtonId(interaction);
 	for (i of buttonTable) {
