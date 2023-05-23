@@ -1,10 +1,10 @@
 //#region import
 // Discord
-const BDB = require("../../baseJS/BaseDiscordBot.js");
+const BDB = require("../baseJS/BaseDiscordBot.js");
 // js
-const componentM = require("../componentManager/componentM.js");
+const componentM = require("../manager/componentManager/componentM.js");
 // json
-const buttonType = require("../buttonManager/buttonType.json");
+const buttonType = require("../manager/buttonManager/buttonType.json");
 //#endregion
 
 // 定義各觸發句該如何回應

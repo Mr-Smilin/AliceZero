@@ -35,14 +35,11 @@ async function DoStart() {
 }
 //#endregion
 //#region 基本方法
-async function DiscordReady() {
-
+async function DiscordReady(client) {
 	// 系統訊息
 	console.log(`Logged in as ${client.user.tag}!`);
-	// 註冊協槓命令
-	CatchF.LogDo("Started refreshing application (/) commands.");
-	slashM.InsertSlash();
-	CatchF.LogDo("Successfully reloaded application (/) commands.");
+	// 註冊斜線命令
+	await slashM.InsertSlash(client);
 }
 
 //#endregion

@@ -3,6 +3,7 @@
 const {
 	Events,
 	Client,
+	Collection,
 	GatewayIntentBits,
 	Partials,
 	ButtonStyle,
@@ -43,8 +44,6 @@ const client = new Client({
 		Partials?.ThreadMember && "THREADMEMBER",
 	],
 });
-const { REST } = require("@discordjs/rest");
-const { Routes } = require("discord-api-types/v9");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, NoSubscriberBehavior } = require('@discordjs/voice');
 // js
@@ -52,6 +51,34 @@ const CatchF = require("./CatchF.js");
 // json
 const buttonType = require("../manager/buttonManager/buttonType.json");
 const { exceptions } = require("winston");
+//#endregion
+
+//#region 客戶端操作 C
+
+/** 創建 commands 屬性
+ * 
+ */
+exports.CInitCommand = () => {
+	try {
+		client.commands = new Collection();
+	} catch (err) {
+		CatchF.ErrorDo(err, "CInitCommand 方法異常!");
+	}
+}
+
+/** 在 client 中注入 commands
+ * 
+ * @param {*} name 
+ * @param {*} value 
+ */
+exports.CSetCommand = (name, value) => {
+	try {
+		client.commands.set(name, value);
+	} catch (err) {
+		CatchF.ErrorDo(err, "CSetCommand 方法異常!");
+	}
+}
+
 //#endregion
 
 //#region 訊息動作 M
@@ -113,7 +140,7 @@ exports.MReply = async function (discordObject, message) {
  * @param {*} discordMessage Discord.Message
  * @returns {string}
  */
-exports.MContent = (discordMessage) => discordMessage?.content == undefined ? new exceptions("MContent 方法異常!") : discordMessage?.content;
+exports.MContent = (discordMessage) => discordMessage?.content == undefined ? CatchF.ErrorDo("MContent 方法異常!") : discordMessage?.content;
 
 class MessageBuilder {
 	constructor(text) {
@@ -181,33 +208,21 @@ exports.MNewMessage = (message = "") => new MessageBuilder(message);
 
 //#region 斜線動作 S
 
-/** 回傳一個 REST
- *
- * @returns {REST}
- */
-exports.SNewRest = () => {
-	try {
-		return new REST({ version: "10" }).setToken(process.env.TOKEN);
-	}
-	catch (err) {
-		new exceptions("SNewRest 方法異常!");
-	}
-}
-
 /** 註冊斜線命令
  *
- * @param {REST} rest
+ * @param {*} rest
  * @param {*} body
  * @returns
  */
-exports.SRestPutRoutes = async (rest, body = []) => {
+exports.SRestPutRoutes = async (body = []) => {
 	try {
-		return await rest.put(Routes.applicationCommands(process.env.BOT_ID), {
-			body: body,
-		});
+		// return await rest.put(Routes.applicationCommands(process.env.BOT_ID), {
+		// 	body: body,
+		// });
+		return await client.application.commands.set(body);
 	}
 	catch (err) {
-		new exceptions("SRestPutRoutes 方法異常!");
+		CatchF.ErrorDo(err, "SRestPutRoutes 方法異常!");
 	}
 }
 
@@ -216,7 +231,7 @@ exports.SRestPutRoutes = async (rest, body = []) => {
  * @param {*} interaction
  * @return {string}
  */
-exports.SGetSlashName = (interaction) => interaction?.commandName === undefined ? new exceptions("SGetSlashName 方法異常!") : interaction?.commandName;
+exports.SGetSlashName = (interaction) => interaction?.commandName === undefined ? CatchF.ErrorDo("SGetSlashName 方法異常!") : interaction?.commandName;
 
 /** 回傳 斜線指令輸入值物件
  *
@@ -229,7 +244,7 @@ exports.SNewSlashCommand = (name = "", description = "") => {
 		return new SlashCommandBuilder().setName(name).setDescription(description);
 	}
 	catch (err) {
-		new exceptions("SNewSlashCommand 方法異常!");
+		CatchF.ErrorDo(err, "SNewSlashCommand 方法異常!");
 	}
 }
 
@@ -354,7 +369,7 @@ exports.BNewButton = (
 			.setDisabled(disabled);
 	}
 	catch (err) {
-		new exceptions("BNewButton 方法異常!")
+		CatchF.ErrorDo(err, "BNewButton 方法異常!")
 	}
 };
 
@@ -364,9 +379,9 @@ exports.BNewButton = (
  * @returns {string}
  */
 exports.BGetSlashName = (interaction) =>
-	interaction?.message?.interaction?.commandName === undefined ? new exceptions("BGetSlashName 方法異常!") : interaction?.message?.interaction?.commandName;
+	interaction?.message?.interaction?.commandName === undefined ? CatchF.ErrorDo("BGetSlashName 方法異常!") : interaction?.message?.interaction?.commandName;
 
-exports.BGetButtonId = (interaction) => interaction?.customId === undefined ? new exceptions("BGetButtonId 方法異常!") : interaction?.customId;
+exports.BGetButtonId = (interaction) => interaction?.customId === undefined ? CatchF.ErrorDo("BGetButtonId 方法異常!") : interaction?.customId;
 
 // 獲得按鈕類型(顏色)
 function BGetButtonType(type) {
@@ -385,7 +400,7 @@ function BGetButtonType(type) {
 		}
 	}
 	catch (err) {
-		new exceptions("BGetButtonType 方法異常!")
+		CatchF.ErrorDo(err, "BGetButtonType 方法異常!")
 	}
 }
 
@@ -404,7 +419,7 @@ exports.SMNewSelectMenu = (customId = "", placeholder = "") => {
 		return new StringSelectMenuBuilder().setCustomId(customId).setPlaceholder(placeholder);
 	}
 	catch (err) {
-		new exceptions("SMNewSelectMenu 方法異常!");
+		CatchF.ErrorDo(err, "SMNewSelectMenu 方法異常!");
 	}
 }
 
@@ -419,7 +434,7 @@ exports.SMPushOptions = (selectMenuBuilder, options = []) => {
 		return options.map((option) => selectMenuBuilder.addOptions(option));
 	}
 	catch (err) {
-		new exceptions("SMPushOptions 方法異常!");
+		CatchF.ErrorDo(err, "SMPushOptions 方法異常!");
 	}
 }
 
@@ -429,14 +444,14 @@ exports.SMPushOptions = (selectMenuBuilder, options = []) => {
  * @returns
  */
 exports.SMGetSelectMenuName = (selectMenuBuilder) =>
-	selectMenuBuilder?.customId === undefined ? new exceptions("SMGetSelectMenuName 方法異常!") : selectMenuBuilder?.customId;
+	selectMenuBuilder?.customId === undefined ? CatchF.ErrorDo("SMGetSelectMenuName 方法異常!") : selectMenuBuilder?.customId;
 
 /** 獲得菜單的選擇內容(陣列)
  *
  * @param {StringSelectMenuBuilder} selectMenuBuilder
  * @returns {[string]}
  */
-exports.SMGetSelectValues = (selectMenuBuilder) => selectMenuBuilder?.values === undefined ? new exceptions("SMGetSelectValues 方法異常!") : selectMenuBuilder?.values;
+exports.SMGetSelectValues = (selectMenuBuilder) => selectMenuBuilder?.values === undefined ? CatchF.ErrorDo("SMGetSelectValues 方法異常!") : selectMenuBuilder?.values;
 
 //#endregion
 
@@ -454,10 +469,12 @@ exports.ISend = async function (interaction, message, replyType = 0) {
 		switch (replyType) {
 			case 0:
 				return await interaction.reply(message);
+			case 1:
+				return await interaction.followUp(message);
 		}
 	}
 	catch (err) {
-		new exceptions("ISend 方法異常!");
+		CatchF.ErrorDo(err, "ISend 方法異常!");
 	}
 };
 
@@ -478,7 +495,7 @@ exports.IEdit = async function (interaction, message, replyType = 0) {
 		}
 	}
 	catch (err) {
-		new exceptions("IEdit 方法異常!");
+		CatchF.ErrorDo(err, "IEdit 方法異常!");
 	}
 };
 
@@ -487,28 +504,38 @@ exports.IEdit = async function (interaction, message, replyType = 0) {
  * @param {*} interaction
  * @return {boolean}
  */
-exports.IIsSlash = (interaction) => interaction?.isChatInputCommand() === undefined ? new exceptions("IIsSlash 方法異常!") : interaction?.isChatInputCommand();
+exports.IIsSlash = (interaction) => interaction?.isChatInputCommand() === undefined ? CatchF.ErrorDo("IIsSlash 方法異常!") : interaction?.isChatInputCommand();
 
 /** 回傳 interaction 是否為按鈕物件
  *
  * @param {*} interaction
  * @return {boolean}
  */
-exports.IIsButton = (interaction) => interaction?.isButton() === undefined ? new exceptions("IIsButton 方法異常!") : interaction?.isButton();
+exports.IIsButton = (interaction) => interaction?.isButton() === undefined ? CatchF.ErrorDo("IIsButton 方法異常!") : interaction?.isButton();
 
 /** 回傳 interaction 是否為菜單物件
  *
  * @param {*} interaction
  * @returns {boolean}
  */
-exports.IIsSelectMenu = (interaction) => interaction?.isStringSelectMenu() === undefined ? new exceptions("IIsSelectMenu 方法異常!") : interaction?.isStringSelectMenu();
+exports.IIsSelectMenu = (interaction) => interaction?.isStringSelectMenu() === undefined ? CatchF.ErrorDo("IIsSelectMenu 方法異常!") : interaction?.isStringSelectMenu();
 
 /** 回傳 interaction 是否為是bot發出
  *
  * @param {*} interaction
  * @return {boolean}
  */
-exports.IIsBot = (interaction) => interaction?.user?.bot === undefined ? new exceptions("IIsBot 方法異常!") : interaction?.user?.bot;
+exports.IIsBot = (interaction) => interaction?.user?.bot === undefined ? CatchF.ErrorDo("IIsBot 方法異常!") : interaction?.user?.bot;
+
+/** 獲得 commandName */
+exports.IGetCommandName = (interaction) => interaction?.commandName === undefined ? CatchF.ErrorDo("IGetCommandName 方法異常!") : interaction?.commandName;
+
+/** 獲得 command
+ * 
+ * @param {*} interaction 
+ * @returns 
+ */
+exports.IGetCommand = (interaction) => interaction?.client?.commands?.get(interaction?.commandName) === undefined ? CatchF.ErrorDo("IGetCommand 方法異常!") : interaction?.client?.commands?.get(interaction?.commandName);
 
 //#endregion
 
@@ -523,7 +550,7 @@ exports.NewActionRow = () => {
 		return new ActionRowBuilder();
 	}
 	catch (err) {
-		new exceptions("NewActionRow 方法異常!")
+		CatchF.ErrorDo(err, "NewActionRow 方法異常!")
 	}
 }
 
@@ -538,7 +565,7 @@ exports.ActionRowAddComponents = (actionRowBuilder, components) => {
 		return actionRowBuilder.addComponents(components);
 	}
 	catch (err) {
-		new exceptions("ActionRowAddComponents 方法異常!");
+		CatchF.ErrorDo(err, "ActionRowAddComponents 方法異常!");
 	}
 }
 
@@ -676,7 +703,7 @@ exports.ENewEmbed = () => new EmbedMessage();
  */
 exports.MuIsVoicing = (discordObject, type = 0) => {
 	if (discordObject?.member?.voice === undefined)
-		new exceptions("MuIsVoicing 方法異常!");
+		CatchF.ErrorDo("MuIsVoicing 方法異常!");
 	if (type === 0) {
 		return discordObject?.member?.voice?.channel === null ? true : false;
 	} else {
@@ -759,10 +786,10 @@ exports.MuIsPlaying = (guildId) => {
  */
 exports.MuGetGuildId = (discordObject, type = 0) => {
 	if (type === 0)
-		return discordObject?.guild?.id === undefined ? new exceptions("MuGetGuildId 方法異常!") : discordObject?.guild?.id;
+		return discordObject?.guild?.id === undefined ? CatchF.ErrorDo("MuGetGuildId 方法異常!") : discordObject?.guild?.id;
 	else
 		// TODO
-		return discordObject?.guild?.id === undefined ? new exceptions("MuGetGuildId 方法異常!") : discordObject?.guild?.id;
+		return discordObject?.guild?.id === undefined ? CatchF.ErrorDo("MuGetGuildId 方法異常!") : discordObject?.guild?.id;
 }
 
 /** 獲得頻道ID 沒用到
@@ -773,10 +800,10 @@ exports.MuGetGuildId = (discordObject, type = 0) => {
  */
 exports.MuGetChannelId = (discordObject, type = 0) => {
 	if (type === 0)
-		return discordObject?.channel?.id === undefined ? new exceptions("MuGetChannelId 方法異常!") : discordObject?.channel?.id;
+		return discordObject?.channel?.id === undefined ? CatchF.ErrorDo("MuGetChannelId 方法異常!") : discordObject?.channel?.id;
 	else
 		// TODO
-		return discordObject?.channel?.id === undefined ? new exceptions("MuGetChannelId 方法異常!") : discordObject?.channel?.id;
+		return discordObject?.channel?.id === undefined ? CatchF.ErrorDo("MuGetChannelId 方法異常!") : discordObject?.channel?.id;
 }
 
 /** 音樂系統用的訊息回傳方式
