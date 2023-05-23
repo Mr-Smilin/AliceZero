@@ -451,7 +451,9 @@ exports.SMGetSelectMenuName = (selectMenuBuilder) =>
  * @param {StringSelectMenuBuilder} selectMenuBuilder
  * @returns {[string]}
  */
-exports.SMGetSelectValues = (selectMenuBuilder) => selectMenuBuilder?.values === undefined ? CatchF.ErrorDo("SMGetSelectValues 方法異常!") : selectMenuBuilder?.values;
+exports.SMGetSelectValue = (selectMenuBuilder) => selectMenuBuilder?.values[0] === undefined ? CatchF.ErrorDo("SMGetSelectValue 方法異常!") : selectMenuBuilder?.values[0];
+
+exports.SMGetSelectMenuId = (interaction) => interaction?.customId === undefined ? CatchF.ErrorDo("SMGetSelectMenuId 方法異常!") : interaction?.customId;
 
 //#endregion
 
@@ -470,7 +472,11 @@ exports.ISend = async function (interaction, message, replyType = 0) {
 			case 0:
 				return await interaction.reply(message);
 			case 1:
-				return await interaction.followUp(message);
+				if (interaction?.replied || interaction?.deferred)
+					return await interaction.followUp(message);
+				else
+					return await interaction.reply(message);
+
 		}
 	}
 	catch (err) {
@@ -529,13 +535,6 @@ exports.IIsBot = (interaction) => interaction?.user?.bot === undefined ? CatchF.
 
 /** 獲得 commandName */
 exports.IGetCommandName = (interaction) => interaction?.commandName === undefined ? CatchF.ErrorDo("IGetCommandName 方法異常!") : interaction?.commandName;
-
-/** 獲得 command
- * 
- * @param {*} interaction 
- * @returns 
- */
-exports.IGetCommand = (interaction) => interaction?.client?.commands?.get(interaction?.commandName) === undefined ? CatchF.ErrorDo("IGetCommand 方法異常!") : interaction?.client?.commands?.get(interaction?.commandName);
 
 //#endregion
 

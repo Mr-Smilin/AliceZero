@@ -12,11 +12,10 @@ const CatchF = require("../../baseJS/CatchF.js");
 
 // 監聽斜線事件
 exports.Start = async (interaction) => {
-
 	if (!BDB.IIsSlash(interaction)) return;
 	if (BDB.IIsBot(interaction)) return;
 
-	const command = BDB.IGetCommand(interaction);
+	const command = interaction?.client?.commands?.get(BDB.IGetCommandName(interaction));
 
 	if (!command) {
 		CatchF.ErrorDo(`找不到指令 ${BDB.IGetCommandName(interaction)}。`);
@@ -39,21 +38,6 @@ exports.Start = async (interaction) => {
 			});
 		}
 	}
-
-	// if (!BDB.IIsSlash(interaction)) return;
-	// if (BDB.IIsBot(interaction)) return;
-	// interaction?.user?.id === process.env.MASTER_ID &&
-	// 	console.log("slash: ", interaction);
-
-	// const slashName = BDB.SGetSlashName(interaction);
-	// for (i of slashTable) {
-	// 	if (i === null) continue;
-	// 	if (slashName === i.name) {
-	// 		const message = slashC.SendMessage(interaction, i);
-	// 		const replyType = i.replyType && 0;
-	// 		await BDB.ISend(interaction, message, replyType);
-	// 	}
-	// }
 };
 
 // 註冊斜線命令

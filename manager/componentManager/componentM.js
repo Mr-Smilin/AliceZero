@@ -7,11 +7,11 @@ const embedC = require("../embedManager/embedC.js");
 const selectMenuC = require("../selectMenuManager/selectMenuC.js");
 const buttonC = require("../buttonManager/buttonC.js");
 
-exports.GetHelpMessage = (ephemeral = false) => {
+exports.GetHelpMessage = (command, ephemeral = false) => {
   try {
     const returnMessage = BDB.MNewMessage();
     let embed = embedC.HelpMessage();
-    let selectMenu = selectMenuC.GetHelpSelectMenu();
+    let selectMenu = selectMenuC.GetHelpSelectMenu(command);
     returnMessage
       .setEphemeral(ephemeral)
       .addEmbed(embed)

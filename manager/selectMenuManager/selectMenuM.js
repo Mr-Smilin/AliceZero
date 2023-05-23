@@ -4,31 +4,43 @@ require("dotenv").config();
 // Discord
 const BDB = require("../../baseJS/BaseDiscordBot.js");
 // js
+const fs = require("node:fs"); // 用於讀寫檔案
+const path = require("node:path"); // 用於處理路徑
 const CatchF = require("../../baseJS/CatchF.js");
 const selectMenuC = require("./selectMenuC.js");
 // json
-const selectTable = require("./selectTable.json");
-const slashTable = require("../slashManager/slashTable.json");
 //#endregion
 
 exports.Start = async (interaction) => {
 	if (!BDB.IIsSelectMenu(interaction)) return;
 	if (BDB.IIsBot(interaction)) return;
-	interaction?.user?.id === process.env.MASTER_ID &&
-		console.log("selectMenu: ", interaction);
 
-	const smName = BDB.SMGetSelectMenuName(interaction);
-	for (i of slashTable) {
-		if (i === null) continue;
-		if (smName === i.name) {
-			for (j of selectTable) {
-				if (j === null) continue;
-				if (j.slashId === i.id) {
-					const message = selectMenuC.SendMessage(interaction, i, j);
-					const replyType = j.replyType && 0;
-					await BDB.ISend(interaction, message, replyType);
-				}
-			}
-		}
+	const command = interaction?.client?.commands?.get(BDB.SMGetSelectMenuId(interaction));
+
+	if (!command) {
+		CatchF.ErrorDo(`找不到指令 ${BDB.SMGetSelectMenuId(interaction)}。`);
+		return;
+	}
+
+	if (command.data.name !== BDB.SMGetSelectMenuName(interaction)) {
+		CatchF.ErrorDo(`找不到指令 ${BDB.SMGetSelectMenuId(interaction)}`);
+		return;
+	}
+
+	const selectMenu = command?.selectMenu[BDB.SMGetSelectValue(interaction)];
+
+	if (!command) {
+		CatchF.ErrorDo(`找不到指令 ${BDB.SMGetSelectValue(interaction)}！`);
+		return;
+	}
+
+	try {
+		await selectMenu.execute(interaction);
+	} catch (err) {
+		CatchF.ErrorDo(err, "Slash 監聽事件異常!");
+		await BDB.ISend(interaction, {
+			content: "執行指令時發生錯誤！",
+			ephemeral: true,
+		}, 1);
 	}
 };
