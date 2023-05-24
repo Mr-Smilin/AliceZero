@@ -50,6 +50,7 @@ async function DiscordReady(client) {
 	// 綁定菜單命令
 	await selectMenuM.InsertSelectMenu(client);
 	// 綁定按鈕命令
+	await buttonM.InsertButton(client);
 }
 
 //#endregion

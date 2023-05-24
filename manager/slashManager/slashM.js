@@ -26,19 +26,12 @@ exports.Start = async (interaction) => {
 		await command.execute(interaction);
 	} catch (err) {
 		CatchF.ErrorDo(err, "Slash 監聽事件異常!");
-		if (interaction?.replied || interaction?.deferred) {
-			await BDB.ISend(interaction, {
-				content: "執行指令時發生錯誤！",
-				ephemeral: true,
-			}, 1);
-		} else {
-			await BDB.ISend(interaction, {
-				content: "執行指令時發生錯誤！",
-				ephemeral: true,
-			});
-		}
-	}
-};
+		await BDB.ISend(interaction, {
+			content: "執行指令時發生錯誤！",
+			ephemeral: true,
+		}, 1);
+	};
+}
 
 // 註冊斜線命令
 exports.InsertSlash = async (client) => {
@@ -53,7 +46,7 @@ exports.InsertSlash = async (client) => {
 	}
 };
 
-function getApplicationCommands(client) {
+function getApplicationCommands() {
 	const commands = [];
 	// 讀取 commands 資料夾下的 js 檔案
 	const commandsPath = path.join(__dirname, "commands");
@@ -66,7 +59,7 @@ function getApplicationCommands(client) {
 
 		// 在 Collection 中以指令名稱作為 key，指令模組作為 value 加入
 		if ("data" in command && "execute" in command) {
-			BDB.CSetSlashCommand(command.data.name, command, 0);
+			BDB.CSetSlashCommand(command?.data?.name, command, 0);
 		} else {
 			console.log(`[警告] ${filePath} 中的指令缺少必要的 "data" 或 "execute" 屬性。`);
 		}

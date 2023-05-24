@@ -11,17 +11,4 @@ module.exports = {
     // 使用者輸入指令後程式要做的事
     BDB.ISend(interaction, componentM.GetMusicMessage());
   },
-  button: {
-    helpPlay: {
-      async execute(interaction) {
-        BDB.ISend(interaction, componentM.GetHelpMusicMessage(0));
-      }
-    },
-    helpPlayFirst: {},
-    helpPause: {},
-    helpResume: {},
-    helpSkip: {},
-    helpNowQueue: {},
-    helpSleep: {},
-  }
 };

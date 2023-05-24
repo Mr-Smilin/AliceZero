@@ -58,6 +58,7 @@ const { exceptions } = require("winston");
 
 /** 創建 commands 屬性
  * 
+ * @param {*} commandNumber 
  */
 exports.CInitCommand = (commandNumber = 0) => {
 	try {
@@ -100,7 +101,40 @@ exports.CSetSelectMenuCommand = (name, value) => {
 	try {
 		client.selectMenuCommands.set(name, value);
 	} catch (err) {
-		CatchF.ErrorDo(err, "CSetSlashCommand 方法異常!");
+		CatchF.ErrorDo(err, "CSetSelectMenuCommand 方法異常!");
+	}
+}
+
+/** 在 client 中注入 commands
+ * 
+ * @param {*} name 
+ * @param {*} value 
+ */
+exports.CSetButtonCommand = (name, value) => {
+	try {
+		client.buttonCommands.set(name, value);
+	} catch (err) {
+		CatchF.ErrorDo(err, "CSetButtonCommand 方法異常!");
+	}
+}
+
+/** 從 client 拿到 command
+ * 
+ * @param {*} commandNumber 
+ */
+exports.CGetCommand = (commandNumber = 0) => {
+	try {
+		switch (commandNumber) {
+			case 0:
+				return client.slashCommands;
+			case 1:
+				return client.selectMenuCommands;
+			case 2:
+				return client.buttonCommands;
+		}
+
+	} catch (err) {
+		CatchF.ErrorDo(err, "CGetCommand 方法異常!");
 	}
 }
 

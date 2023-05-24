@@ -11,7 +11,8 @@ exports.GetHelpMessage = (ephemeral = false) => {
   try {
     const returnMessage = BDB.MNewMessage();
     let embed = embedC.HelpMessage();
-    let selectMenu = selectMenuC.GetHelpSelectMenu();
+    const command = BDB.CGetCommand(1);
+    let selectMenu = command.get("help").data;
     returnMessage
       .setEphemeral(ephemeral)
       .addEmbed(embed)

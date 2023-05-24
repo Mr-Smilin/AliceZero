@@ -71,10 +71,12 @@ exports.MusicMessage = () => {
  */
 exports.HelpMusicMessage = (helpNumber) => {
 	const embedMessage = baseEmbed();
-	const musicPrefix = Object.keys(messagePrefix).find(e => console.log("ee " + e));
+	// 從 messagePrefix 找出 id = 1 = 音樂指令 的元素
+	const musicPrefix = messagePrefix.find(e => e?.Id === "1");
 	switch (helpNumber) {
 		case 0:
-			embedMessage.EAddField("文字指令", "");
+			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} {網址}`);
+			embedMessage.EAddField("斜線指令", `2`);
 			break;
 	}
 	return embedMessage;

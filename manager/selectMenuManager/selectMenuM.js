@@ -37,9 +37,9 @@ exports.Start = async (interaction) => {
 	try {
 		await selectMenu.execute(interaction);
 	} catch (err) {
-		CatchF.ErrorDo(err, "Slash 監聽事件異常!");
+		CatchF.ErrorDo(err, "SelectMenu 監聽事件異常!");
 		await BDB.ISend(interaction, {
-			content: "執行指令時發生錯誤！",
+			content: "執行菜單時發生錯誤！",
 			ephemeral: true,
 		}, 1);
 	}
@@ -56,7 +56,7 @@ exports.InsertSelectMenu = async (client) => {
 	}
 };
 
-function getApplicationCommands(client) {
+function getApplicationCommands() {
 	const commands = [];
 	// 讀取 commands 資料夾下的 js 檔案
 	const commandsPath = path.join(__dirname, "commands");
