@@ -15,7 +15,7 @@ exports.Start = async (interaction) => {
 	if (!BDB.IIsSlash(interaction)) return;
 	if (BDB.IIsBot(interaction)) return;
 
-	const command = interaction?.client?.commands?.get(BDB.IGetCommandName(interaction));
+	const command = interaction?.client?.slashCommands?.get(BDB.IGetCommandName(interaction));
 
 	if (!command) {
 		CatchF.ErrorDo(`找不到指令 ${BDB.IGetCommandName(interaction)}。`);
@@ -43,7 +43,7 @@ exports.Start = async (interaction) => {
 // 註冊斜線命令
 exports.InsertSlash = async (client) => {
 	try {
-		BDB.CInitCommand();
+		BDB.CInitCommand(0);
 		const commands = getApplicationCommands();
 		CatchF.LogDo(`Started refreshing ${commands.length} application (/) commands.`);
 		const data = await BDB.SRestPutRoutes(commands);
@@ -66,7 +66,7 @@ function getApplicationCommands(client) {
 
 		// 在 Collection 中以指令名稱作為 key，指令模組作為 value 加入
 		if ("data" in command && "execute" in command) {
-			BDB.CSetCommand(command.data.name, command);
+			BDB.CSetSlashCommand(command.data.name, command, 0);
 		} else {
 			console.log(`[警告] ${filePath} 中的指令缺少必要的 "data" 或 "execute" 屬性。`);
 		}

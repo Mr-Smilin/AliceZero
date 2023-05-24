@@ -11,16 +11,16 @@ module.exports = {
     // 使用者輸入指令後程式要做的事
     BDB.ISend(interaction, componentM.GetHelpMessage(this));
   },
-  selectMenu: {
-    music: {
-      async execute(interaction) {
-        BDB.ISend(interaction, "music");
-      }
-    },
-    second_option: {
-      async execute(interaction) {
-        BDB.ISend(interaction, "music", 1);
-      }
-    },
-  }
+  // selectMenu: {
+  //   music: {
+  //     async execute(interaction) {
+  //       BDB.ISend(interaction, "music");
+  //     }
+  //   },
+  //   second_option: {
+  //     async execute(interaction) {
+  //       BDB.ISend(interaction, "music", 1);
+  //     }
+  //   },
+  // }
 };

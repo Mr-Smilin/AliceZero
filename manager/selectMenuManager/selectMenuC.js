@@ -6,12 +6,12 @@ const CatchF = require("../../baseJS/CatchF.js");
 // json
 //#endregion
 
-exports.GetHelpSelectMenu = (command) => {
+exports.GetHelpSelectMenu = (name, value) => {
 	try {
 		const selectMenuAction = BDB.NewActionRow();
 		const messageSelectMenu = BDB.SMNewSelectMenu(
-			"help",
-			"📖 指令教學"
+			name,
+			value
 		);
 		const option1 = BDB.SMNewOption()
 			.SMSetLabel("🎧 音樂系統")

@@ -47,6 +47,9 @@ async function DiscordReady(client) {
 	console.log(`Logged in as ${client.user.tag}!`);
 	// 註冊斜線命令
 	await slashM.InsertSlash(client);
+	// 綁定菜單命令
+	await selectMenuM.InsertSelectMenu(client);
+	// 綁定按鈕命令
 }
 
 //#endregion
