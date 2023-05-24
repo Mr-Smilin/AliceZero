@@ -43,7 +43,7 @@ exports.HelpMessage = () => {
 exports.MusicMessage = () => {
 	const embedMessage = baseEmbed();
 	embedMessage.EAddField("音樂指令~", "點擊按鈕可以看到詳細說明喔!");
-	embedMessage.EAddField("指令一覽", `\`點歌\` - Add\n\`插播\` - Insert\n\`暫停\` - Pause\n\`恢復\` - Resume\n\`跳過\` - Skip\n\`歌單\` - NowQueue\n\`休息\` - Sleep`);
+	embedMessage.EAddField("指令一覽", `\`點歌\` - Play\n\`插播\` - Insert\n\`暫停\` - Pause\n\`恢復\` - Resume\n\`跳過\` - Skip\n\`歌單\` - NowQueue\n\`休息\` - Sleep`);
 	return embedMessage;
 };
 
@@ -73,34 +73,35 @@ exports.HelpMusicMessage = (helpNumber) => {
 	const embedMessage = baseEmbed();
 	// 從 messagePrefix 找出 id = 1 = 音樂指令 的元素
 	const musicPrefix = messagePrefix.find(e => e?.Id === "1");
+	const command = BDB.CGetCommand(0)?.get("music");
 	switch (helpNumber) {
 		case 0:
 			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} {網址}`);
-			embedMessage.EAddField("斜線指令", `2`);
+			embedMessage.EAddField("斜線指令", `/${command?.data?.name} ${command?.subcommand?.play?.data?.name} {網址}`);
 			break;
 		case 1:
 			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} i {網址}`);
-			embedMessage.EAddField("斜線指令", `3`);
+			embedMessage.EAddField("斜線指令", `/${command?.data?.name} ${command?.subcommand?.insert?.data?.name} {網址}`);
 			break;
 		case 2:
 			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} p`);
-			embedMessage.EAddField("斜線指令", `4`);
+			embedMessage.EAddField("斜線指令", `/${command?.data?.name} ${command?.subcommand?.pause?.data?.name}`);
 			break;
 		case 3:
 			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} rp`);
-			embedMessage.EAddField("斜線指令", `5`);
+			embedMessage.EAddField("斜線指令", `/${command?.data?.name} ${command?.subcommand?.resume?.data?.name}`);
 			break;
 		case 4:
 			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} s`);
-			embedMessage.EAddField("斜線指令", `6`);
+			embedMessage.EAddField("斜線指令", `/${command?.data?.name} ${command?.subcommand?.skip?.data?.name}`);
 			break;
 		case 5:
 			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} np`);
-			embedMessage.EAddField("斜線指令", `7`);
+			embedMessage.EAddField("斜線指令", `/${command?.data?.name} ${command?.subcommand?.nowqueue?.data?.name}`);
 			break;
 		case 6:
 			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} sp`);
-			embedMessage.EAddField("斜線指令", `8`);
+			embedMessage.EAddField("斜線指令", `/${command?.data?.name} ${command?.subcommand?.sleep?.data?.name}`);
 			break;
 	}
 	return embedMessage;
