@@ -389,12 +389,58 @@ exports.SPushOption = (
 					return option;
 				});
 				break;
+			case "subcommand":
+				slashCommandBuilder.addSubcommand((subcommand) => {
+					subcommand.setName(name).setDescription(description);
+					for (option of choices) {
+						this.SPushOption(subcommand, option?.type, option?.name, option?.description, option?.required, option?.choices);
+					}
+					return subcommand;
+				});
+				break;
 		}
 	}
 	catch (err) {
-		console.err("SPushOption 方法異常!");
+		CatchF.ErrorDo(err, "SPushOption 方法異常!");
 	}
 };
+
+/** 獲得子選項參數
+ * 
+ * @param {*} interaction 
+ * @param {*} type 
+ * @param {*} value 
+ * @returns 
+ */
+exports.SGetOptionValue = (interaction, type = "string", name = "") => {
+	try {
+		switch (type) {
+			case "string":
+				return interaction?.options?.getString(name, false);
+			case "int":
+				return interaction?.options?.getInteger(name, false);
+			case "bool":
+				return interaction?.options?.getBoolean(name, false);
+			case "user":
+				return interaction?.options?.getUser(name, false);
+			case "channel":
+				return interaction?.options?.getChannel(name, false);
+			case "role":
+				return interaction?.options?.getRole(name, false);
+			case "mention":
+				return interaction?.options?.getMentionable(name, false);
+			case "number":
+				return interaction?.options?.getNumber(name, false);
+			case "attachment":
+				return interaction?.options?.getAttachment(name, false);
+			case "subcommand":
+				return interaction?.options?.getSubcommand(false);
+		}
+	}
+	catch (err) {
+		CatchF.ErrorDo(err, "SGetOptionValue 方法異常!");
+	}
+}
 
 //#endregion
 

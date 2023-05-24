@@ -23,7 +23,12 @@ exports.Start = async (interaction) => {
 	}
 
 	try {
-		await command.execute(interaction);
+		if (!!BDB.SGetOptionValue(interaction, "subcommand")) {
+			const subCommand = BDB.SGetOptionValue(interaction, "subcommand");
+			await command.subcommand[subCommand].execute(interaction);
+		}
+		else
+			await command.execute(interaction);
 	} catch (err) {
 		CatchF.ErrorDo(err, "Slash 監聽事件異常!");
 		await BDB.ISend(interaction, {
