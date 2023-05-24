@@ -27,11 +27,26 @@ exports.DoStart = (msg, cmd, args, type = 0) => {
       case "Alice":
         this.DoAlice(msg, type);
         break;
-      case "先播這個":
-        this.DoPlayMusicFirst(msg, cmd, type).catch(err => CatchF.ErrorDo(err, "DoPlayMusicFirst 方法異常!"));
+      case "i":
+        this.DoPlayMusicFirst(msg, args[0], type).catch(err => CatchF.ErrorDo(err, "DoPlayMusicFirst 方法異常!"));
         break;
-      case "先播這首":
-        this.DoPlayMusicFirst(msg, cmd, type).catch(err => CatchF.ErrorDo(err, "DoPlayMusicFirst 方法異常!"));
+      case "p":
+        this.DoPause(msg, type);
+        break;
+      case "rp":
+        this.DoResume(msg, type);
+        break;
+      case "s":
+        this.DoSkip(msg, type);
+        break;
+      case "np":
+        this.DoNowQueue(msg, type);
+        break;
+      case "sp":
+        this.DoSleep(msg, type);
+        break;
+      case "status":
+        this.DoNowStatus(msg, type);
         break;
       // 無匹配指令
       default:
@@ -66,7 +81,7 @@ exports.DoPlayMusic = async (discordObject, musicUrl, type = 0) => {
   await musicC.AddSongList(guildId, musicUrl);
 
   // 判斷是否正在播放歌曲 是:將歌曲加入歌單 否:播放歌曲
-  if (musicC.IsPlaying()) {
+  if (musicC.IsPlaying(guildId)) {
     BDB.MuMessageSend(discordObject, "加入歌單成功喔~!", type);
   } else {
     musicC.SetIsPlaying(guildId, true);
@@ -97,7 +112,7 @@ exports.DoPlayMusicFirst = async (discordObject, musicUrl, type = 0) => {
   await musicC.AddSongList(guildId, musicUrl, 1);
 
   // 判斷是否正在播放歌曲 是:將歌曲加入歌單 否:播放歌曲
-  if (musicC.IsPlaying()) {
+  if (musicC.IsPlaying(guildId)) {
     BDB.MuMessageSend(discordObject, "好的，下一首播這個喔!", type);
   } else {
     musicC.SetIsPlaying(guildId, true);
@@ -115,7 +130,7 @@ exports.DoAlice = (discordObject, type = 0) => {
 
 // 暫停播放
 exports.DoPause = (discordObject, type = 0) => {
-  const guildID = BDB.MuGetGuildId(discordObject, type);
+  const guildId = BDB.MuGetGuildId(discordObject, type);
   musicC.Pause(guildId, discordObject, type);
 }
 
@@ -135,6 +150,18 @@ exports.DoSkip = (discordObject, type = 0) => {
 exports.DoNowQueue = (discordObject, type = 0) => {
   const guildId = BDB.MuGetGuildId(discordObject, type);
   musicC.NowQueue(guildId, discordObject, type);
+}
+
+// 取得目前隊列中的歌曲
+exports.DoSleep = (discordObject, type = 0) => {
+  const guildId = BDB.MuGetGuildId(discordObject, type);
+  musicC.Sleep(guildId, discordObject, type);
+}
+
+// 檢查當前狀態
+exports.DoNowStatus = (discordObject, type = 0) => {
+  const guildId = BDB.MuGetGuildId(discordObject, type);
+  musicC.NowStatus(guildId, discordObject, type);
 }
 
 //#endregion

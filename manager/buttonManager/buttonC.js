@@ -9,20 +9,23 @@ const CatchF = require("../../baseJS/CatchF.js");
 const buttonType = require("./buttonType.json");
 //#endregion
 
+//#region 按鈕集合
+
 exports.GetMusicHelpButtons = (row = 0) => {
+  const command = BDB.CGetCommand(2);
   const buttonAction = BDB.NewActionRow();
   if (row === 0) {
-    let messageButton1 = BDB.BNewButton("helpPlay", "點歌");
-    let messageButton2 = BDB.BNewButton("helpPlayFirst", "插播");
+    let messageButton1 = command.get("helpPlay").data;
+    let messageButton2 = command.get("helpPlayFirst").data;
     BDB.ActionRowAddComponents(buttonAction, messageButton1);
     BDB.ActionRowAddComponents(buttonAction, messageButton2);
   }
   else {
-    let messageButton1 = BDB.BNewButton("helpPause", "暫停");
-    let messageButton2 = BDB.BNewButton("helpResume", "恢復");
-    let messageButton3 = BDB.BNewButton("helpSkip", "跳過");
-    let messageButton4 = BDB.BNewButton("helpNowQueue", "歌單");
-    let messageButton5 = BDB.BNewButton("helpSleep", "休息");
+    let messageButton1 = command.get("helpPause").data;
+    let messageButton2 = command.get("helpResume").data;
+    let messageButton3 = command.get("helpSkip").data;
+    let messageButton4 = command.get("helpNowQueue").data;
+    let messageButton5 = command.get("helpSleep").data;
     BDB.ActionRowAddComponents(buttonAction, messageButton1);
     BDB.ActionRowAddComponents(buttonAction, messageButton2);
     BDB.ActionRowAddComponents(buttonAction, messageButton3);
@@ -46,3 +49,5 @@ exports.GetMusicAliceButtons = () => {
   BDB.ActionRowAddComponents(buttonAction, messageButton5);
   return buttonAction;
 };
+
+//#endregion

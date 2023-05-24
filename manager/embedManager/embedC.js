@@ -43,7 +43,7 @@ exports.HelpMessage = () => {
 exports.MusicMessage = () => {
 	const embedMessage = baseEmbed();
 	embedMessage.EAddField("音樂指令~", "點擊按鈕可以看到詳細說明喔!");
-	embedMessage.EAddField("指令一覽", `\`點歌\`\n\`插播\` - 先播這首\n\`暫停\` - Pause\n\`恢復\` - Resume\n\`跳過\` - Skip\n\`歌單\` - NowQueue\n\`休息\` - Sleep`);
+	embedMessage.EAddField("指令一覽", `\`點歌\` - Add\n\`插播\` - Insert\n\`暫停\` - Pause\n\`恢復\` - Resume\n\`跳過\` - Skip\n\`歌單\` - NowQueue\n\`休息\` - Sleep`);
 	return embedMessage;
 };
 
@@ -77,6 +77,30 @@ exports.HelpMusicMessage = (helpNumber) => {
 		case 0:
 			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} {網址}`);
 			embedMessage.EAddField("斜線指令", `2`);
+			break;
+		case 1:
+			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} i {網址}`);
+			embedMessage.EAddField("斜線指令", `3`);
+			break;
+		case 2:
+			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} p`);
+			embedMessage.EAddField("斜線指令", `4`);
+			break;
+		case 3:
+			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} rp`);
+			embedMessage.EAddField("斜線指令", `5`);
+			break;
+		case 4:
+			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} s`);
+			embedMessage.EAddField("斜線指令", `6`);
+			break;
+		case 5:
+			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} np`);
+			embedMessage.EAddField("斜線指令", `7`);
+			break;
+		case 6:
+			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} sp`);
+			embedMessage.EAddField("斜線指令", `8`);
 			break;
 	}
 	return embedMessage;

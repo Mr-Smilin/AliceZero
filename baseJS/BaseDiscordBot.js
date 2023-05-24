@@ -822,6 +822,20 @@ exports.MuJoinVoiceChannel = (discordObject, type = 0) => {
 				guildId: discordObject?.guild?.id,
 				adapterCreator: discordObject?.guild?.voiceAdapterCreator,
 			});
+			//#region 解決 bot 加入頻道一分鐘後停止播放任何音頻的問題
+			// https://github.com/discordjs/discord.js/issues/9185#issuecomment-1452514375
+			const networkStateChangeHandler = (oldNetworkState, newNetworkState) => {
+				const newUdp = Reflect.get(newNetworkState, 'udp');
+				clearInterval(newUdp?.keepAliveInterval);
+			}
+			connection.on('stateChange', (oldState, newState) => {
+				const oldNetworking = Reflect.get(oldState, 'networking');
+				const newNetworking = Reflect.get(newState, 'networking');
+
+				oldNetworking?.off('stateChange', networkStateChangeHandler);
+				newNetworking?.on('stateChange', networkStateChangeHandler)
+			});
+			//#endregion
 			global.connection.set(discordObject?.guild?.id, connection);
 			return connection;
 		}
@@ -919,7 +933,7 @@ exports.MuGetAudioPlay = () => {
 
 exports.MuPlayMusic = (audioPlay, stream) => {
 	try {
-		const resource = createAudioResource(stream, { inputType: stream.type });
+		const resource = createAudioResource(stream.stream, { inputType: stream.type });
 		audioPlay.play(resource);
 	}
 	catch (err) {

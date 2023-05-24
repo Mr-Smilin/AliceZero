@@ -71,11 +71,11 @@ exports.PlayMusic = async (discordObject, nowSong, isReplied, type = 0) => {
     }
 
     // pldl 讀取資訊流
-    const stream = await pldl.stream(nowSong?.url, { quality: 2, discordPlayerCompatibility: true });
+    const stream = await pldl.stream(nowSong?.url, { quality: 2 });
     // 創建音樂器
     const audioPlay = BDB.MuGetAudioPlay();
     // 播放
-    BDB.MuPlayMusic(audioPlay, stream?.stream);
+    BDB.MuPlayMusic(audioPlay, stream);
     global.connection.get(guildId)?.subscribe(audioPlay);
     global.dispatcher.set(guildId, audioPlay);
     // 從歌單移除播放中的歌曲
@@ -84,11 +84,17 @@ exports.PlayMusic = async (discordObject, nowSong, isReplied, type = 0) => {
       if (newState?.status === BDB.MuGetAudioPlayerStatus(0) && oldState?.status !== BDB.MuGetAudioPlayerStatus(0)) {
         this.PlayNextMusic(discordObject, type);
       }
-    })
+    });
+    // error 事件監聽，如果出現異常案例再啟用
+    // audioPlay.on('error', err => {
+    //   CatchF.ErrorDo(`${err.message} with track ${err.resource.metadata.title} from guild ${guildId}`, "播放器發生異常!");
+    //   BDB.MuMessageSend(discordObject, "歌曲在播放途中發生問題了..小愛先播下一首試試喔><", type);
+    //   this.PlayNextMusic(discordObject, type);
+    // });
   } catch (err) {
     CatchF.ErrorDo(err, "musicC.PlayMusic 方法異常!");
     global.songList.get(guildId).shift();
-    BDB.MuMessageSend(discordObject, "歌曲在播放途中發生問題了..小愛先播下一首喔><", type);
+    BDB.MuMessageSend(discordObject, "歌曲在播放途中發生問題了..小愛先播下一首試試喔><", type);
     this.PlayNextMusic(discordObject, type);
   }
 }
@@ -187,6 +193,12 @@ exports.Skip = (guildId, discordObject, type) => {
   }
 }
 
+/** 顯示歌單
+ * 
+ * @param {*} guildId 
+ * @param {*} discordObject 
+ * @param {*} type 
+ */
 exports.NowQueue = (guildId, discordObject, type) => {
   // 如果隊列中有歌曲就顯示
   if (global.songList.get(guildId) && global.songList.get(guildId).length > 0) {
@@ -202,6 +214,35 @@ exports.NowQueue = (guildId, discordObject, type) => {
     }
 
     BDB.MuMessageSend(discordObject, { content: queueString }, type);
+  } else {
+    BDB.MuMessageSend(discordObject, { content: '要先點歌喔:3...' }, type);
+  }
+}
+
+/** 顯示歌單
+ * 
+ * @param {*} guildId 
+ * @param {*} discordObject 
+ * @param {*} type 
+ */
+exports.Sleep = (guildId, discordObject, type) => {
+  // 存在語音頻道與播放器就退出
+  if (global.dispatcher.get(guildId) && global.connection.get(guildId)) {
+    global.dispatcher.get(guildId).stop();
+    global.connection.get(guildId).destroy();
+    this.InitMusicValue(guildId);
+    BDB.MuMessageSend(discordObject, { content: "晚安~" }, type);
+  } else {
+    BDB.MuMessageSend(discordObject, { content: '要先點歌喔:3...' }, type);
+  }
+}
+
+exports.NowStatus = (guildId, discordObject, type) => {
+  // 存在播放器就退出
+  if (global.dispatcher.get(guildId)) {
+    let statusString = "";
+    statusString += global.dispatcher.get(guildId).checkPlayable();
+    BDB.MuMessageSend(discordObject, { content: statusString }, type);
   } else {
     BDB.MuMessageSend(discordObject, { content: '要先點歌喔:3...' }, type);
   }

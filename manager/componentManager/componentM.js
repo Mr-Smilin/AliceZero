@@ -54,7 +54,7 @@ exports.GetMusicAliceMessage = (ephemeral = false) => {
   }
 }
 
-exports.GetHelpMusicMessage = (helpNumber = 0, ephemeral = false) => {
+exports.GetHelpMusicMessage = (helpNumber = 0, ephemeral = true) => {
   try {
     const returnMessage = BDB.MNewMessage();
     let embed = embedC.HelpMusicMessage(helpNumber);
