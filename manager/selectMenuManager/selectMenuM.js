@@ -71,7 +71,7 @@ function getApplicationCommands() {
 		if ("data" in command) {
 			BDB.CSetSelectMenuCommand(command?.data?.components[0]?.data?.custom_id, command, 0);
 		} else {
-			console.log(`[警告] ${filePath} 中的指令缺少必要的 "data" 屬性。`);
+			CatchF.LogDo(`[警告] ${filePath} 中的指令缺少必要的 "data" 屬性。`);
 		}
 
 		// 存進 commands array

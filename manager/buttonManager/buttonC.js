@@ -50,4 +50,13 @@ exports.GetMusicAliceButtons = () => {
   return buttonAction;
 };
 
+exports.GetMyKiritoSkillButtons = () => {
+  const command = BDB.CGetCommand(2);
+  const buttonAction = BDB.NewActionRow();
+
+  // let button1 = 
+
+  return buttonAction;
+}
+
 //#endregion

@@ -446,13 +446,61 @@ exports.SGetOptionValue = (interaction, type = "string", name = "") => {
 
 //#region 按鈕動作 B
 
-/** 回傳一個 ButtonBuilder
+class BButtonBuilder extends ButtonBuilder {
+	BSetURL(url = "") {
+		this.setURL(url);
+		return this;
+	}
+
+	BSetCustomId(customId) {
+		this.setCustomId(customId);
+		return this;
+	}
+
+	BSetLabel(label) {
+		this.setLabel(label);
+		return this;
+	}
+
+	BSetStyle(style) {
+		this.setStyle(style);
+		return this;
+	}
+
+	BSetDisabled(disabled) {
+		this.setDisabled(disabled);
+		return this;
+	}
+
+	// 獲得按鈕類型(顏色)
+	BGetButtonType(type) {
+		try {
+			switch (type) {
+				case buttonType.blue:
+					return ButtonStyle.Primary;
+				case buttonType.gray:
+					return ButtonStyle.Secondary;
+				case buttonType.green:
+					return ButtonStyle.Success;
+				case buttonType.red:
+					return ButtonStyle.Danger;
+				case buttonType.link:
+					return ButtonStyle.Link;
+			}
+		}
+		catch (err) {
+			CatchF.ErrorDo(err, "BGetButtonType 方法異常!")
+		}
+	}
+}
+
+/** 回傳一個 BButtonBuilder
  *
  * @param {string} customId 傳遞的id || 當 type 為 link 時，customId 傳遞 url
  * @param {string} label 按鈕顯示的文字
  * @param {string} type buttonType.json
  * @param {boolean} disabled ture = 按鈕禁用(不能按)，默認 false
- * @returns {ButtonBuilder}
+ * @returns {BButtonBuilder}
  */
 exports.BNewButton = (
 	customId = "",
@@ -462,16 +510,16 @@ exports.BNewButton = (
 ) => {
 	try {
 		if (buttonType.link === type)
-			return new ButtonBuilder()
-				.setURL(customId)
-				.setLabel(label)
-				.setStyle(BGetButtonType(type))
-				.setDisabled(disabled);
-		return new ButtonBuilder()
-			.setCustomId(customId)
-			.setLabel(label)
-			.setStyle(BGetButtonType(type))
-			.setDisabled(disabled);
+			return new BButtonBuilder()
+				.BSetURL(customId)
+				.BSetLabel(label)
+				.BSetStyle(new BButtonBuilder().BGetButtonType(type))
+				.BSetDisabled(disabled);
+		return new BButtonBuilder()
+			.BSetCustomId(customId)
+			.BSetLabel(label)
+			.BSetStyle(new BButtonBuilder().BGetButtonType(type))
+			.BSetDisabled(disabled);
 	}
 	catch (err) {
 		CatchF.ErrorDo(err, "BNewButton 方法異常!")
@@ -488,26 +536,6 @@ exports.BGetSlashName = (interaction) =>
 
 exports.BGetButtonId = (interaction) => interaction?.customId === undefined ? CatchF.ErrorDo("BGetButtonId 方法異常!") : interaction?.customId;
 
-// 獲得按鈕類型(顏色)
-function BGetButtonType(type) {
-	try {
-		switch (type) {
-			case buttonType.blue:
-				return ButtonStyle.Primary;
-			case buttonType.gray:
-				return ButtonStyle.Secondary;
-			case buttonType.green:
-				return ButtonStyle.Success;
-			case buttonType.red:
-				return ButtonStyle.Danger;
-			case buttonType.link:
-				return ButtonStyle.Link;
-		}
-	}
-	catch (err) {
-		CatchF.ErrorDo(err, "BGetButtonType 方法異常!")
-	}
-}
 
 //#endregion
 

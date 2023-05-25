@@ -64,7 +64,7 @@ function getApplicationCommands() {
 		if ("data" in command && "execute" in command) {
 			BDB.CSetButtonCommand(command?.data?.data?.custom_id, command, 0);
 		} else {
-			console.log(`[警告] ${filePath} 中的指令缺少必要的 "data" 或 "execute" 屬性。`);
+			CatchF.LogDo(`[警告] ${filePath} 中的指令缺少必要的 "data" 或 "execute" 屬性。`);
 		}
 
 		// 存進 commands array

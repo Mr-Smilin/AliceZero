@@ -12,7 +12,8 @@ exports.DoBaseFunction = async (message, cmd, args = []) => {
     switch (cmd) {
       case "helpp":
         // message?.client?.commands?.get("help")
-        BDB.MSend(message, componentM.GetHelpMessage());
+        // BDB.MSend(message, componentM.GetHelpMessage());
+        BDB.MSend(message, global.mkLevel);
         break;
       case "老婆":
         BDB.MSend(message, "你沒有老婆!!");

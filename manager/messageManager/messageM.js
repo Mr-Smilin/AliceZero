@@ -5,6 +5,7 @@ const BDB = require("../../baseJS/BaseDiscordBot.js");
 const CatchF = require("../../baseJS/CatchF.js");
 const MessageC = require("./messageC.js");
 const musicM = require("../musicManager/musicM.js");
+const myKiritoM = require("../mykiritoManager/myKiritoM.js");
 // json
 const prefix = require("./messagePrefix.json");
 //#endregion
@@ -68,6 +69,10 @@ async function SelectFunctionWithPrefix(msg, cmd, args = []) {
 		// 音樂方法
 		case "1":
 			musicM.DoMStart(msg, cmd[1], args);
+			break;
+		// mykirito 攻略組
+		case "2":
+			myKiritoM.DoStart(msg, cmd[1], args);
 			break;
 	}
 }

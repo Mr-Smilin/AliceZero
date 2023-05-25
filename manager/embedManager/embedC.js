@@ -9,15 +9,6 @@ const CatchF = require("../../baseJS/CatchF.js");
 // json
 const messagePrefix = require("../messageManager/messagePrefix.json");
 // constants
-const color = "#fbfbc9";
-const title = "A.L.I.C.E.";
-const Author = "アリス・ツーベルク";
-const Author2 = "https://i.imgur.com/crrk7I2.png";
-const Author3 = "https://home.gamer.com.tw/homeindex.php";
-const Description = "人工高適應性知性自律存在";
-const Thumbnail = "https://i.imgur.com/5ffD6du.png";
-const Field = "小愛#0143";
-const Field2 = "主人您好，請問有何吩咐?";
 //07群的都是變態484
 //Season生日快樂٩(｡・ω・｡)﻿و
 //DeasonDio生日快樂٩(｡・ω・｡)﻿و
@@ -107,7 +98,44 @@ exports.HelpMusicMessage = (helpNumber) => {
 	return embedMessage;
 }
 
-function baseEmbed() {
+exports.MykiritoSkillMessage = (roleData) => {
+	const embedMessage = baseEmbed({
+		Author: roleData?.name,
+		title: "獲得方式",
+		Description: roleData?.data?.getData,
+		Thumbnail: roleData?.data?.authorImg
+	});
+
+	// 備註 & 角色頻道
+	if (roleData?.data?.backUp !== "" && roleData?.data?.dcUrl !== "")
+		embedMessage.EAddField("備註", roleData?.data?.backUp, true).EAddField("角色頻道", roleData?.data?.dcUrl, true);
+	else if (roleData?.data?.backUp !== "")
+		embedMessage.EAddField("備註", roleData?.data?.backUp);
+	else if (roleData?.data?.dcUrl !== "")
+		embedMessage.EAddField("角色頻道", roleData?.data?.dcUrl);
+
+	embedMessage.EAddEmptyField();
+
+	for (i = 1; i <= 10; i++) {
+		if (roleData?.data[`skill${i}`] === "")
+			break;
+		else {
+			embedMessage.EAddField(roleData?.data[`skill${i}`], roleData?.data[`task${i}`], true);
+		}
+	}
+
+	return embedMessage;
+}
+
+function baseEmbed({
+	color = "#fbfbc9",
+	title = "A.L.I.C.E.",
+	Author = "アリス・ツーベルク",
+	Author2 = "https://i.imgur.com/crrk7I2.png",
+	Author3 = "https://smilin.net",
+	Description = "人工高適應性知性自律存在",
+	Thumbnail = "https://i.imgur.com/5ffD6du.png",
+}) {
 	const embedMessage = BDB.ENewEmbed();
 	embedMessage
 		.ESetColor(color)

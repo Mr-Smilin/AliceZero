@@ -67,3 +67,18 @@ exports.GetHelpMusicMessage = (helpNumber = 0, ephemeral = true) => {
     CatchF.ErrorDo(err, "GetHelpPlayMessage 方法異常!");
   }
 }
+
+exports.GetMyKiritoSkillMessage = (roleData) => {
+  try {
+    const returnMessage = BDB.MNewMessage();
+    let embed = embedC.MykiritoSkillMessage(roleData);
+    // 技能 身體素質 稱號
+    let buttonComponents = buttonC.Get
+    returnMessage
+      .addEmbed(embed);
+    return returnMessage.toMessage();
+  }
+  catch (err) {
+    CatchF.ErrorDo(err, "GetMyKiritoSkillMessage 方法異常!");
+  }
+}
