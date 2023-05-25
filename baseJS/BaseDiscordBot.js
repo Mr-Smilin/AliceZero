@@ -603,11 +603,24 @@ exports.ISend = async function (interaction, message, replyType = 0) {
 					return await interaction.followUp(message);
 				else
 					return await interaction.reply(message);
+			case 2:
+				if (interaction?.replied || interaction?.deferred) {
+					try {
+						await interaction.deferReply();
+						return await interaction.reply(message);
+					}
+					catch {
+						return await interaction.followUp(message);
+					}
+				}
+				else
+					return await interaction.reply(message);
 
 		}
 	}
 	catch (err) {
 		CatchF.ErrorDo(err, "ISend 方法異常!");
+		CatchF.LogDo(`Message: ${message},replyType: ${replyType}`);
 	}
 };
 
@@ -870,17 +883,17 @@ exports.MuJoinVoiceChannel = (discordObject, type = 0) => {
 			});
 			//#region 解決 bot 加入頻道一分鐘後停止播放任何音頻的問題
 			// https://github.com/discordjs/discord.js/issues/9185#issuecomment-1452514375
-			const networkStateChangeHandler = (oldNetworkState, newNetworkState) => {
-				const newUdp = Reflect.get(newNetworkState, 'udp');
-				clearInterval(newUdp?.keepAliveInterval);
-			}
-			connection.on('stateChange', (oldState, newState) => {
-				const oldNetworking = Reflect.get(oldState, 'networking');
-				const newNetworking = Reflect.get(newState, 'networking');
+			// const networkStateChangeHandler = (oldNetworkState, newNetworkState) => {
+			// 	const newUdp = Reflect.get(newNetworkState, 'udp');
+			// 	clearInterval(newUdp?.keepAliveInterval);
+			// }
+			// connection.on('stateChange', (oldState, newState) => {
+			// 	const oldNetworking = Reflect.get(oldState, 'networking');
+			// 	const newNetworking = Reflect.get(newState, 'networking');
 
-				oldNetworking?.off('stateChange', networkStateChangeHandler);
-				newNetworking?.on('stateChange', networkStateChangeHandler)
-			});
+			// 	oldNetworking?.off('stateChange', networkStateChangeHandler);
+			// 	newNetworking?.on('stateChange', networkStateChangeHandler)
+			// });
 			//#endregion
 			global.connection.set(discordObject?.guild?.id, connection);
 			return connection;
@@ -952,11 +965,11 @@ exports.MuGetChannelId = (discordObject, type = 0) => {
  * @param {*} message 
  * @param {*} type 0 = message, 1 = slash
  */
-exports.MuMessageSend = (discordObject, message, type = 0) => {
+exports.MuMessageSend = (discordObject, message, type = 0, replyType = 2) => {
 	if (type === 0) {
 		this.MReply(discordObject, message);
 	} else if (type === 1) {
-		this.ISend(discordObject, message);
+		this.ISend(discordObject, message, replyType);
 	}
 }
 

@@ -74,23 +74,4 @@ function getApplicationCommands() {
 	}
 
 	return commands;
-
-	// for (i of slashTable) {
-	// 	const slashCommandBuilder = BDB.SNewSlashCommand(i?.name, i?.description);
-	// 	if (i?.options) {
-	// 		for (j of i?.options) {
-	// 			const choices = j?.choices || [];
-	// 			BDB.SPushOption(
-	// 				slashCommandBuilder,
-	// 				j?.type,
-	// 				j?.name,
-	// 				j?.description,
-	// 				j?.required,
-	// 				choices
-	// 			);
-	// 		}
-	// 	}
-	// 	returnData.push(slashCommandBuilder);
-	// }
-	// return returnData;
 }

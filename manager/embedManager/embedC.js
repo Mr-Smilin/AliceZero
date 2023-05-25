@@ -21,7 +21,7 @@ const Field2 = "主人您好，請問有何吩咐?";
 //07群的都是變態484
 //Season生日快樂٩(｡・ω・｡)﻿و
 //DeasonDio生日快樂٩(｡・ω・｡)﻿و
-const footerText = "當前版本v14.10.0";
+const footerText = "當前版本b14.11.0";
 const footerPicture = "https://i.imgur.com/crrk7I2.png";
 //#endregion
 
@@ -73,7 +73,7 @@ exports.HelpMusicMessage = (helpNumber) => {
 	const embedMessage = baseEmbed();
 	// 從 messagePrefix 找出 id = 1 = 音樂指令 的元素
 	const musicPrefix = messagePrefix.find(e => e?.Id === "1");
-	const command = BDB.CGetCommand(0)?.get("music");
+	const command = BDB.CGetCommand(0)?.get("m");
 	switch (helpNumber) {
 		case 0:
 			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} {網址}`);

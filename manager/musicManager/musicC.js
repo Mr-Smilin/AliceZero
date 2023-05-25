@@ -67,11 +67,11 @@ exports.PlayMusic = async (discordObject, nowSong, isReplied, type = 0) => {
     // 提示播放音樂
     if (!isReplied) {
       const content = `🎵　播放音樂：${nowSong?.name}`;
-      BDB.MuMessageSend(discordObject, content, type);
+      await BDB.MuMessageSend(discordObject, content, type);
     }
 
     // pldl 讀取資訊流
-    const stream = await pldl.stream(nowSong?.url, { quality: 2 });
+    const stream = await pldl.stream(nowSong?.url);
     // 創建音樂器
     const audioPlay = BDB.MuGetAudioPlay();
     // 播放
@@ -94,7 +94,7 @@ exports.PlayMusic = async (discordObject, nowSong, isReplied, type = 0) => {
   } catch (err) {
     CatchF.ErrorDo(err, "musicC.PlayMusic 方法異常!");
     global.songList.get(guildId).shift();
-    BDB.MuMessageSend(discordObject, "歌曲在播放途中發生問題了..小愛先播下一首試試喔><", type);
+    await BDB.MuMessageSend(discordObject, "歌曲在播放途中發生問題了..小愛先播下一首試試喔><", type);
     this.PlayNextMusic(discordObject, type);
   }
 }

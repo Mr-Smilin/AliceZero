@@ -3,6 +3,7 @@
 const BDB = require("../../../baseJS/BaseDiscordBot.js");
 // js
 const componentM = require("../../componentManager/componentM.js");
+const musicM = require("../../musicManager/musicM.js");
 //#endregion
 
 const subcommandPlay = () => {
@@ -67,7 +68,7 @@ const subcommandSleep = () => {
 }
 
 const musicSlash = () => {
-  const command = BDB.SNewSlashCommand("music", "音樂指令");
+  const command = BDB.SNewSlashCommand("m", "音樂指令");
   BDB.SPushOption(
     command,
     "subcommand",
@@ -132,43 +133,43 @@ module.exports = {
     play: {
       data: subcommandPlay(),
       async execute(interaction) {
-        BDB.ISend(interaction, "yooo");
+        musicM.DoSStart(interaction, "play", BDB.SGetOptionValue(interaction, "string", "url"));
       }
     },
     insert: {
       data: subcommandInsert(),
       async execute(interaction) {
-        BDB.ISend(interaction, "yooo");
+        musicM.DoSStart(interaction, "insert", BDB.SGetOptionValue(interaction, "string", "url"));
       }
     },
     pause: {
       data: subcommandPause(),
       async execute(interaction) {
-        BDB.ISend(interaction, "yooo");
+        musicM.DoSStart(interaction, "pause");
       }
     },
     resume: {
       data: subcommandResume(),
       async execute(interaction) {
-        BDB.ISend(interaction, "yooo");
+        musicM.DoSStart(interaction, "resume");
       }
     },
     skip: {
       data: subcommandSkip(),
       async execute(interaction) {
-        BDB.ISend(interaction, "yooo");
+        musicM.DoSStart(interaction, "skip");
       }
     },
     nowqueue: {
       data: subcommandNowQueue(),
       async execute(interaction) {
-        BDB.ISend(interaction, "yooo");
+        musicM.DoSStart(interaction, "nowqueue");
       }
     },
     sleep: {
       data: subcommandSleep(),
       async execute(interaction) {
-        BDB.ISend(interaction, "yooo");
+        musicM.DoSStart(interaction, "sleep");
       }
     },
   }

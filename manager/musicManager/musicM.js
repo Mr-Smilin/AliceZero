@@ -19,7 +19,7 @@ const componentM = require("../componentManager/componentM.js");
  * @param {any[]} args 參數
  * @param {number} type 0 = message 1 = slash
  */
-exports.DoStart = (msg, cmd, args, type = 0) => {
+exports.DoMStart = (msg, cmd, args, type = 0) => {
   try {
     // 判斷屬於哪種指令
     switch (cmd) {
@@ -56,7 +56,39 @@ exports.DoStart = (msg, cmd, args, type = 0) => {
     }
   }
   catch (err) {
-    CatchF.ErrorDo(err, "music 方法異常!");
+    CatchF.ErrorDo(err, "DoMStart 方法異常!");
+  }
+}
+
+exports.DoSStart = (interaction, cmd, value = "", type = 1) => {
+  try {
+    // 判斷屬於哪種指令
+    switch (cmd) {
+      case "play":
+        this.DoPlayMusic(interaction, value, type).catch(err => CatchF.ErrorDo(err, "DoPlayMusic 方法異常!"));
+        break;
+      case "insert":
+        this.DoPlayMusicFirst(interaction, value, type).catch(err => CatchF.ErrorDo(err, "DoPlayMusicFirst 方法異常!"));
+        break;
+      case "pause":
+        this.DoPause(interaction, type);
+        break;
+      case "resume":
+        this.DoResume(interaction, type);
+        break;
+      case "skip":
+        this.DoSkip(interaction, type);
+        break;
+      case "nowqueue":
+        this.DoNowQueue(interaction, type);
+        break;
+      case "sleep":
+        this.DoSleep(interaction, type);
+        break;
+    }
+  }
+  catch (err) {
+    CatchF.ErrorDo(err, "DoSStart 方法異常!");
   }
 }
 
@@ -66,7 +98,7 @@ exports.DoPlayMusic = async (discordObject, musicUrl, type = 0) => {
 
   // 判斷指令使用者是否在語音頻道
   if (BDB.MuIsVoicing(discordObject, type)) {
-    BDB.MuMessageSend(discordObject, "請先進入頻道再點歌喔:3...", type);
+    await BDB.MuMessageSend(discordObject, "請先進入頻道再點歌喔:3...", type);
     return;
   }
 
@@ -82,10 +114,10 @@ exports.DoPlayMusic = async (discordObject, musicUrl, type = 0) => {
 
   // 判斷是否正在播放歌曲 是:將歌曲加入歌單 否:播放歌曲
   if (musicC.IsPlaying(guildId)) {
-    BDB.MuMessageSend(discordObject, "加入歌單成功喔~!", type);
+    await BDB.MuMessageSend(discordObject, "加入歌單成功喔~!", type);
   } else {
     musicC.SetIsPlaying(guildId, true);
-    BDB.MuMessageSend(discordObject, `🎵　播放音樂：${musicC.GetNowSong(guildId)?.name}`, type);
+    await BDB.MuMessageSend(discordObject, `🎵　播放音樂：${musicC.GetNowSong(guildId)?.name}`, type);
     // 播放音樂
     musicC.PlayMusic(discordObject, musicC.GetNowSong(guildId), true, type);
   }
@@ -97,7 +129,7 @@ exports.DoPlayMusicFirst = async (discordObject, musicUrl, type = 0) => {
 
   // 判斷指令使用者是否在語音頻道
   if (BDB.MuIsVoicing(discordObject, type)) {
-    BDB.MuMessageSend(discordObject, "請先進入頻道再點歌喔:3...", type);
+    await BDB.MuMessageSend(discordObject, "請先進入頻道再點歌喔:3...", type);
     return;
   }
 
@@ -113,10 +145,10 @@ exports.DoPlayMusicFirst = async (discordObject, musicUrl, type = 0) => {
 
   // 判斷是否正在播放歌曲 是:將歌曲加入歌單 否:播放歌曲
   if (musicC.IsPlaying(guildId)) {
-    BDB.MuMessageSend(discordObject, "好的，下一首播這個喔!", type);
+    await BDB.MuMessageSend(discordObject, "好的，下一首播這個喔!", type);
   } else {
     musicC.SetIsPlaying(guildId, true);
-    BDB.MuMessageSend(discordObject, `🎵　播放音樂：${musicC.GetNowSong(guildId)?.name}`, type);
+    await BDB.MuMessageSend(discordObject, `🎵　播放音樂：${musicC.GetNowSong(guildId)?.name}`, type);
     // 播放音樂
     musicC.PlayMusic(discordObject, musicC.GetNowSong(guildId), true, type);
   }

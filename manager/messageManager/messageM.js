@@ -67,7 +67,7 @@ async function SelectFunctionWithPrefix(msg, cmd, args = []) {
 			break;
 		// 音樂方法
 		case "1":
-			musicM.DoStart(msg, cmd[1], args);
+			musicM.DoMStart(msg, cmd[1], args);
 			break;
 	}
 }
