@@ -23,7 +23,7 @@ exports.HelpMessage = () => {
 	embedMessage
 		.EAddField(
 			"自我檢測執行..",
-			" 🔨 版本復原進度 40%\n 🎧 音樂系統 ✅\n 🍻 派對指令 ❌\n ⚔️ mykirito系統 ✅\n ... \n ...\n ☄️ 隱藏功能 ✅"
+			" 🔨 版本復原進度 60%\n 🎧 音樂系統 ✅\n 🍻 派對指令 ❌\n ⚔️ mykirito系統 ✅\n ... \n ...\n ☄️ 隱藏功能 ✅"
 		)
 		.EAddField(
 			"模組加載完畢，請根據需求選擇對應系統說明",

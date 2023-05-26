@@ -12,8 +12,8 @@ const componentM = require("../componentManager/componentM.js");
 exports.DoBaseFunction = async (message, cmd, args = []) => {
   try {
     switch (cmd) {
-      case "helpp":
-        BDB.MSend(message, global.mkLevel);
+      case "help":
+        BDB.MSend(message, componentM.GetHelpMessage());
         break;
       case "老婆":
         BDB.MSend(message, "你沒有老婆!!");
