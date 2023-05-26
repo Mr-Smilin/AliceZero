@@ -19,7 +19,7 @@ exports.Start = async (oldMessage, newMessage) => {
 			}
 			let talkStr = `\n舊對話 ${oldMessage?.content}\n新對話 ${newMessage?.content}\n`;
 			const messageStr = nameStr + guildStr + talkStr;
-			BDB.MSend(
+			await BDB.MSend(
 				BDB.GetMe(),
 				messageStr,
 				2,

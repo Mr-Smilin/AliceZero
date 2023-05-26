@@ -1,4 +1,6 @@
 //#region import
+// 載入env變量
+require("dotenv").config();
 // Discord
 const BDB = require("../../baseJS/BaseDiscordBot.js");
 // js
@@ -18,17 +20,37 @@ exports.DoBaseFunction = async (message, cmd, args = []) => {
       case "老婆":
         BDB.MSend(message, "你沒有老婆!!");
         break;
-      case "test":
-        console.log(global);
-        BDB.MSend(message, "" + global.a);
-        // BDB.MSend(message, args[1]);
-        break;
-      case "test2":
-        global.a = args[0];
-        break;
+    }
+    // 開發方法必須是開發者觸發
+    if (BDB.MGetAuthorId(message) === process.env.MASTER_ID) {
+      switch (cmd) {
+        // 重新下載 global 資料
+        case "reset":
+          resetGlobal(message);
+          break;
+      }
     }
   }
   catch (err) {
     CatchF.ErrorDo(err, " DoBaseFunction 異常!");
   }
 }
+
+// #region dev 方法
+
+// dev import
+const devAlice = require("../../alice.js");
+
+// 重新下載資訊
+function resetGlobal(message) {
+  try {
+    devAlice.ResetGlobal(BDB.CGetClient());
+    BDB.MSend(message, "ok");
+  }
+  catch (err) {
+    CatchF.ErrorDo(err);
+    BDB.MSend(message, "Fail");
+  }
+}
+
+// #endregion

@@ -56,6 +56,14 @@ const { exceptions } = require("winston");
 
 //#region 客戶端操作 C
 
+/** 拿到 client
+ * 
+ * @returns 
+ */
+exports.CGetClient = () => {
+	return client;
+}
+
 /** 創建 commands 屬性
  * 
  * @param {*} commandNumber 
@@ -199,7 +207,7 @@ exports.MReply = async function (discordObject, message) {
  * @param {*} discordMessage Discord.Message
  * @returns {string}
  */
-exports.MContent = (discordMessage) => discordMessage?.content == undefined ? CatchF.ErrorDo("MContent 方法異常!") : discordMessage?.content;
+exports.MContent = (discordMessage) => discordMessage?.content === undefined ? CatchF.ErrorDo("MContent 方法異常!") : discordMessage?.content;
 
 class MessageBuilder {
 	constructor(text) {
@@ -260,6 +268,13 @@ class MessageBuilder {
  * @returns {MessageBuilder} 訊息格式產生器
  */
 exports.MNewMessage = (message = "") => new MessageBuilder(message);
+
+/** 獲得消息發送者的id
+ * 
+ * @param {*} discordMessage 
+ * @returns 
+ */
+exports.MGetAuthorId = (discordMessage) => discordMessage?.author?.id === undefined ? CatchF.ErrorDo("MGetAuthorId 方法異常!") : discordMessage?.author?.id;
 
 //#endregion
 

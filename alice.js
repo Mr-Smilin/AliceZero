@@ -61,6 +61,7 @@ async function DoStart() {
 //#endregion
 //#region 基本方法
 async function DiscordReady(client) {
+	initGlobal();
 	// 註冊斜線命令
 	await slashM.InsertSlash(client);
 	// 綁定菜單命令
@@ -77,4 +78,23 @@ async function DiscordReady(client) {
 //#endregion
 
 //#region 其餘宣告
+
+function initGlobal() {
+	global.isPlaying = new Map(); // 是否正在播放音樂
+	global.songList = new Map(); // 歌單
+	global.connection = new Map(); // https://discord.js.org/#/docs/voice/main/class/VoiceConnection
+	global.dispatcher = new Map(); // https://discord.js.org/#/docs/voice/main/class/AudioPlayer
+	global.isMykirito = false;
+	// 轉生點
+	global.mkLevel = undefined;
+	// 角色情報
+	global.mkSkill = undefined;
+	// 樓層
+	global.mkBoss = undefined;
+}
+
+exports.ResetGlobal = (client) => {
+	DiscordReady(client);
+}
+
 //#endregion
