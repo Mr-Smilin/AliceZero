@@ -4,6 +4,9 @@
     "description": "AliceZero",
     "main": "alice.js",
     "author": "Double",
+    "engines": {
+        "node": ">=16.9"
+      },
     "scripts": {
         "start": "node alice.js"
     },
