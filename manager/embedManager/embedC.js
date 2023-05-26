@@ -98,7 +98,7 @@ exports.HelpMusicMessage = (helpNumber) => {
 	return embedMessage;
 }
 
-exports.MykiritoSkillMessage = (roleData) => {
+exports.MykiritoSkillMessage = (roleData, status) => {
 	const embedMessage = baseEmbed({
 		Author: roleData?.name,
 		title: "獲得方式",
@@ -116,15 +116,53 @@ exports.MykiritoSkillMessage = (roleData) => {
 
 	embedMessage.EAddEmptyField();
 
-	for (i = 1; i <= 10; i++) {
-		if (roleData?.data[`skill${i}`] === "")
+	switch (status) {
+		// 技能
+		case 0:
+			for (let i = 1; i <= 10; i++) {
+				if (roleData?.data[`skill${i}`] === "")
+					break;
+				else
+					embedMessage.EAddField(roleData?.data[`skill${i}`], roleData?.data[`task${i}`], true);
+			}
 			break;
-		else {
-			embedMessage.EAddField(roleData?.data[`skill${i}`], roleData?.data[`task${i}`], true);
-		}
+		// 身體素質
+		case 1:
+			embedMessage
+				.EAddField("HP", "" + addMykiritoSkillField(roleData?.data?.state1))
+				.EAddField("攻擊", "" + addMykiritoSkillField(roleData?.data?.state2), true)
+				.EAddField("防禦", "" + addMykiritoSkillField(roleData?.data?.state3), true)
+				.EAddField("體力", "" + addMykiritoSkillField(roleData?.data?.state4), true)
+				.EAddField("敏捷", "" + addMykiritoSkillField(roleData?.data?.state5), true)
+				.EAddField("反應速度", "" + addMykiritoSkillField(roleData?.data?.state6), true)
+				.EAddField("技巧", "" + addMykiritoSkillField(roleData?.data?.state7), true)
+				.EAddField("智力", "" + addMykiritoSkillField(roleData?.data?.state8), true)
+				.EAddField("幸運", "" + addMykiritoSkillField(roleData?.data?.state9), true)
+				.EAddEmptyField(true);
+			break;
+		// 稱號
+		case 2:
+			embedMessage.EAddField("初始稱號", addMykiritoSkillField(roleData?.data?.nickname1));
+			for (let i = 2; i <= 7; i++) {
+				if (roleData?.data[`nickname${i}`] === "")
+					break;
+				else
+					embedMessage
+						.EAddField(roleData?.data[`nickname${i}`], roleData?.data[`nicknameQuest${i}`], true)
+						.EAddField("效果", roleData?.data[`nicknameData${i}`], true)
+						.EAddEmptyField();
+			}
+			break;
 	}
 
 	return embedMessage;
+}
+
+function addMykiritoSkillField(str) {
+	if (str === undefined || str === "")
+		return "小愛不知道喔";
+	else
+		return str;
 }
 
 function baseEmbed({

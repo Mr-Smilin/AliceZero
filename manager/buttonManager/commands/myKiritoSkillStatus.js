@@ -6,7 +6,7 @@ const componentM = require("../../componentManager/componentM.js");
 //#endregion
 
 module.exports = {
-  data: BDB.BNewButton("myKiritoSkillSkill", "技能"),
+  data: BDB.BNewButton("myKiritoSkillStatus", "能力"),
   async execute(interaction) {
     const nam = BDB.BGetMessageEmbedsAuthorName(interaction);
     const responseData = global.mkSkill;
@@ -15,6 +15,6 @@ module.exports = {
     BDB.IEdit(interaction, componentM.GetMyKiritoSkillMessage({
       name: nam,
       data: roleData,
-    }, 0), 1);
+    }, 1), 1);
   },
 };

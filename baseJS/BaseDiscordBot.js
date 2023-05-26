@@ -536,6 +536,8 @@ exports.BGetSlashName = (interaction) =>
 
 exports.BGetButtonId = (interaction) => interaction?.customId === undefined ? CatchF.ErrorDo("BGetButtonId 方法異常!") : interaction?.customId;
 
+// 獲得原始訊息中的內嵌訊息中的 Author.name (mykirito模組使用)
+exports.BGetMessageEmbedsAuthorName = (interaction) => interaction?.message?.embeds[0]?.data?.author?.name === undefined ? CatchF.ErrorDo("BGetMessageEmbedsAuthorName 方法異常!") : interaction?.message?.embeds[0]?.data?.author?.name;
 
 //#endregion
 
@@ -653,7 +655,7 @@ exports.ISend = async function (interaction, message, replyType = 0) {
 };
 
 /** 定義 interaction 編輯訊息的方法
- * 0 = message, 1 = embed
+ * 0 = reply, 1 = 原始消息
  * @param {*} interaction
  * @param {*} message
  * @param {*} replyType
@@ -665,7 +667,7 @@ exports.IEdit = async function (interaction, message, replyType = 0) {
 			case 0:
 				return await interaction.editReply(message);
 			case 1:
-				return await interaction.editReply({ embeds: [message] });
+				return await interaction.update(message);
 		}
 	}
 	catch (err) {

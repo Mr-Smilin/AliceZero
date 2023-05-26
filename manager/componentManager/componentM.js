@@ -68,14 +68,15 @@ exports.GetHelpMusicMessage = (helpNumber = 0, ephemeral = true) => {
   }
 }
 
-exports.GetMyKiritoSkillMessage = (roleData) => {
+exports.GetMyKiritoSkillMessage = (roleData, status = 0) => {
   try {
     const returnMessage = BDB.MNewMessage();
-    let embed = embedC.MykiritoSkillMessage(roleData);
+    let embed = embedC.MykiritoSkillMessage(roleData, status);
     // 技能 身體素質 稱號
-    let buttonComponents = buttonC.Get
+    let buttonComponents = buttonC.GetMyKiritoSkillButtons(status);
     returnMessage
-      .addEmbed(embed);
+      .addEmbed(embed)
+      .addComponents(buttonComponents);
     return returnMessage.toMessage();
   }
   catch (err) {

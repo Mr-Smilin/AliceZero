@@ -31,7 +31,7 @@ module.exports = {
         await BDB.MSend(msg, componentM.GetMyKiritoSkillMessage({
           name: args[0],
           data: roleData,
-        }));
+        }, 0));
     }
     catch (err) {
       CatchF.ErrorDo(err, "攻略組 情報 查詢異常!");

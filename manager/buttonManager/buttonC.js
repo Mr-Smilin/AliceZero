@@ -50,12 +50,32 @@ exports.GetMusicAliceButtons = () => {
   return buttonAction;
 };
 
-exports.GetMyKiritoSkillButtons = () => {
+exports.GetMyKiritoSkillButtons = (status) => {
   const command = BDB.CGetCommand(2);
   const buttonAction = BDB.NewActionRow();
-
-  // let button1 = 
-
+  let button1 = command.get("myKiritoSkillSkill")?.data;
+  let button2 = command.get("myKiritoSkillStatus")?.data;
+  let button3 = command.get("myKiritoSkillNicename")?.data;
+  switch (status) {
+    case 0:
+      button1.BSetDisabled(true);
+      button2.BSetDisabled(false);
+      button3.BSetDisabled(false);
+      break;
+    case 1:
+      button1.BSetDisabled(false);
+      button2.BSetDisabled(true);
+      button3.BSetDisabled(false);
+      break;
+    case 2:
+      button1.BSetDisabled(false);
+      button2.BSetDisabled(false);
+      button3.BSetDisabled(true);
+      break;
+  }
+  BDB.ActionRowAddComponents(buttonAction, button1);
+  BDB.ActionRowAddComponents(buttonAction, button2);
+  BDB.ActionRowAddComponents(buttonAction, button3);
   return buttonAction;
 }
 
