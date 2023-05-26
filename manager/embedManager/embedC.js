@@ -129,20 +129,20 @@ exports.MykiritoSkillMessage = (roleData, status) => {
 		// 身體素質
 		case 1:
 			embedMessage
-				.EAddField("HP", "" + addMykiritoSkillField(roleData?.data?.state1))
-				.EAddField("攻擊", "" + addMykiritoSkillField(roleData?.data?.state2), true)
-				.EAddField("防禦", "" + addMykiritoSkillField(roleData?.data?.state3), true)
-				.EAddField("體力", "" + addMykiritoSkillField(roleData?.data?.state4), true)
-				.EAddField("敏捷", "" + addMykiritoSkillField(roleData?.data?.state5), true)
-				.EAddField("反應速度", "" + addMykiritoSkillField(roleData?.data?.state6), true)
-				.EAddField("技巧", "" + addMykiritoSkillField(roleData?.data?.state7), true)
-				.EAddField("智力", "" + addMykiritoSkillField(roleData?.data?.state8), true)
-				.EAddField("幸運", "" + addMykiritoSkillField(roleData?.data?.state9), true)
+				.EAddField("HP", "" + addMykiritoField(roleData?.data?.state1))
+				.EAddField("攻擊", "" + addMykiritoField(roleData?.data?.state2), true)
+				.EAddField("防禦", "" + addMykiritoField(roleData?.data?.state3), true)
+				.EAddField("體力", "" + addMykiritoField(roleData?.data?.state4), true)
+				.EAddField("敏捷", "" + addMykiritoField(roleData?.data?.state5), true)
+				.EAddField("反應速度", "" + addMykiritoField(roleData?.data?.state6), true)
+				.EAddField("技巧", "" + addMykiritoField(roleData?.data?.state7), true)
+				.EAddField("智力", "" + addMykiritoField(roleData?.data?.state8), true)
+				.EAddField("幸運", "" + addMykiritoField(roleData?.data?.state9), true)
 				.EAddEmptyField(true);
 			break;
 		// 稱號
 		case 2:
-			embedMessage.EAddField("初始稱號", addMykiritoSkillField(roleData?.data?.nickname1));
+			embedMessage.EAddField("初始稱號", addMykiritoField(roleData?.data?.nickname1));
 			for (let i = 2; i <= 7; i++) {
 				if (roleData?.data[`nickname${i}`] === "")
 					break;
@@ -158,7 +158,50 @@ exports.MykiritoSkillMessage = (roleData, status) => {
 	return embedMessage;
 }
 
-function addMykiritoSkillField(str) {
+exports.MyKiritoBossMessage = (bossData) => {
+	const embedMessage = baseEmbed({
+		Author: bossData?.floor,
+		title: "Boss資訊",
+		Description: bossData?.data?.name,
+		Thumbnail: bossData?.data?.authorImg
+	});
+
+	// 素質
+	embedMessage
+		.EAddField('HP', addMykiritoField("" + bossData?.data?.hp))
+		.EAddField('攻擊', addMykiritoField("" + bossData?.data?.atk), true)
+		.EAddField('防禦', addMykiritoField("" + bossData?.data?.def), true)
+		.EAddField('體力', addMykiritoField("" + bossData?.data?.vit), true)
+		.EAddField('敏捷', addMykiritoField("" + bossData?.data?.agi), true)
+		.EAddField('反應速度', addMykiritoField("" + bossData?.data?.agi2), true)
+		.EAddField('技巧', addMykiritoField("" + bossData?.data?.agi3), true)
+		.EAddField('智力', addMykiritoField("" + bossData?.data?.mAtk), true)
+		.EAddField('幸運', addMykiritoField("" + bossData?.data?.dex), true);
+
+	if (bossData?.data?.backUp !== "") embedMessage.EAddField("備註", "" + bossData?.data?.backUp, true);
+	else embedMessage.EAddEmptyField(true);
+
+	embedMessage.EAddEmptyField();
+
+	// 技能
+	for (let i = 1; i <= 10; i++) {
+		if (bossData?.data[`skill${i}`] === "")
+			break;
+		else
+			embedMessage.EAddField(bossData?.data[`skill${i}`], bossData?.data[`task${i}`], true);
+	}
+
+	embedMessage.EAddEmptyField();
+
+	embedMessage
+		.EAddField("推薦攻略等級", addMykiritoField("" + bossData?.data?.LvCan), true)
+		.EAddField("推薦攻略角色", addMykiritoField("" + bossData?.data?.AuthorCan), true)
+		.EAddField("不推薦攻略角色", addMykiritoField("" + bossData?.data?.AuthorCant), true);
+
+	return embedMessage;
+}
+
+function addMykiritoField(str = undefined) {
 	if (str === undefined || str === "")
 		return "小愛不知道喔";
 	else
@@ -173,7 +216,7 @@ function baseEmbed({
 	Author3 = "https://smilin.net",
 	Description = "人工高適應性知性自律存在",
 	Thumbnail = "https://i.imgur.com/5ffD6du.png",
-}) {
+} = {}) {
 	const embedMessage = BDB.ENewEmbed();
 	embedMessage
 		.ESetColor(color)

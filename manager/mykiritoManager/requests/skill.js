@@ -40,7 +40,10 @@ module.exports = {
 }
 
 function returnDefault(responseData) {
-  let message = "```角色情報查詢\n語法: 攻略組 情報 {角色名稱}\n\n根據角色名稱，反饋此角色已記錄技能與簡介\n\n角色名稱需與表單完全一致\n目前的角色有...\n";
+  let message = "```角色情報查詢\n" +
+    "語法: 攻略組 情報 {角色名稱}\n\n" +
+    "根據角色名稱，反饋此角色已記錄技能與簡介\n\n" +
+    "角色名稱需與表單完全一致\n目前的角色有...\n";
   let count = 0;
   const names = Object.keys(responseData);
   for (nam of names) {

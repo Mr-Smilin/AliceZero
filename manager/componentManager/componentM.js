@@ -68,6 +68,12 @@ exports.GetHelpMusicMessage = (helpNumber = 0, ephemeral = true) => {
   }
 }
 
+/** myKirito 攻略組 情報
+ * 
+ * @param {*} roleData 角色資料，從 global.mkSkill 拿來的
+ * @param {*} status 0 技能 1 身體素質 2 稱號  
+ * @returns 
+ */
 exports.GetMyKiritoSkillMessage = (roleData, status = 0) => {
   try {
     const returnMessage = BDB.MNewMessage();
@@ -81,5 +87,19 @@ exports.GetMyKiritoSkillMessage = (roleData, status = 0) => {
   }
   catch (err) {
     CatchF.ErrorDo(err, "GetMyKiritoSkillMessage 方法異常!");
+  }
+}
+
+/** myKirito 攻略組 樓層
+ * 
+ */
+exports.GetMyKiritoBossMessage = (bossData) => {
+  try {
+    const returnMessage = BDB.MNewMessage();
+    const embed = embedC.MyKiritoBossMessage(bossData);
+    returnMessage.addEmbed(embed);
+    return returnMessage.toMessage();
+  } catch (err) {
+    CatchF.ErrorDo(err, "GetMyKiritoBossMessage 方法異常!");
   }
 }

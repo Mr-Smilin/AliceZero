@@ -39,6 +39,8 @@ global.isMykirito = false;
 global.mkLevel = undefined;
 // 角色情報
 global.mkSkill = undefined;
+// 樓層
+global.mkBoss = undefined;
 //#endregion
 
 //#endregion
