@@ -14,6 +14,8 @@ const messagePrefix = require("../messageManager/messagePrefix.json");
 //DeasonDio生日快樂٩(｡・ω・｡)﻿و
 const footerText = "當前版本b14.11.0";
 const footerPicture = "https://i.imgur.com/crrk7I2.png";
+// 隱藏功能
+// 掃地
 //#endregion
 
 exports.HelpMessage = () => {
@@ -21,7 +23,7 @@ exports.HelpMessage = () => {
 	embedMessage
 		.EAddField(
 			"自我檢測執行..",
-			" 🔨 版本復原進度 20%\n 🎧 音樂系統 ✅\n 🍻 派對指令 ❌\n ⚔️ mykirito系統 ✅\n ... \n ...\n ☄️ 隱藏功能 ✅ ✅"
+			" 🔨 版本復原進度 40%\n 🎧 音樂系統 ✅\n 🍻 派對指令 ❌\n ⚔️ mykirito系統 ✅\n ... \n ...\n ☄️ 隱藏功能 ✅"
 		)
 		.EAddField(
 			"模組加載完畢，請根據需求選擇對應系統說明",
@@ -31,10 +33,18 @@ exports.HelpMessage = () => {
 	return embedMessage;
 };
 
-exports.MusicMessage = () => {
+exports.MusicHelpMessage = () => {
 	const embedMessage = baseEmbed();
-	embedMessage.EAddField("音樂指令~", "點擊按鈕可以看到詳細說明喔!");
-	embedMessage.EAddField("指令一覽", `\`點歌\` - Play\n\`插播\` - Insert\n\`暫停\` - Pause\n\`恢復\` - Resume\n\`跳過\` - Skip\n\`歌單\` - NowQueue\n\`休息\` - Sleep`);
+	embedMessage
+		.EAddField("音樂指令~", "點擊按鈕可以看到詳細說明喔!")
+		.EAddField("指令一覽",
+			"`點歌` - Play\n" +
+			"`插播` - Insert\n" +
+			"`暫停` - Pause\n" +
+			"`恢復` - Resume\n" +
+			"`跳過` - Skip\n" +
+			"`歌單` - NowQueue\n" +
+			"`休息` - Sleep");
 	return embedMessage;
 };
 
@@ -54,6 +64,19 @@ exports.MusicMessage = () => {
 // 	}
 // 	return message;
 // }
+
+exports.MykiritoHelpMessage = () => {
+	const embedMessage = baseEmbed();
+	embedMessage
+		.EAddField("https://mykirito.com", "夢開始的遊戲，創造出小愛的地方！")
+		.EAddEmptyField()
+		.EAddField("攻略組指令", "歡迎聯絡作者，投稿新資料")
+		.EAddField("指令一覽 - {} 為必填 [] 為選填",
+			"`攻略組 轉生點` {等級} [範圍]\n" +
+			"`攻略組 情報` {角色名稱}\n" +
+			"`攻略組 樓層` {層數}\n");
+	return embedMessage;
+};
 
 /**
  * 

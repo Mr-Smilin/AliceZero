@@ -127,7 +127,7 @@ module.exports = {
   data: musicSlash(),
   async execute(interaction) {
     // 使用者輸入指令後程式要做的事
-    BDB.ISend(interaction, componentM.GetMusicMessage());
+    BDB.ISend(interaction, componentM.GetMusicHelpMessage());
   },
   subcommand: {
     play: {

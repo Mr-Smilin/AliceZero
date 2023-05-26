@@ -24,10 +24,10 @@ exports.GetHelpMessage = (ephemeral = false) => {
   }
 }
 
-exports.GetMusicMessage = (ephemeral = false) => {
+exports.GetMusicHelpMessage = (ephemeral = false) => {
   try {
     const returnMessage = BDB.MNewMessage();
-    let embed = embedC.MusicMessage();
+    let embed = embedC.MusicHelpMessage();
     returnMessage
       .setEphemeral(ephemeral)
       .addEmbed(embed)
@@ -36,7 +36,21 @@ exports.GetMusicMessage = (ephemeral = false) => {
     return returnMessage.toMessage();
   }
   catch (err) {
-    CatchF.ErrorDo(err, "GetMusicMessage 方法異常!");
+    CatchF.ErrorDo(err, "GetMusicHelpMessage 方法異常!");
+  }
+}
+
+exports.GetMykiritoHelpMessage = (ephemeral = false) => {
+  try {
+    const returnMessage = BDB.MNewMessage();
+    let embed = embedC.MykiritoHelpMessage();
+    returnMessage
+      .setEphemeral(ephemeral)
+      .addEmbed(embed);
+    return returnMessage.toMessage();
+  }
+  catch (err) {
+    CatchF.ErrorDo(err, "GetMykiritoHelpMessage 方法異常!");
   }
 }
 
