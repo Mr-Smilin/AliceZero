@@ -44,7 +44,6 @@ global.mkLevel = undefined;
 global.mkSkill = undefined;
 // 樓層
 global.mkBoss = undefined;
-
 // 掃地
 global.ninePeople = new Map();
 //#endregion
@@ -88,7 +87,7 @@ async function DiscordReady(client) {
 //#region 其餘宣告
 
 function callMyself() {
-	cornTask.cronCallMysell();
+	global.cornTask = cornTask.cronCallMysell();
 	CatchF.LogDo("Start cronCallMysell");
 }
 

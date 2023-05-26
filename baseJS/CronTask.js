@@ -5,7 +5,7 @@ const axios = require("axios");
 
 // 定時呼叫自己，防止睡眠
 exports.cronCallMysell = function () {
-  schedule.scheduleJob('*/10 * * * *', async () => {
+  schedule.scheduleJob('*/5 * * * *', async () => {
     await getData(process.env.HOME_PAGE);
   })
 };
