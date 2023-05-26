@@ -127,7 +127,8 @@ module.exports = {
     const authorId = BDB.MGetAuthorId(msg);
     if (!global.ninePeople.has(authorId)) {
       global.ninePeople.set(authorId, true);
-      BDB.MSend(msg, randomOne(data));
+      const message = randomOne(data);
+      BDB.MSend(msg, valueChange(message, authorId));
     }
   }
 };
@@ -150,19 +151,11 @@ function getRandomIntInclusive(min, max) {
 }
 
 //參數替換
-function valueChange(message, msg) {
+function valueChange(message, authorId) {
   if (message.indexOf("$[ID]") != -1) {
     beforeStr = message.substring(0, message.indexOf('$[ID]'));
     afterStr = message.substring(message.indexOf('$[ID]') + 5, message.length);
-    message = beforeStr + '<@' + msg.author.id + '>' + afterStr;
-  }
-
-  let mStr = message.split("\\n");
-  if (mStr.length > 1) {
-    message = '';
-    mStr.forEach(element => {
-      message = message + element + "\n";
-    })
+    message = beforeStr + '<@' + authorId + '>' + afterStr;
   }
 
   return message;
