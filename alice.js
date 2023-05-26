@@ -59,7 +59,7 @@ async function DoStart() {
 	client = await BDB.Login(process.env.TOKEN);
 	BDB.On(client, "ready", DiscordReady);
 	BDB.On(client, "message", messageM.Start);
-	BDB.On(client, "messageUpdate", messageUpdateM.Start);
+	// BDB.On(client, "messageUpdate", messageUpdateM.Start);
 	BDB.On(client, "slash", slashM.Start);
 	BDB.On(client, "button", buttonM.Start);
 	BDB.On(client, "selectMenu", selectMenuM.Start);
