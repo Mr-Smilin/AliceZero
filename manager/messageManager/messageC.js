@@ -26,7 +26,7 @@ exports.DoBaseFunction = async (message, cmd, args = []) => {
       switch (cmd) {
         // 重新下載 global 資料
         case "reset":
-          resetGlobal(message);
+          await resetGlobal(message);
           break;
       }
     }
@@ -36,15 +36,16 @@ exports.DoBaseFunction = async (message, cmd, args = []) => {
   }
 }
 
+
 // #region dev 方法
 
 // dev import
 const devAlice = require("../../alice.js");
 
 // 重新下載資訊
-function resetGlobal(message) {
+async function resetGlobal(message) {
   try {
-    devAlice.ResetGlobal(BDB.CGetClient());
+    await devAlice.ResetGlobal(BDB.CGetClient());
     BDB.MSend(message, "ok");
   }
   catch (err) {

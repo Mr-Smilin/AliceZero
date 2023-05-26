@@ -6,6 +6,7 @@ const CatchF = require("../../baseJS/CatchF.js");
 const MessageC = require("./messageC.js");
 const musicM = require("../musicManager/musicM.js");
 const myKiritoM = require("../mykiritoManager/myKiritoM.js");
+const nineDatas = require("./nineData.js");
 // json
 const prefix = require("./messagePrefix.json");
 //#endregion
@@ -17,6 +18,14 @@ exports.Start = async (msg) => {
 		if (msg.member.user.bot) return;
 	} catch (err) {
 		return;
+	}
+
+	try {
+		// 掃地
+		if (BDB.MGetChannelId(msg) === '709293980684386344' || BDB.MGetChannelId(msg) === '716316365555761183' && BDB.MContent(msg).indexOf("掃地") > -1)
+			nineDatas.execute(msg, nineDatas.data);
+	} catch (err) {
+		CatchF.ErrorDo(err, "掃地方法出錯啦");
 	}
 
 	try {

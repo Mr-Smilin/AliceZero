@@ -209,6 +209,8 @@ exports.MReply = async function (discordObject, message) {
  */
 exports.MContent = (discordMessage) => discordMessage?.content === undefined ? CatchF.ErrorDo("MContent 方法異常!") : discordMessage?.content;
 
+exports.MGetChannelId = (discordMessage) => discordMessage?.channel?.id === undefined ? CatchF.ErrorDo("MGetChannelId 方法異常!") : discordMessage?.channel?.id;
+
 class MessageBuilder {
 	constructor(text) {
 		this.text = text;

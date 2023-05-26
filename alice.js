@@ -41,6 +41,9 @@ global.mkLevel = undefined;
 global.mkSkill = undefined;
 // 樓層
 global.mkBoss = undefined;
+
+// 掃地
+global.ninePeople = new Map();
 //#endregion
 
 //#endregion
@@ -91,10 +94,12 @@ function initGlobal() {
 	global.mkSkill = undefined;
 	// 樓層
 	global.mkBoss = undefined;
+	// 掃地
+	global.ninePeople = new Map();
 }
 
-exports.ResetGlobal = (client) => {
-	DiscordReady(client);
+exports.ResetGlobal = async (client) => {
+	await DiscordReady(client);
 }
 
 //#endregion
