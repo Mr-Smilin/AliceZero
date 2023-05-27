@@ -117,3 +117,33 @@ exports.GetMyKiritoBossMessage = (bossData) => {
     CatchF.ErrorDo(err, "GetMyKiritoBossMessage 方法異常!");
   }
 }
+
+exports.GetTrpgHelpMessage = (ephemeral = false) => {
+  try {
+    const returnMessage = BDB.MNewMessage();
+    let embed = embedC.TrpgHelpMessage();
+    let buttonComponents = buttonC.GetTrpgHelpButtons();
+    returnMessage
+      .setEphemeral(ephemeral)
+      .addEmbed(embed)
+      .addComponents(buttonComponents);
+    return returnMessage.toMessage();
+  }
+  catch (err) {
+    CatchF.ErrorDo(err, "GetTrpgHelpMessage 方法異常!");
+  }
+}
+
+exports.GetHelpTrpgMessage = (helpNumber = 0, ephemeral = true) => {
+  try {
+    const returnMessage = BDB.MNewMessage();
+    let embed = embedC.HelpTrpgMessage(helpNumber);
+    returnMessage
+      .setEphemeral(ephemeral)
+      .addEmbed(embed);
+    return returnMessage.toMessage();
+  }
+  catch (err) {
+    CatchF.ErrorDo(err, "GetHelpTrpgMessage 方法異常!");
+  }
+}

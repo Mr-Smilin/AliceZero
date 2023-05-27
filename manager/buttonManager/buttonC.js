@@ -79,4 +79,14 @@ exports.GetMyKiritoSkillButtons = (status) => {
   return buttonAction;
 }
 
+exports.GetTrpgHelpButtons = () => {
+  const command = BDB.CGetCommand(2);
+  const buttonAction = BDB.NewActionRow();
+  let messageButton1 = command.get("helpTrpgDice").data;
+  let messageButton2 = command.get("helpTrpgSort").data;
+  BDB.ActionRowAddComponents(buttonAction, messageButton1);
+  BDB.ActionRowAddComponents(buttonAction, messageButton2);
+  return buttonAction;
+}
+
 //#endregion

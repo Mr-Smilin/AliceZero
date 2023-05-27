@@ -12,7 +12,7 @@ const messagePrefix = require("../messageManager/messagePrefix.json");
 //07群的都是變態484
 //Season生日快樂٩(｡・ω・｡)﻿و
 //DeasonDio生日快樂٩(｡・ω・｡)﻿و
-const footerText = "當前版本v1.1.2";
+const footerText = "當前版本v1.1.3";
 const footerPicture = "https://i.imgur.com/crrk7I2.png";
 // 隱藏功能
 // 掃地
@@ -20,10 +20,11 @@ const footerPicture = "https://i.imgur.com/crrk7I2.png";
 
 exports.HelpMessage = () => {
 	const embedMessage = baseEmbed();
+	// ✅ ❌
 	embedMessage
 		.EAddField(
 			"自我檢測執行..",
-			" 🔨 版本復原進度 60%\n 🎧 音樂系統 ✅\n 🍻 派對指令 ❌\n ⚔️ mykirito系統 ✅\n ... \n ...\n ☄️ 隱藏功能 ✅"
+			" 🔨 版本復原進度 75%\n 🎧 音樂系統 ✅\n 🍻 派對系統(開發中) 🛠️\n ⚔️ mykirito系統 ✅\n ... \n ...\n ☄️ 隱藏功能 ✅"
 		)
 		.EAddField(
 			"模組加載完畢，請根據需求選擇對應系統說明",
@@ -86,35 +87,35 @@ exports.MykiritoHelpMessage = () => {
 exports.HelpMusicMessage = (helpNumber) => {
 	const embedMessage = baseEmbed();
 	// 從 messagePrefix 找出 id = 1 = 音樂指令 的元素
-	const musicPrefix = messagePrefix.find(e => e?.Id === "1");
+	const prefix = messagePrefix.find(e => e?.Id === "1");
 	const command = BDB.CGetCommand(0)?.get("m");
 	switch (helpNumber) {
 		case 0:
-			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} {網址}`);
+			embedMessage.EAddField("文字指令", `${prefix?.Value} {網址}`);
 			embedMessage.EAddField("斜線指令", `/${command?.data?.name} ${command?.subcommand?.play?.data?.name} {網址}`);
 			break;
 		case 1:
-			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} i {網址}`);
+			embedMessage.EAddField("文字指令", `${prefix?.Value} i {網址}`);
 			embedMessage.EAddField("斜線指令", `/${command?.data?.name} ${command?.subcommand?.insert?.data?.name} {網址}`);
 			break;
 		case 2:
-			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} p`);
+			embedMessage.EAddField("文字指令", `${prefix?.Value} p`);
 			embedMessage.EAddField("斜線指令", `/${command?.data?.name} ${command?.subcommand?.pause?.data?.name}`);
 			break;
 		case 3:
-			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} rp`);
+			embedMessage.EAddField("文字指令", `${prefix?.Value} rp`);
 			embedMessage.EAddField("斜線指令", `/${command?.data?.name} ${command?.subcommand?.resume?.data?.name}`);
 			break;
 		case 4:
-			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} s`);
+			embedMessage.EAddField("文字指令", `${prefix?.Value} s`);
 			embedMessage.EAddField("斜線指令", `/${command?.data?.name} ${command?.subcommand?.skip?.data?.name}`);
 			break;
 		case 5:
-			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} np`);
+			embedMessage.EAddField("文字指令", `${prefix?.Value} np`);
 			embedMessage.EAddField("斜線指令", `/${command?.data?.name} ${command?.subcommand?.nowqueue?.data?.name}`);
 			break;
 		case 6:
-			embedMessage.EAddField("文字指令", `${musicPrefix?.Value} sp`);
+			embedMessage.EAddField("文字指令", `${prefix?.Value} sp`);
 			embedMessage.EAddField("斜線指令", `/${command?.data?.name} ${command?.subcommand?.sleep?.data?.name}`);
 			break;
 	}
@@ -221,6 +222,43 @@ exports.MyKiritoBossMessage = (bossData) => {
 		.EAddField("推薦攻略角色", addMykiritoField("" + bossData?.data?.AuthorCan), true)
 		.EAddField("不推薦攻略角色", addMykiritoField("" + bossData?.data?.AuthorCant), true);
 
+	return embedMessage;
+}
+
+exports.TrpgHelpMessage = () => {
+	const embedMessage = baseEmbed();
+	embedMessage
+		.EAddField("派對指令~", "點擊按鈕可以看到詳細說明喔!")
+		.EAddField("指令一覽",
+			"`骰子` - Dice\n" +
+			"`排序` - Sort(未實裝)");
+	return embedMessage;
+}
+
+/**
+ * 
+ * @param {*} helpNumber 0 = 骰子 1 = 排序 
+ * @returns 
+ */
+exports.HelpTrpgMessage = (helpNumber) => {
+	const embedMessage = baseEmbed();
+	// 從 messagePrefix 找出 id = 3 = 派對指令 的元素
+	const prefix = messagePrefix.find(e => e?.Id === "3");
+	// const command = BDB.CGetCommand(0)?.get("m");
+	switch (helpNumber) {
+		case 0:
+			embedMessage.EAddField("文字指令", `${prefix?.Value} d {骰目} [次數]`)
+				.EAddField("斜線指令", `開發中`)
+				.EAddField("`骰目` - 必填", `輸入任意數進行擲骰，可接受如 2D12 & 3B12>6 等格式`, true)
+				.EAddField("`次數` - 選填", `預設1次，指定整個擲骰行為要做幾次`, true);
+			// embedMessage.EAddField("斜線指令", `/${command?.data?.name} ${command?.subcommand?.play?.data?.name} {網址}`);
+			break;
+		case 1:
+			// embedMessage.EAddField("文字指令", `${prefix?.Value} i {網址}`);
+			embedMessage.EAddField("文字指令", `開發中`);
+			embedMessage.EAddField("斜線指令", `開發中`);
+			break;
+	}
 	return embedMessage;
 }
 
