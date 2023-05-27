@@ -17,7 +17,7 @@ exports.getTRpgDice = (msg, args) => {
       /^[0-9]*[Dd][0-9]*$/
     ];
 
-    regex.some(async element => {
+    regex.forEach(async element => {
       if (element.test(args[0])) {
         if (args[1] != undefined) {
           if (parseFloat(args[1]) > 5) args[1] = 5;
