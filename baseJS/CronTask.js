@@ -8,7 +8,8 @@ const axios = require("axios");
 exports.cronCallMysell = function () {
   schedule.scheduleJob('*/5 * * * *', async () => {
     try {
-      await getData(process.env.HOME_PAGE);
+      const response = await getData(process.env.HOME_PAGE);
+      CatchF.LogDo(response, "自我呼叫 response");
     }
     catch (err) {
       CatchF.ErrorDo(err, "自我呼叫異常!");
