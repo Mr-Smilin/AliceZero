@@ -1,12 +1,18 @@
 // 載入env變量
 require('dotenv').config();
+const CatchF = require("./CatchF.js");
 const schedule = require('node-schedule')
 const axios = require("axios");
 
 // 定時呼叫自己，防止睡眠
 exports.cronCallMysell = function () {
   schedule.scheduleJob('*/5 * * * *', async () => {
-    await getData(process.env.HOME_PAGE);
+    try {
+      await getData(process.env.HOME_PAGE);
+    }
+    catch (err) {
+      CatchF.ErrorDo(err, "自我呼叫異常!");
+    }
   })
 };
 
