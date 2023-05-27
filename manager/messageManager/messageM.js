@@ -6,6 +6,7 @@ const CatchF = require("../../baseJS/CatchF.js");
 const MessageC = require("./messageC.js");
 const musicM = require("../musicManager/musicM.js");
 const myKiritoM = require("../mykiritoManager/myKiritoM.js");
+const trpgM = require("../trpgManager/trpgM.js");
 const nineDatas = require("./nineData.js");
 // json
 const prefix = require("./messagePrefix.json");
@@ -82,6 +83,10 @@ async function SelectFunctionWithPrefix(msg, cmd, args = []) {
 		// mykirito 攻略組
 		case "2":
 			myKiritoM.DoStart(msg, cmd[1], args);
+			break;
+		// TRPG 指令
+		case "3":
+			trpgM.DoMStart(msg, cmd[1], args);
 			break;
 	}
 }

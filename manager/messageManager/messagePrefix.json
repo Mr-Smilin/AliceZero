@@ -13,5 +13,10 @@
         "Id": "2",
         "Value": "攻略組",
         "Name": "mykirito 攻略組表單查詢"
+    },
+    {
+        "Id": "3",
+        "Value": "T",
+        "Name": "派對 TRPG 指令"
     }
 ]
