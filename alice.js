@@ -12,6 +12,7 @@ const buttonM = require("./manager/buttonManager/buttonM.js");
 const selectMenuM = require("./manager/selectMenuManager/selectMenuM.js");
 const myKiritoM = require("./manager/mykiritoManager/myKiritoM.js");
 //健康狀態
+const cornTask = require('./baseJS/CronTask.js');
 require('./baseJS/HealthCheck.js').start();
 //#endregion
 
@@ -65,6 +66,8 @@ async function DoStart() {
 //#endregion
 //#region 基本方法
 async function DiscordReady(client) {
+	// 定時自我呼叫
+	callMyself();
 	initGlobal();
 	// 註冊斜線命令
 	await slashM.InsertSlash(client);
@@ -82,6 +85,11 @@ async function DiscordReady(client) {
 //#endregion
 
 //#region 其餘宣告
+
+function callMyself() {
+	global.cornTask = cornTask.cronCallMysell();
+	CatchF.LogDo("Start cronCallMysell");
+}
 
 function initGlobal() {
 	global.isPlaying = new Map(); // 是否正在播放音樂
