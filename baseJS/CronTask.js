@@ -6,10 +6,9 @@ const axios = require("axios");
 
 // 定時呼叫自己，防止睡眠
 exports.cronCallMysell = function () {
-  schedule.scheduleJob('*/5 * * * *', async () => {
+  schedule.scheduleJob('*/10 * * * *', async () => {
     try {
       const response = await getData(process.env.HOME_PAGE, "GET", configs);
-      CatchF.LogDo(response, "自我呼叫 response");
     }
     catch (err) {
       CatchF.ErrorDo(err, "自我呼叫異常!");
