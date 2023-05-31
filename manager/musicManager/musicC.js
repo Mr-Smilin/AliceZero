@@ -96,7 +96,7 @@ exports.PlayMusic = async (discordObject, nowSong, isReplied, type = 0) => {
     // 提示播放音樂
     if (!isReplied) {
       const content = `🎵　播放音樂：${nowSong?.name}`;
-      await BDB.MuMessageSend(discordObject, content, type);
+      await BDB.MuMessageSend(discordObject, content, type, 2);
     }
 
     // pldl 讀取資訊流
@@ -294,7 +294,7 @@ exports.PlayNextMusic = (discordObject, type) => {
     this.PlayMusic(discordObject, global.songList.get(guildId)[0], false, type);
   } else {
     global.isPlaying.set(guildId, false);
-    BDB.MuMessageSend(discordObject, "播放完畢", type);
+    BDB.MuMessageSend(discordObject, "播放完畢", type, 2);
   }
 }
 

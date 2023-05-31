@@ -127,7 +127,7 @@ async function getTRpgDice2(msg, args, typeED) {
         mStr = `${mStr}${sumValue}[${tempValue}]`;
         break;
     }
-    await BDB.MReply(msg, mStr);
+    await BDB.MSend(msg, mStr, 1);
   } catch (err) {
     CatchF.ErrorDo(err, 'getTRpgDice2 方法異常!');
   }

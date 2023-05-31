@@ -110,7 +110,7 @@ exports.DoPlayMusic = async (discordObject, musicUrl, type = 0) => {
   }
 
   if (musicC.IsPlayList(musicUrl))
-    await BDB.MuMessageSend(discordObject, await musicC.AddSongLists(guildId, musicUrl), type);
+    await BDB.MuMessageSend(discordObject, await musicC.AddSongLists(guildId, musicUrl), type, 2);
   else
     // 添加歌單
     await musicC.AddSongList(guildId, musicUrl);
@@ -120,7 +120,7 @@ exports.DoPlayMusic = async (discordObject, musicUrl, type = 0) => {
     await BDB.MuMessageSend(discordObject, "加入歌單成功喔~!", type, 1);
   } else {
     musicC.SetIsPlaying(guildId, true);
-    await BDB.MuMessageSend(discordObject, `🎵　播放音樂：${musicC.GetNowSong(guildId)?.name}`, type, 1);
+    await BDB.MuMessageSend(discordObject, `🎵　播放音樂：${musicC.GetNowSong(guildId)?.name}`, type);
     // 播放音樂
     musicC.PlayMusic(discordObject, musicC.GetNowSong(guildId), true, type);
   }

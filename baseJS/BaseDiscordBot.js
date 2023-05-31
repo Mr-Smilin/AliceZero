@@ -166,9 +166,9 @@ exports.MSend = async function (
 	guildId = ""
 ) {
 	if (!/^[0-9]*$/.test(type)) new exceptions("type Error");
-	if (type >= 1 && channelId === "")
+	if (type >= 2 && channelId === "")
 		new exceptions("channelId Error");
-	if (type >= 2 && guildId === "")
+	if (type >= 3 && guildId === "")
 		new exceptions("guildId Error");
 	try {
 		let guild;
@@ -177,9 +177,11 @@ exports.MSend = async function (
 			case 0:
 				return await discordObject.channel.send(message);
 			case 1:
+				return await discordObject.reply(message);
+			case 2:
 				channel = await discordObject.channels.fetch(channelId);
 				return await channel.send(message);
-			case 2:
+			case 3:
 				guild = await discordObject.guilds.fetch(guildId);
 				channel = await guild.channels.fetch(channelId);
 				return await channel.send(message);
@@ -188,19 +190,6 @@ exports.MSend = async function (
 		CatchF.ErrorDo(err, "MSend 方法異常!");
 	}
 };
-
-/** 回傳訊息
- * 
- * @param {*} discordObject 
- * @param {*} message 
- */
-exports.MReply = async function (discordObject, message) {
-	try {
-		return await discordObject.reply(message);
-	} catch (err) {
-		return CatchF.ErrorDo(err, "MReply 方法異常!");
-	}
-}
 
 /** 回傳 Discord.Message 的訊息
  *
@@ -1007,9 +996,9 @@ exports.MuGetChannelId = (discordObject, type = 0) => {
  * @param {*} message 
  * @param {*} type 0 = message, 1 = slash
  */
-exports.MuMessageSend = (discordObject, message, type = 0, replyType = 2) => {
+exports.MuMessageSend = (discordObject, message, type = 0, replyType = 1) => {
 	if (type === 0) {
-		this.MReply(discordObject, message);
+		this.MSend(discordObject, message, replyType);
 	} else if (type === 1) {
 		this.ISend(discordObject, message, replyType);
 	}
