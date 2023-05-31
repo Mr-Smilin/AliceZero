@@ -49,7 +49,36 @@ exports.AddSongList = async (guildId, musicUrl, type = 0) => {
     }
     return true;
   } catch (err) {
-    CatchF.ErrorDo(err, "歌單新增歌曲目錄時發生異常!");
+    CatchF.ErrorDo(err, "歌單新增歌曲時發生異常!");
+    return false;
+  }
+}
+
+/** 添加yt歌單進入歌單
+ * 
+ * @param {*} guildId 
+ * @param {*} musicUrl 
+ */
+exports.AddSongLists = async (guildId, musicListUrl) => {
+  try {
+    const res = await pldl.playlist_info(musicListUrl);
+    let musicId = res.id;
+    const videoTitles = res.videos.map((v, i) => `[${i + 1}] ${v.title}`).slice(0, 10).join('\n');
+    let returnStr = `**加入播放清單：${musicListUrl}**\n` +
+      `ID 識別碼：[${res.id}]\n` +
+      `==========================\n` +
+      `${videoTitles}`;
+    if (res.videos.length > 10) returnStr += `\n……以及其他 ${res.videos.length - 10} 首歌`;
+    res.videos.forEach(v => {
+      global.songList.get(guildId).push({
+        id: musicId,
+        name: v.title,
+        url: v.url
+      })
+    });
+    return returnStr;
+  } catch (err) {
+    CatchF.ErrorDo(err, "歌單新增yt歌單時發生異常!");
     return false;
   }
 }

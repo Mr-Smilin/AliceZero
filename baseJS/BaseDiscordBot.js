@@ -647,11 +647,6 @@ exports.ISend = async function (interaction, message, replyType = 0) {
 				return await interaction.reply(message);
 			case 1:
 				if (interaction?.replied || interaction?.deferred)
-					return await interaction.followUp(message);
-				else
-					return await interaction.reply(message);
-			case 2:
-				if (interaction?.replied || interaction?.deferred) {
 					try {
 						await interaction.deferReply();
 						return await interaction.reply(message);
@@ -659,10 +654,10 @@ exports.ISend = async function (interaction, message, replyType = 0) {
 					catch {
 						return await interaction.followUp(message);
 					}
-				}
 				else
 					return await interaction.reply(message);
-
+			case 2:
+				return await interaction.channel.send(message);
 		}
 	}
 	catch (err) {

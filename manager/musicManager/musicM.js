@@ -109,8 +109,11 @@ exports.DoPlayMusic = async (discordObject, musicUrl, type = 0) => {
     BDB.MuJoinVoiceChannel(discordObject, type);
   }
 
-  // 添加歌單
-  await musicC.AddSongList(guildId, musicUrl);
+  if (musicC.IsPlayList(musicUrl))
+    await BDB.MuMessageSend(discordObject, await musicC.AddSongLists(guildId, musicUrl), type);
+  else
+    // 添加歌單
+    await musicC.AddSongList(guildId, musicUrl);
 
   // 判斷是否正在播放歌曲 是:將歌曲加入歌單 否:播放歌曲
   if (musicC.IsPlaying(guildId)) {
