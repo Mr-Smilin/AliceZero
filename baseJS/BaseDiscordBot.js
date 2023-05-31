@@ -996,7 +996,7 @@ exports.MuGetChannelId = (discordObject, type = 0) => {
  * @param {*} message 
  * @param {*} type 0 = message, 1 = slash
  */
-exports.MuMessageSend = (discordObject, message, type = 0, replyType = 1) => {
+exports.MuMessageSend = (discordObject, message, type = 0, replyType = 0) => {
 	if (type === 0) {
 		this.MSend(discordObject, message, replyType);
 	} else if (type === 1) {
