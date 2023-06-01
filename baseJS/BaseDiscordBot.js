@@ -51,7 +51,6 @@ const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerSta
 const CatchF = require("./CatchF.js");
 // json
 const buttonType = require("../manager/buttonManager/buttonType.json");
-const { exceptions } = require("winston");
 //#endregion
 
 //#region 客戶端操作 C
@@ -165,11 +164,11 @@ exports.MSend = async function (
 	channelId = "",
 	guildId = ""
 ) {
-	if (!/^[0-9]*$/.test(type)) new exceptions("type Error");
+	if (!/^[0-9]*$/.test(type)) throw new Error("type Error");
 	if (type >= 2 && channelId === "")
-		new exceptions("channelId Error");
+		throw new Error("channelId Error");
 	if (type >= 3 && guildId === "")
-		new exceptions("guildId Error");
+		throw new Error("guildId Error");
 	try {
 		let guild;
 		let channel;
@@ -275,7 +274,6 @@ exports.MGetAuthorId = (discordMessage) => discordMessage?.author?.id === undefi
 
 /** 註冊斜線命令
  *
- * @param {*} rest
  * @param {*} body
  * @returns
  */

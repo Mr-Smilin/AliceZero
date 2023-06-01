@@ -1,6 +1,5 @@
 //#region import
 // Discord
-const { exceptions } = require("winston");
 const BDB = require("../../baseJS/BaseDiscordBot.js");
 // js
 const CatchF = require("../../baseJS/CatchF.js");

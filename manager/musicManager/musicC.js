@@ -2,7 +2,6 @@
 const BDB = require("../../baseJS/BaseDiscordBot.js");
 const pldl = require('play-dl');
 const CatchF = require("../../baseJS/CatchF.js");
-const { exceptions, stream } = require("winston");
 
 //#region 主要方法
 
@@ -45,7 +44,7 @@ exports.AddSongList = async (guildId, musicUrl, type = 0) => {
     } else if (type === 1) {
       global.songList.get(guildId).unshift(listData);
     } else {
-      new exceptions("未知的 type 代號");
+      throw new Error("未知的 type 代號");
     }
     return true;
   } catch (err) {
