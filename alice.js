@@ -68,7 +68,6 @@ async function DoStart() {
 //#endregion
 //#region 基本方法
 async function DiscordReady(client) {
-	BDB.CSetStatus(configJson?.status);
 	// 定時自我呼叫
 	callMyself();
 	initGlobal();
@@ -80,6 +79,8 @@ async function DiscordReady(client) {
 	await buttonM.InsertButton(client);
 	// 下載攻略組資料
 	await myKiritoM.DoInsertMyKirito(client);
+	// 設定狀態消息
+	BDB.CSetStatus(configJson?.status);
 	// 系統訊息
 	console.log(`Logged in as ${client.user.tag}!`);
 }
