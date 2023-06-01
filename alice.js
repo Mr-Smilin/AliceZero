@@ -68,7 +68,7 @@ async function DoStart() {
 //#endregion
 //#region 基本方法
 async function DiscordReady(client) {
-	BDB.CSetStatus(`當前版本:v${configJson?.version}`);
+	BDB.CSetStatus(configJson?.status);
 	// 定時自我呼叫
 	callMyself();
 	initGlobal();
