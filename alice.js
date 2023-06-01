@@ -82,7 +82,7 @@ async function DiscordReady(client) {
 	// 設定狀態消息
 	BDB.CSetStatus(configJson?.status);
 	// 系統訊息
-	console.log(`Logged in as ${client.user.tag}!`);
+	CatchF.LogDo(`Logged in as ${client.user.tag}!`);
 }
 
 //#endregion
