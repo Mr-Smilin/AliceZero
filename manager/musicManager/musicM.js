@@ -117,10 +117,10 @@ exports.DoPlayMusic = async (discordObject, musicUrl, type = 0) => {
 
   // 判斷是否正在播放歌曲 是:將歌曲加入歌單 否:播放歌曲
   if (musicC.IsPlaying(guildId)) {
-    await BDB.MuMessageSend(discordObject, "加入歌單成功喔~!", type);
+    await BDB.MuMessageSend(discordObject, "加入歌單成功喔~!", type, 1);
   } else {
     musicC.SetIsPlaying(guildId, true);
-    await BDB.MuMessageSend(discordObject, `🎵　播放音樂：${musicC.GetNowSong(guildId)?.name}`, type);
+    await BDB.MuMessageSend(discordObject, `🎵　播放音樂：${musicC.GetNowSong(guildId)?.name}`, type, 1);
     // 播放音樂
     musicC.PlayMusic(discordObject, musicC.GetNowSong(guildId), true, type);
   }
