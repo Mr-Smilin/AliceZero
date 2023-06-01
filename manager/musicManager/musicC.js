@@ -285,15 +285,20 @@ exports.NowStatus = (guildId, discordObject, type) => {
  * @param {*} discordObject 
  * @param {*} type 0 = message 1 = interaction 
  */
-exports.PlayNextMusic = (discordObject, type) => {
-  const guildId = BDB.MuGetGuildId(discordObject, type);
+exports.PlayNextMusic = async (discordObject, type) => {
+  try {
+    const guildId = BDB.MuGetGuildId(discordObject, type);
 
-  // 如果歌單還有歌曲就播放
-  if (global.songList.get(guildId)?.length > 0) {
-    this.PlayMusic(discordObject, global.songList.get(guildId)[0], false, type);
-  } else {
-    global.isPlaying.set(guildId, false);
-    BDB.MuMessageSend(discordObject, "播放完畢", type, 2);
+    // 如果歌單還有歌曲就播放
+    if (global.songList.get(guildId)?.length > 0) {
+      this.PlayMusic(discordObject, global.songList.get(guildId)[0], false, type);
+    } else {
+      global.isPlaying.set(guildId, false);
+      await BDB.MuMessageSend(discordObject, "播放完畢", type, 2);
+    }
+  }
+  catch (err) {
+    CatchF.ErrorDo(err, "PlayNextMusic 方法異常!");
   }
 }
 

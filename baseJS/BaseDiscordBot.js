@@ -1003,11 +1003,16 @@ exports.MuGetChannelId = (discordObject, type = 0) => {
  * @param {*} message 
  * @param {*} type 0 = message, 1 = slash
  */
-exports.MuMessageSend = (discordObject, message, type = 0, replyType = 0) => {
-	if (type === 0) {
-		this.MSend(discordObject, message);
-	} else if (type === 1) {
-		this.ISend(discordObject, message, replyType);
+exports.MuMessageSend = async (discordObject, message, type = 0, replyType = 0) => {
+	try {
+		if (type === 0) {
+			await this.MSend(discordObject, message);
+		} else if (type === 1) {
+			await this.ISend(discordObject, message, replyType);
+		}
+	}
+	catch (err) {
+		CatchF.ErrorDo(err, "MuMessageSend 方法異常!");
 	}
 }
 
