@@ -8,11 +8,12 @@ const BDB = require("../../baseJS/BaseDiscordBot.js");
 const CatchF = require("../../baseJS/CatchF.js");
 // json
 const messagePrefix = require("../messageManager/messagePrefix.json");
+const configJson = require("../../baseJS/Config.json");
 // constants
 //07群的都是變態484
 //Season生日快樂٩(｡・ω・｡)﻿و
 //DeasonDio生日快樂٩(｡・ω・｡)﻿و
-const footerText = "當前版本v1.2.12";
+const footerText = `當前版本v${configJson?.version}`;
 const footerPicture = "https://i.imgur.com/crrk7I2.png";
 // 隱藏功能
 // 掃地

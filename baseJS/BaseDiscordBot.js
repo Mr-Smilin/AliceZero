@@ -145,6 +145,15 @@ exports.CGetCommand = (commandNumber = 0) => {
 	}
 }
 
+/** 設定 bot 的即時狀態
+ * 
+ * @param {*} statusMessage 狀態訊息
+ * @param {*} statusType 狀態代號 3 = 收看中 https://discord-api-types.dev/api/discord-api-types-v10/enum/ActivityType#Custom
+ */
+exports.CSetStatus = (statusMessage = "with discord.js", statusType = 3) => {
+	client.user.setPresence({ activities: [{ name: statusMessage, type: statusType }], status: 'idle' });
+}
+
 //#endregion
 
 //#region 訊息動作 M

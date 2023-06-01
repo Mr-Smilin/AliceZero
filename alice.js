@@ -11,7 +11,9 @@ const messageUpdateM = require("./manager/messageManager/messageUpdateM.js");
 const buttonM = require("./manager/buttonManager/buttonM.js");
 const selectMenuM = require("./manager/selectMenuManager/selectMenuM.js");
 const myKiritoM = require("./manager/mykiritoManager/myKiritoM.js");
-//健康狀態
+// json
+const configJson = require("./baseJS/Config.json");
+// 健康狀態
 const cornTask = require('./baseJS/CronTask.js');
 require('./baseJS/HealthCheck.js').start();
 //#endregion
@@ -66,6 +68,7 @@ async function DoStart() {
 //#endregion
 //#region 基本方法
 async function DiscordReady(client) {
+	BDB.CSetStatus(`當前版本:v${configJson?.version}`);
 	// 定時自我呼叫
 	callMyself();
 	initGlobal();
