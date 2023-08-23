@@ -103,7 +103,7 @@ exports.PlayMusic = async (discordObject, nowSong, isReplied, type = 0) => {
 		}
 
 		// pldl 讀取資訊流
-		const stream = await pldl.stream(nowSong?.url, { seek: 10 });
+		const stream = await pldl.stream(nowSong?.url);
 		// 創建音樂器
 		const audioPlay = BDB.MuGetAudioPlay();
 		// 播放
