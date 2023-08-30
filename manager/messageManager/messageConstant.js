@@ -2,27 +2,11 @@ module.exports = {
 	power: [
 		{
 			type: "1",
-			GroupID: "678615262211211308",
-			GroupName: "石頭's Server",
-			ChannelID: "na",
-			ChannelName: "測試區",
-			Power: "0123456789",
-		},
-		{
-			type: "1",
-			GroupID: "na",
-			GroupName: "石頭's Server",
-			ChannelID: "725288853249720402",
-			ChannelName: "測試區",
-			Power: "",
-		},
-		{
-			type: "1",
 			GroupID: "707946293603074108",
 			GroupName: "艾恩葛朗特",
 			ChannelID: "na",
 			ChannelName: "na",
-			Power: "0123456789",
+			Power: "0123",
 		},
 		{
 			type: "1",
@@ -46,7 +30,7 @@ module.exports = {
 			GroupName: "艾恩葛朗特",
 			ChannelID: "719379242978377820",
 			ChannelName: "機廳",
-			Power: "4",
+			Power: "",
 		},
 		{
 			type: "1",
@@ -54,7 +38,7 @@ module.exports = {
 			GroupName: "艾恩葛朗特",
 			ChannelID: "728176161909112873",
 			ChannelName: "益智遊戲觀戰區",
-			Power: "012346789",
+			Power: "0123",
 		},
 		{
 			type: "1",
@@ -62,7 +46,7 @@ module.exports = {
 			GroupName: "艾恩葛朗特",
 			ChannelID: "735769134020952147",
 			ChannelName: "益智遊戲測試區",
-			Power: "012346789",
+			Power: "0123",
 		},
 		{
 			type: "1",
@@ -70,7 +54,7 @@ module.exports = {
 			GroupName: "艾恩葛朗特",
 			ChannelID: "727781450342203424",
 			ChannelName: "益智遊戲遊戲主頻道",
-			Power: "012346789",
+			Power: "0123",
 		},
 		{
 			type: "1",
@@ -78,7 +62,7 @@ module.exports = {
 			GroupName: "艾恩葛朗特",
 			ChannelID: "717315673810010152",
 			ChannelName: "安廳",
-			Power: "012346789",
+			Power: "0123",
 		},
 		{
 			type: "1",

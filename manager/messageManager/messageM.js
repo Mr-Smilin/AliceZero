@@ -108,17 +108,17 @@ function DeleteTempIfHaveEx(msg, temp) {
 
 //權限判斷 預設判斷群組id
 function findPowerFromConstant(msg, temp) {
-	let a = messageConstant.Power.find(
+	let a = messageConstant.power.find(
 		(item) =>
 			item.ChannelID == BDB.MGetChannelId(msg) && item.Power.indexOf(temp) != -1
 	);
 	if (a !== undefined) temp = -1;
 	else if (
-		messageConstant.Power.find(
+		messageConstant.power.find(
 			(item) => item.ChannelID == BDB.MGetChannelId(msg)
 		) === undefined
 	) {
-		a = messageConstant.Power.find(
+		a = messageConstant.power.find(
 			(item) =>
 				item.GroupID == BDB.MGetGuildId(msg) && item.Power.indexOf(temp) != -1
 		);
