@@ -4,6 +4,7 @@ const BDB = require("../../baseJS/BaseDiscordBot.js");
 // js
 const CatchF = require("../../baseJS/CatchF.js");
 const MessageC = require("./messageC.js");
+const messageConstant = require("./messageConstant.js")''
 const musicM = require("../musicManager/musicM.js");
 const myKiritoM = require("../mykiritoManager/myKiritoM.js");
 const trpgM = require("../trpgManager/trpgM.js");
@@ -63,6 +64,7 @@ async function SelectFunctionWithPrefix(msg, cmd, args = []) {
 		}
 	}
 
+	nowPrefix = findPowerFromConstant(msg, nowPrefix);
 	// 正則判斷
 	if (cmd[1] === undefined) {
 		nowPrefix = DeleteTempIfHaveEx(cmd[0], nowPrefix);
@@ -100,4 +102,15 @@ function DeleteTempIfHaveEx(msg, temp) {
 		if (t.test(msg)) tempValue = -1;
 	}
 	return tempValue;
+}
+
+//權限判斷 預設判斷群組id
+function findPowerFromConstant(msg, temp) {
+    let a = messageConstant.Power.find(item => item.ChannelID == BDB.MGetChannelId(msg) && item.Power.indexOf(temp) != -1);
+    if (a !== undefined) temp = -1;
+    else if (messageConstant.Power.find(item => item.ChannelID == BDB.MGetChannelId(msg)) === undefined) {
+        a = messageConstant.Power.find(item => item.GroupID == BDB.MGetGuildId(msg) && item.Power.indexOf(temp) != -1);
+        if (a !== undefined) temp = -1;
+    }
+    return temp;
 }

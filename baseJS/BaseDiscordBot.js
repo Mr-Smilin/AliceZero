@@ -46,7 +46,13 @@ const client = new Client({
 	],
 });
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, NoSubscriberBehavior } = require('@discordjs/voice');
+const {
+	joinVoiceChannel,
+	createAudioPlayer,
+	createAudioResource,
+	AudioPlayerStatus,
+	NoSubscriberBehavior,
+} = require("@discordjs/voice");
 // js
 const CatchF = require("./CatchF.js");
 // json
@@ -56,16 +62,16 @@ const buttonType = require("../manager/buttonManager/buttonType.json");
 //#region 客戶端操作 C
 
 /** 拿到 client
- * 
- * @returns 
+ *
+ * @returns
  */
 exports.CGetClient = () => {
 	return client;
-}
+};
 
 /** 創建 commands 屬性
- * 
- * @param {*} commandNumber 
+ *
+ * @param {*} commandNumber
  */
 exports.CInitCommand = (commandNumber = 0) => {
 	try {
@@ -80,16 +86,15 @@ exports.CInitCommand = (commandNumber = 0) => {
 				client.buttonCommands = new Collection();
 				break;
 		}
-
 	} catch (err) {
 		CatchF.ErrorDo(err, "CInitCommand 方法異常!");
 	}
-}
+};
 
 /** 在 client 中注入 commands
- * 
- * @param {*} name 
- * @param {*} value 
+ *
+ * @param {*} name
+ * @param {*} value
  */
 exports.CSetSlashCommand = (name, value) => {
 	try {
@@ -97,12 +102,12 @@ exports.CSetSlashCommand = (name, value) => {
 	} catch (err) {
 		CatchF.ErrorDo(err, "CSetSlashCommand 方法異常!");
 	}
-}
+};
 
 /** 在 client 中注入 commands
- * 
- * @param {*} name 
- * @param {*} value 
+ *
+ * @param {*} name
+ * @param {*} value
  */
 exports.CSetSelectMenuCommand = (name, value) => {
 	try {
@@ -110,12 +115,12 @@ exports.CSetSelectMenuCommand = (name, value) => {
 	} catch (err) {
 		CatchF.ErrorDo(err, "CSetSelectMenuCommand 方法異常!");
 	}
-}
+};
 
 /** 在 client 中注入 commands
- * 
- * @param {*} name 
- * @param {*} value 
+ *
+ * @param {*} name
+ * @param {*} value
  */
 exports.CSetButtonCommand = (name, value) => {
 	try {
@@ -123,11 +128,11 @@ exports.CSetButtonCommand = (name, value) => {
 	} catch (err) {
 		CatchF.ErrorDo(err, "CSetButtonCommand 方法異常!");
 	}
-}
+};
 
 /** 從 client 拿到 command
- * 
- * @param {*} commandNumber 
+ *
+ * @param {*} commandNumber
  */
 exports.CGetCommand = (commandNumber = 0) => {
 	try {
@@ -139,20 +144,22 @@ exports.CGetCommand = (commandNumber = 0) => {
 			case 2:
 				return client.buttonCommands;
 		}
-
 	} catch (err) {
 		CatchF.ErrorDo(err, "CGetCommand 方法異常!");
 	}
-}
+};
 
 /** 設定 bot 的即時狀態
- * 
+ *
  * @param {*} statusMessage 狀態訊息
  * @param {*} statusType 狀態代號 3 = 收看中 https://discord-api-types.dev/api/discord-api-types-v10/enum/ActivityType#Custom
  */
 exports.CSetStatus = (statusMessage = "with discord.js", statusType = 3) => {
-	client.user.setPresence({ activities: [{ name: statusMessage, type: statusType }], status: 'idle' });
-}
+	client.user.setPresence({
+		activities: [{ name: statusMessage, type: statusType }],
+		status: "idle",
+	});
+};
 
 //#endregion
 
@@ -174,10 +181,8 @@ exports.MSend = async function (
 	guildId = ""
 ) {
 	if (!/^[0-9]*$/.test(type)) throw new Error("type Error");
-	if (type >= 2 && channelId === "")
-		throw new Error("channelId Error");
-	if (type >= 3 && guildId === "")
-		throw new Error("guildId Error");
+	if (type >= 2 && channelId === "") throw new Error("channelId Error");
+	if (type >= 3 && guildId === "") throw new Error("guildId Error");
 	try {
 		let guild;
 		let channel;
@@ -204,9 +209,20 @@ exports.MSend = async function (
  * @param {*} discordMessage Discord.Message
  * @returns {string}
  */
-exports.MContent = (discordMessage) => discordMessage?.content === undefined ? CatchF.ErrorDo("MContent 方法異常!") : discordMessage?.content;
+exports.MContent = (discordMessage) =>
+	discordMessage?.content === undefined
+		? CatchF.ErrorDo("MContent 方法異常!")
+		: discordMessage?.content;
 
-exports.MGetChannelId = (discordMessage) => discordMessage?.channel?.id === undefined ? CatchF.ErrorDo("MGetChannelId 方法異常!") : discordMessage?.channel?.id;
+exports.MGetChannelId = (discordMessage) =>
+	discordMessage?.channel?.id === undefined
+		? CatchF.ErrorDo("MGetChannelId 方法異常!")
+		: discordMessage?.channel?.id;
+
+exports.MGetGuildId = (discordMessage) =>
+	discordMessage?.guild?.id === undefined
+		? CatchF.ErrorDo("MGetGuildId 方法異常!")
+		: discordMessage?.guild?.id;
 
 class MessageBuilder {
 	constructor(text) {
@@ -216,31 +232,31 @@ class MessageBuilder {
 		this.components = [];
 	}
 	/** 修改文字訊息
-	 * 
-	 * @param {string} text 文字訊息 
+	 *
+	 * @param {string} text 文字訊息
 	 */
 	setText(text) {
 		this.text = text;
 		return this;
 	}
 	/** 設定他人是否可見
-	 * 
-	 * @param {boolean} ephemeral false = 他人可見 | true = 僅自己 
+	 *
+	 * @param {boolean} ephemeral false = 他人可見 | true = 僅自己
 	 */
 	setEphemeral(ephemeral) {
 		this.ephemeral = ephemeral;
 		return this;
 	}
 	/** 添加 embed
-	 * 
-	 * @param {*} embed 
+	 *
+	 * @param {*} embed
 	 */
 	addEmbed(embed) {
 		this.embeds.push(embed);
 		return this;
 	}
 	/** 添加組件
-	 * 
+	 *
 	 * @param {*} component 選單 or 按鈕
 	 */
 	addComponents(component) {
@@ -248,7 +264,7 @@ class MessageBuilder {
 		return this;
 	}
 	/** 回傳 discord 訊息格式
-	 * 
+	 *
 	 * @returns {object}
 	 */
 	toMessage() {
@@ -257,23 +273,26 @@ class MessageBuilder {
 			embeds: this.embeds,
 			ephemeral: this.ephemeral,
 			components: this.components,
-		}
+		};
 	}
 }
 
 /** 回傳一個 MessageBuilder
- * 
- * @param {string} message 訊息 
+ *
+ * @param {string} message 訊息
  * @returns {MessageBuilder} 訊息格式產生器
  */
 exports.MNewMessage = (message = "") => new MessageBuilder(message);
 
 /** 獲得消息發送者的id
- * 
- * @param {*} discordMessage 
- * @returns 
+ *
+ * @param {*} discordMessage
+ * @returns
  */
-exports.MGetAuthorId = (discordMessage) => discordMessage?.author?.id === undefined ? CatchF.ErrorDo("MGetAuthorId 方法異常!") : discordMessage?.author?.id;
+exports.MGetAuthorId = (discordMessage) =>
+	discordMessage?.author?.id === undefined
+		? CatchF.ErrorDo("MGetAuthorId 方法異常!")
+		: discordMessage?.author?.id;
 
 //#endregion
 
@@ -292,18 +311,20 @@ exports.SRestPutRoutes = async (body = []) => {
 		// 	body: body,
 		// });
 		return await client.application.commands.set(body);
-	}
-	catch (err) {
+	} catch (err) {
 		CatchF.ErrorDo(err, "SRestPutRoutes 方法異常!");
 	}
-}
+};
 
 /** 回傳 interaction.commandName
  *
  * @param {*} interaction
  * @return {string}
  */
-exports.SGetSlashName = (interaction) => interaction?.commandName === undefined ? CatchF.ErrorDo("SGetSlashName 方法異常!") : interaction?.commandName;
+exports.SGetSlashName = (interaction) =>
+	interaction?.commandName === undefined
+		? CatchF.ErrorDo("SGetSlashName 方法異常!")
+		: interaction?.commandName;
 
 /** 回傳 斜線指令輸入值物件
  *
@@ -314,11 +335,10 @@ exports.SGetSlashName = (interaction) => interaction?.commandName === undefined 
 exports.SNewSlashCommand = (name = "", description = "") => {
 	try {
 		return new SlashCommandBuilder().setName(name).setDescription(description);
-	}
-	catch (err) {
+	} catch (err) {
 		CatchF.ErrorDo(err, "SNewSlashCommand 方法異常!");
 	}
-}
+};
 
 /** 新增選項物件
  *
@@ -341,63 +361,90 @@ exports.SPushOption = (
 		switch (type) {
 			case "string":
 				slashCommandBuilder.addStringOption((option) => {
-					option.setName(name).setDescription(description).setRequired(required);
+					option
+						.setName(name)
+						.setDescription(description)
+						.setRequired(required);
 					choices?.map((choice) => option.addChoices(choice));
 					return option;
 				});
 				break;
 			case "int":
 				slashCommandBuilder.addIntegerOption((option) => {
-					option.setName(name).setDescription(description).setRequired(required);
+					option
+						.setName(name)
+						.setDescription(description)
+						.setRequired(required);
 					choices?.map((choice) => option.addChoices(choice));
 					return option;
 				});
 				break;
 			case "bool":
 				slashCommandBuilder.addBooleanOption((option) => {
-					option.setName(name).setDescription(description).setRequired(required);
+					option
+						.setName(name)
+						.setDescription(description)
+						.setRequired(required);
 					choices?.map((choice) => option.addChoices(choice));
 					return option;
 				});
 				break;
 			case "user":
 				slashCommandBuilder.addUserOption((option) => {
-					option.setName(name).setDescription(description).setRequired(required);
+					option
+						.setName(name)
+						.setDescription(description)
+						.setRequired(required);
 					choices?.map((choice) => option.addChoices(choice));
 					return option;
 				});
 				break;
 			case "channel":
 				slashCommandBuilder.addChannelOption((option) => {
-					option.setName(name).setDescription(description).setRequired(required);
+					option
+						.setName(name)
+						.setDescription(description)
+						.setRequired(required);
 					choices?.map((choice) => option.addChoices(choice));
 					return option;
 				});
 				break;
 			case "role":
 				slashCommandBuilder.addRoleOption((option) => {
-					option.setName(name).setDescription(description).setRequired(required);
+					option
+						.setName(name)
+						.setDescription(description)
+						.setRequired(required);
 					choices?.map((choice) => option.addChoices(choice));
 					return option;
 				});
 				break;
 			case "mention":
 				slashCommandBuilder.addMentionableOption((option) => {
-					option.setName(name).setDescription(description).setRequired(required);
+					option
+						.setName(name)
+						.setDescription(description)
+						.setRequired(required);
 					choices?.map((choice) => option.addChoices(choice));
 					return option;
 				});
 				break;
 			case "number":
 				slashCommandBuilder.addNumberOption((option) => {
-					option.setName(name).setDescription(description).setRequired(required);
+					option
+						.setName(name)
+						.setDescription(description)
+						.setRequired(required);
 					choices?.map((choice) => option.addChoices(choice));
 					return option;
 				});
 				break;
 			case "attachment":
 				slashCommandBuilder.addAttachmentOption((option) => {
-					option.setName(name).setDescription(description).setRequired(required);
+					option
+						.setName(name)
+						.setDescription(description)
+						.setRequired(required);
 					choices?.map((choice) => option.addChoices(choice));
 					return option;
 				});
@@ -406,24 +453,30 @@ exports.SPushOption = (
 				slashCommandBuilder.addSubcommand((subcommand) => {
 					subcommand.setName(name).setDescription(description);
 					for (option of choices) {
-						this.SPushOption(subcommand, option?.type, option?.name, option?.description, option?.required, option?.choices);
+						this.SPushOption(
+							subcommand,
+							option?.type,
+							option?.name,
+							option?.description,
+							option?.required,
+							option?.choices
+						);
 					}
 					return subcommand;
 				});
 				break;
 		}
-	}
-	catch (err) {
+	} catch (err) {
 		CatchF.ErrorDo(err, "SPushOption 方法異常!");
 	}
 };
 
 /** 獲得子選項參數
- * 
- * @param {*} interaction 
- * @param {*} type 
- * @param {*} value 
- * @returns 
+ *
+ * @param {*} interaction
+ * @param {*} type
+ * @param {*} value
+ * @returns
  */
 exports.SGetOptionValue = (interaction, type = "string", name = "") => {
 	try {
@@ -449,11 +502,10 @@ exports.SGetOptionValue = (interaction, type = "string", name = "") => {
 			case "subcommand":
 				return interaction?.options?.getSubcommand(false);
 		}
-	}
-	catch (err) {
+	} catch (err) {
 		CatchF.ErrorDo(err, "SGetOptionValue 方法異常!");
 	}
-}
+};
 
 //#endregion
 
@@ -500,9 +552,8 @@ class BButtonBuilder extends ButtonBuilder {
 				case buttonType.link:
 					return ButtonStyle.Link;
 			}
-		}
-		catch (err) {
-			CatchF.ErrorDo(err, "BGetButtonType 方法異常!")
+		} catch (err) {
+			CatchF.ErrorDo(err, "BGetButtonType 方法異常!");
 		}
 	}
 }
@@ -533,9 +584,8 @@ exports.BNewButton = (
 			.BSetLabel(label)
 			.BSetStyle(new BButtonBuilder().BGetButtonType(type))
 			.BSetDisabled(disabled);
-	}
-	catch (err) {
-		CatchF.ErrorDo(err, "BNewButton 方法異常!")
+	} catch (err) {
+		CatchF.ErrorDo(err, "BNewButton 方法異常!");
 	}
 };
 
@@ -545,12 +595,20 @@ exports.BNewButton = (
  * @returns {string}
  */
 exports.BGetSlashName = (interaction) =>
-	interaction?.message?.interaction?.commandName === undefined ? CatchF.ErrorDo("BGetSlashName 方法異常!") : interaction?.message?.interaction?.commandName;
+	interaction?.message?.interaction?.commandName === undefined
+		? CatchF.ErrorDo("BGetSlashName 方法異常!")
+		: interaction?.message?.interaction?.commandName;
 
-exports.BGetButtonId = (interaction) => interaction?.customId === undefined ? CatchF.ErrorDo("BGetButtonId 方法異常!") : interaction?.customId;
+exports.BGetButtonId = (interaction) =>
+	interaction?.customId === undefined
+		? CatchF.ErrorDo("BGetButtonId 方法異常!")
+		: interaction?.customId;
 
 // 獲得原始訊息中的內嵌訊息中的 Author.name (mykirito模組使用)
-exports.BGetMessageEmbedsAuthorName = (interaction) => interaction?.message?.embeds[0]?.data?.author?.name === undefined ? CatchF.ErrorDo("BGetMessageEmbedsAuthorName 方法異常!") : interaction?.message?.embeds[0]?.data?.author?.name;
+exports.BGetMessageEmbedsAuthorName = (interaction) =>
+	interaction?.message?.embeds[0]?.data?.author?.name === undefined
+		? CatchF.ErrorDo("BGetMessageEmbedsAuthorName 方法異常!")
+		: interaction?.message?.embeds[0]?.data?.author?.name;
 
 //#endregion
 
@@ -573,8 +631,8 @@ class SMStringSelectMenuOptionBuilder extends StringSelectMenuOptionBuilder {
 }
 
 /** 回傳一個選單產生器
- * 
- * @returns 
+ *
+ * @returns
  */
 exports.SMNewOption = () => new SMStringSelectMenuOptionBuilder();
 
@@ -586,12 +644,13 @@ exports.SMNewOption = () => new SMStringSelectMenuOptionBuilder();
  */
 exports.SMNewSelectMenu = (customId = "", placeholder = "") => {
 	try {
-		return new StringSelectMenuBuilder().setCustomId(customId).setPlaceholder(placeholder);
-	}
-	catch (err) {
+		return new StringSelectMenuBuilder()
+			.setCustomId(customId)
+			.setPlaceholder(placeholder);
+	} catch (err) {
 		CatchF.ErrorDo(err, "SMNewSelectMenu 方法異常!");
 	}
-}
+};
 
 /** 新增多個 選項
  *
@@ -602,11 +661,10 @@ exports.SMNewSelectMenu = (customId = "", placeholder = "") => {
 exports.SMPushOptions = (selectMenuBuilder, options = []) => {
 	try {
 		return options.map((option) => selectMenuBuilder.addOptions(option));
-	}
-	catch (err) {
+	} catch (err) {
 		CatchF.ErrorDo(err, "SMPushOptions 方法異常!");
 	}
-}
+};
 
 /** 獲得菜單的指令名稱
  *
@@ -614,16 +672,24 @@ exports.SMPushOptions = (selectMenuBuilder, options = []) => {
  * @returns
  */
 exports.SMGetSelectMenuName = (selectMenuBuilder) =>
-	selectMenuBuilder?.customId === undefined ? CatchF.ErrorDo("SMGetSelectMenuName 方法異常!") : selectMenuBuilder?.customId;
+	selectMenuBuilder?.customId === undefined
+		? CatchF.ErrorDo("SMGetSelectMenuName 方法異常!")
+		: selectMenuBuilder?.customId;
 
 /** 獲得菜單的選擇內容(陣列)
  *
  * @param {StringSelectMenuBuilder} selectMenuBuilder
  * @returns {[string]}
  */
-exports.SMGetSelectValue = (selectMenuBuilder) => selectMenuBuilder?.values[0] === undefined ? CatchF.ErrorDo("SMGetSelectValue 方法異常!") : selectMenuBuilder?.values[0];
+exports.SMGetSelectValue = (selectMenuBuilder) =>
+	selectMenuBuilder?.values[0] === undefined
+		? CatchF.ErrorDo("SMGetSelectValue 方法異常!")
+		: selectMenuBuilder?.values[0];
 
-exports.SMGetSelectMenuId = (interaction) => interaction?.customId === undefined ? CatchF.ErrorDo("SMGetSelectMenuId 方法異常!") : interaction?.customId;
+exports.SMGetSelectMenuId = (interaction) =>
+	interaction?.customId === undefined
+		? CatchF.ErrorDo("SMGetSelectMenuId 方法異常!")
+		: interaction?.customId;
 
 //#endregion
 
@@ -646,17 +712,14 @@ exports.ISend = async function (interaction, message, replyType = 0) {
 					try {
 						await interaction.deferReply();
 						return await interaction.reply(message);
-					}
-					catch {
+					} catch {
 						return await interaction.followUp(message);
 					}
-				else
-					return await interaction.reply(message);
+				else return await interaction.reply(message);
 			case 2:
 				return await interaction.channel.send(message);
 		}
-	}
-	catch (err) {
+	} catch (err) {
 		CatchF.ErrorDo(err, "ISend 方法異常!");
 		CatchF.LogDo(`Message: ${message},replyType: ${replyType}`);
 	}
@@ -677,8 +740,7 @@ exports.IEdit = async function (interaction, message, replyType = 0) {
 			case 1:
 				return await interaction.update(message);
 		}
-	}
-	catch (err) {
+	} catch (err) {
 		CatchF.ErrorDo(err, "IEdit 方法異常!");
 	}
 };
@@ -688,31 +750,46 @@ exports.IEdit = async function (interaction, message, replyType = 0) {
  * @param {*} interaction
  * @return {boolean}
  */
-exports.IIsSlash = (interaction) => interaction?.isChatInputCommand() === undefined ? CatchF.ErrorDo("IIsSlash 方法異常!") : interaction?.isChatInputCommand();
+exports.IIsSlash = (interaction) =>
+	interaction?.isChatInputCommand() === undefined
+		? CatchF.ErrorDo("IIsSlash 方法異常!")
+		: interaction?.isChatInputCommand();
 
 /** 回傳 interaction 是否為按鈕物件
  *
  * @param {*} interaction
  * @return {boolean}
  */
-exports.IIsButton = (interaction) => interaction?.isButton() === undefined ? CatchF.ErrorDo("IIsButton 方法異常!") : interaction?.isButton();
+exports.IIsButton = (interaction) =>
+	interaction?.isButton() === undefined
+		? CatchF.ErrorDo("IIsButton 方法異常!")
+		: interaction?.isButton();
 
 /** 回傳 interaction 是否為菜單物件
  *
  * @param {*} interaction
  * @returns {boolean}
  */
-exports.IIsSelectMenu = (interaction) => interaction?.isStringSelectMenu() === undefined ? CatchF.ErrorDo("IIsSelectMenu 方法異常!") : interaction?.isStringSelectMenu();
+exports.IIsSelectMenu = (interaction) =>
+	interaction?.isStringSelectMenu() === undefined
+		? CatchF.ErrorDo("IIsSelectMenu 方法異常!")
+		: interaction?.isStringSelectMenu();
 
 /** 回傳 interaction 是否為是bot發出
  *
  * @param {*} interaction
  * @return {boolean}
  */
-exports.IIsBot = (interaction) => interaction?.user?.bot === undefined ? CatchF.ErrorDo("IIsBot 方法異常!") : interaction?.user?.bot;
+exports.IIsBot = (interaction) =>
+	interaction?.user?.bot === undefined
+		? CatchF.ErrorDo("IIsBot 方法異常!")
+		: interaction?.user?.bot;
 
 /** 獲得 commandName */
-exports.IGetCommandName = (interaction) => interaction?.commandName === undefined ? CatchF.ErrorDo("IGetCommandName 方法異常!") : interaction?.commandName;
+exports.IGetCommandName = (interaction) =>
+	interaction?.commandName === undefined
+		? CatchF.ErrorDo("IGetCommandName 方法異常!")
+		: interaction?.commandName;
 
 //#endregion
 
@@ -725,11 +802,10 @@ exports.IGetCommandName = (interaction) => interaction?.commandName === undefine
 exports.NewActionRow = () => {
 	try {
 		return new ActionRowBuilder();
+	} catch (err) {
+		CatchF.ErrorDo(err, "NewActionRow 方法異常!");
 	}
-	catch (err) {
-		CatchF.ErrorDo(err, "NewActionRow 方法異常!")
-	}
-}
+};
 
 /** 新增一個組件到動作組件內
  *
@@ -740,11 +816,10 @@ exports.NewActionRow = () => {
 exports.ActionRowAddComponents = (actionRowBuilder, components) => {
 	try {
 		return actionRowBuilder.addComponents(components);
-	}
-	catch (err) {
+	} catch (err) {
 		CatchF.ErrorDo(err, "ActionRowAddComponents 方法異常!");
 	}
-}
+};
 
 //#endregion
 
@@ -860,7 +935,7 @@ class EmbedMessage extends EmbedBuilder {
 	 * @returns {EmbedMessage}
 	 */
 	EToMessage() {
-		return { embeds: [this] }
+		return { embeds: [this] };
 	}
 }
 
@@ -874,7 +949,7 @@ exports.ENewEmbed = () => new EmbedMessage();
 //#region 音樂系統動作 Mu
 
 /** 判斷使用者是否在語音中
- * 
+ *
  * @param {*} discordObject
  * @param {*} type 0 = message 1 = interaction
  */
@@ -886,29 +961,35 @@ exports.MuIsVoicing = (discordObject, type = 0) => {
 	} else {
 		return discordObject?.member?.voice?.channel === null ? true : false;
 	}
-}
+};
 
 /** 判斷 bot 在不在這個群組的語音頻道
- * 
+ *
  * @param {*} discordObject
  * @param {*} type 0 = message 1 = interaction
  */
 exports.MuIsVoicingMySelf = (discordObject, type = 0) => {
 	try {
 		if (type === 0)
-			return global.connection.has(discordObject?.guild?.id) && !(global.connection.get(discordObject?.guild?.id) === undefined);
+			return (
+				global.connection.has(discordObject?.guild?.id) &&
+				!(global.connection.get(discordObject?.guild?.id) === undefined)
+			);
+		// TODO
 		else
-			// TODO
-			return global.connection.has(discordObject?.guild?.id) && !(global.connection.get(discordObject?.guild?.id) === undefined);
+			return (
+				global.connection.has(discordObject?.guild?.id) &&
+				!(global.connection.get(discordObject?.guild?.id) === undefined)
+			);
 	} catch (err) {
 		CatchF.ErrorDo(err, "MuIsVoicingMySelf 方法異常!");
 		return false;
 	}
-}
+};
 
 /** 加入使用者的語音頻道
- * 
- * @param {*} discordObject 
+ *
+ * @param {*} discordObject
  * @param {} type 0 = message 1 = interaction
  */
 exports.MuJoinVoiceChannel = (discordObject, type = 0) => {
@@ -935,8 +1016,7 @@ exports.MuJoinVoiceChannel = (discordObject, type = 0) => {
 			//#endregion
 			global.connection.set(discordObject?.guild?.id, connection);
 			return connection;
-		}
-		else {
+		} else {
 			// TODO
 			const connection = joinVoiceChannel({
 				channelId: discordObject?.member?.voice?.channel?.id,
@@ -946,136 +1026,156 @@ exports.MuJoinVoiceChannel = (discordObject, type = 0) => {
 			global.connection.set(discordObject?.guild?.id, connection);
 			return connection;
 		}
-	}
-	catch (err) {
+	} catch (err) {
 		CatchF.ErrorDo(err, "type = " + type + " MuJoinVoiceChannel 方法異常!");
 	}
-}
+};
 
 /** 獲得全域 connection
- * 
- * @param {*} guildId 
- * @returns 
+ *
+ * @param {*} guildId
+ * @returns
  */
 exports.MuGetConnection = (guildId) => {
 	return global.connection.get(guildId);
-}
+};
 
 /** 判斷是否正在播放歌曲
- * 
- * @param {*} guildId 
- * @returns 
+ *
+ * @param {*} guildId
+ * @returns
  */
 exports.MuIsPlaying = (guildId) => {
 	return global.isPlaying.get(guildId);
-}
+};
 
 /** 獲得群組ID
- * 
- * @param {} discordObject 
+ *
+ * @param {} discordObject
  * @param {} type 0 = message 1 = interaction
  */
 exports.MuGetGuildId = (discordObject, type = 0) => {
 	if (type === 0)
-		return discordObject?.guild?.id === undefined ? CatchF.ErrorDo("MuGetGuildId 方法異常!") : discordObject?.guild?.id;
+		return discordObject?.guild?.id === undefined
+			? CatchF.ErrorDo("MuGetGuildId 方法異常!")
+			: discordObject?.guild?.id;
+	// TODO
 	else
-		// TODO
-		return discordObject?.guild?.id === undefined ? CatchF.ErrorDo("MuGetGuildId 方法異常!") : discordObject?.guild?.id;
-}
+		return discordObject?.guild?.id === undefined
+			? CatchF.ErrorDo("MuGetGuildId 方法異常!")
+			: discordObject?.guild?.id;
+};
 
 /** 獲得頻道ID 沒用到
- * 
- * @param {*} discordObject 
+ *
+ * @param {*} discordObject
  * @param {} type 0 = message 1 = interaction
- * @returns 
+ * @returns
  */
 exports.MuGetChannelId = (discordObject, type = 0) => {
 	if (type === 0)
-		return discordObject?.channel?.id === undefined ? CatchF.ErrorDo("MuGetChannelId 方法異常!") : discordObject?.channel?.id;
+		return discordObject?.channel?.id === undefined
+			? CatchF.ErrorDo("MuGetChannelId 方法異常!")
+			: discordObject?.channel?.id;
+	// TODO
 	else
-		// TODO
-		return discordObject?.channel?.id === undefined ? CatchF.ErrorDo("MuGetChannelId 方法異常!") : discordObject?.channel?.id;
-}
+		return discordObject?.channel?.id === undefined
+			? CatchF.ErrorDo("MuGetChannelId 方法異常!")
+			: discordObject?.channel?.id;
+};
 
 /** 音樂系統用的訊息回傳方式
- * 
- * @param {*} discordObject 
- * @param {*} message 
+ *
+ * @param {*} discordObject
+ * @param {*} message
  * @param {*} type 0 = message, 1 = slash
  */
-exports.MuMessageSend = async (discordObject, message, type = 0, replyType = 0) => {
+exports.MuMessageSend = async (
+	discordObject,
+	message,
+	type = 0,
+	replyType = 0
+) => {
 	try {
 		if (type === 0) {
 			await this.MSend(discordObject, message);
 		} else if (type === 1) {
 			await this.ISend(discordObject, message, replyType);
 		}
-	}
-	catch (err) {
+	} catch (err) {
 		CatchF.ErrorDo(err, "MuMessageSend 方法異常!");
 	}
-}
+};
 
 /** 創建音樂播放器(訂閱目標)
- * 
- * @returns 
+ *
+ * @returns
  */
 exports.MuGetAudioPlay = () => {
 	try {
 		return createAudioPlayer({
 			behaviors: {
-				noSubscriber: NoSubscriberBehavior.Play
-			}
+				noSubscriber: NoSubscriberBehavior.Play,
+			},
 		});
-	}
-	catch (err) {
+	} catch (err) {
 		CatchF.ErrorDo(err, "MuGetAudioPlay 方法異常!");
 	}
-}
+};
 
 exports.MuPlayMusic = (audioPlay, stream) => {
 	try {
-		const resource = createAudioResource(stream.stream, { inputType: stream.type });
+		const resource = createAudioResource(stream.stream, {
+			inputType: stream.type,
+		});
 		audioPlay.play(resource);
-	}
-	catch (err) {
+	} catch (err) {
 		CatchF.ErrorDo(err, "MuPlayMusic 方法異常!");
 	}
-}
+};
 
 /** 獲得 audioPlayer 狀態
  * url: https://discordjs.guide/voice/audio-player.html#life-cycle
- * @param {*} status 
- * @returns 
+ * @param {*} status
+ * @returns
  */
 exports.MuGetAudioPlayerStatus = (status = 0) => {
 	try {
 		switch (status) {
 			case 0:
 				// the initial state of an audio player. The audio player will be in this state when there is no audio resource for it to play.
-				return AudioPlayerStatus?.Idle === undefined ? new exceptions("State Idle Error") : AudioPlayerStatus?.Idle;
+				return AudioPlayerStatus?.Idle === undefined
+					? new exceptions("State Idle Error")
+					: AudioPlayerStatus?.Idle;
 			case 1:
 				// the state an audio player will be in while it is waiting for an audio resource to become playable.
 				// The audio player may transition from this state to either the Playing state (success) or the Idle state (failure).
-				return AudioPlayerStatus?.Buffering === undefined ? new exceptions("State Buffering Error") : AudioPlayerStatus?.Buffering;
+				return AudioPlayerStatus?.Buffering === undefined
+					? new exceptions("State Buffering Error")
+					: AudioPlayerStatus?.Buffering;
 			case 2:
 				// the state a voice connection enters when it is actively playing an audio resource.
 				// When the audio resource comes to an end, the audio player will transition to the Idle state.
-				return AudioPlayerStatus?.Playing === undefined ? new exceptions("State Playing Error") : AudioPlayerStatus?.Playing;
+				return AudioPlayerStatus?.Playing === undefined
+					? new exceptions("State Playing Error")
+					: AudioPlayerStatus?.Playing;
 			case 3:
 				// the state a voice connection will enter when the player has paused itself because there are no active voice connections to play to.
 				// This is only possible with the noSubscriber behavior set to Pause.
 				// It will automatically transition back to Playing once at least one connection becomes available again.
-				return AudioPlayerStatus?.AutoPaused === undefined ? new exceptions("State AutoPaused Error") : AudioPlayerStatus?.AutoPaused;
+				return AudioPlayerStatus?.AutoPaused === undefined
+					? new exceptions("State AutoPaused Error")
+					: AudioPlayerStatus?.AutoPaused;
 			case 4:
 				// the state a voice connection enters when it is paused by the user.
-				return AudioPlayerStatus?.Paused === undefined ? new exceptions("State Paused Error") : AudioPlayerStatus?.Paused;
+				return AudioPlayerStatus?.Paused === undefined
+					? new exceptions("State Paused Error")
+					: AudioPlayerStatus?.Paused;
 		}
-	}
-	catch (err) {
+	} catch (err) {
 		CatchF.ErrorDo(err, "MuGetAudioPlayerStatus 方法異常!");
 	}
-}
+};
 
 //#endregion
 
