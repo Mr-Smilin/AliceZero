@@ -316,7 +316,7 @@ exports.SRestPutRoutes = async (body = []) => {
 	}
 };
 
-exports.SRestDeleteRoutes = async (guildId, body = []) => {
+exports.SRestDeleteRoutes = async (guildId) => {
 	try {
 		let guilds = await client.guilds.fetch();
 		let saoGuild = await guilds.find((guild) => guild.id === guildId);
