@@ -316,6 +316,17 @@ exports.SRestPutRoutes = async (body = []) => {
 	}
 };
 
+exports.SRestDeleteRoutes = async (guildId, body = []) => {
+	try {
+		let guilds = await client.guilds.fetch();
+		let saoGuild = await guilds.find((guild) => guild.id === guildId);
+		saoGuild = await saoGuild.fetch();
+		return await saoGuild.commands.set([]);
+	} catch (err) {
+		CatchF.ErrorDo(err, "SRestDeleteRoutes 方法異常!");
+	}
+};
+
 /** 回傳 interaction.commandName
  *
  * @param {*} interaction

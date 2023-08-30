@@ -14,8 +14,8 @@ const myKiritoM = require("./manager/mykiritoManager/myKiritoM.js");
 // json
 const configJson = require("./baseJS/Config.json");
 // 健康狀態
-const cornTask = require('./baseJS/CronTask.js');
-require('./baseJS/HealthCheck.js').start();
+const cornTask = require("./baseJS/CronTask.js");
+require("./baseJS/HealthCheck.js").start();
 //#endregion
 
 //#region 參數
@@ -73,6 +73,8 @@ async function DiscordReady(client) {
 	initGlobal();
 	// 註冊斜線命令
 	await slashM.InsertSlash(client);
+	// 刪除艾恩葛朗特的斜線命令
+	await slashM.DeleteSAOSlash(client);
 	// 綁定菜單命令
 	await selectMenuM.InsertSelectMenu(client);
 	// 綁定按鈕命令
@@ -113,6 +115,6 @@ function initGlobal() {
 
 exports.ResetGlobal = async (client) => {
 	await DiscordReady(client);
-}
+};
 
 //#endregion
