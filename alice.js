@@ -47,7 +47,7 @@ global.mkSkill = undefined;
 // 樓層
 global.mkBoss = undefined;
 // 掃地
-global.ninePeople = new Map();
+// global.ninePeople = new Map();
 //#endregion
 
 //#endregion
@@ -110,7 +110,7 @@ function initGlobal() {
 	// 樓層
 	global.mkBoss = undefined;
 	// 掃地
-	global.ninePeople = new Map();
+	// global.ninePeople = new Map();
 }
 
 exports.ResetGlobal = async (client) => {

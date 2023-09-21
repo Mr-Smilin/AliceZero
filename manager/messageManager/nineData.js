@@ -143,11 +143,11 @@ module.exports = {
 	],
 	async execute(msg, data) {
 		const authorId = BDB.MGetAuthorId(msg);
-		if (!global.ninePeople.has(authorId)) {
-			global.ninePeople.set(authorId, true);
-			const message = randomOne(data);
-			BDB.MSend(msg, valueChange(message, authorId));
-		}
+		// if (!global.ninePeople.has(authorId)) {
+		// global.ninePeople.set(authorId, true);
+		const message = randomOne(data);
+		BDB.MSend(msg, valueChange(message, authorId));
+		// }
 	},
 };
 
