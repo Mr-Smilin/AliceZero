@@ -12,6 +12,8 @@ const {
 	StringSelectMenuBuilder,
 	StringSelectMenuOptionBuilder,
 	EmbedBuilder,
+	ContextMenuCommandBuilder,
+	ApplicationCommandType,
 } = require("discord.js");
 const client = new Client({
 	intents: [
@@ -85,6 +87,9 @@ exports.CInitCommand = (commandNumber = 0) => {
 			case 2:
 				client.buttonCommands = new Collection();
 				break;
+			case 3:
+				client.contextCommands = new Collection();
+				break;
 		}
 	} catch (err) {
 		CatchF.ErrorDo(err, "CInitCommand 方法異常!");
@@ -130,6 +135,19 @@ exports.CSetButtonCommand = (name, value) => {
 	}
 };
 
+/** 在 client 中注入 command
+ *
+ * @param {*} name
+ * @param {*} value
+ */
+exports.CSetContextCommand = (name, value) => {
+	try {
+		client.contextCommands.set(name, value);
+	} catch (err) {
+		CatchF.ErrorDo(err, "CSetContextCommand 方法異常!");
+	}
+};
+
 /** 從 client 拿到 command
  *
  * @param {*} commandNumber
@@ -143,6 +161,8 @@ exports.CGetCommand = (commandNumber = 0) => {
 				return client.selectMenuCommands;
 			case 2:
 				return client.buttonCommands;
+			case 3:
+				return client.contextCommands;
 		}
 	} catch (err) {
 		CatchF.ErrorDo(err, "CGetCommand 方法異常!");
@@ -786,6 +806,16 @@ exports.IIsSelectMenu = (interaction) =>
 		? CatchF.ErrorDo("IIsSelectMenu 方法異常!")
 		: interaction?.isStringSelectMenu();
 
+/** 回傳 interaction 是否為內容選單物件
+ *
+ * @param {*} interaction
+ * @returns {boolean}
+ */
+exports.IIsContext = (interaction) =>
+	interaction?.isUserContextMenuCommand() === undefined
+		? CatchF.ErrorDo("IIsContext 方法異常!")
+		: interaction?.isUserContextMenuCommand();
+
 /** 回傳 interaction 是否為是bot發出
  *
  * @param {*} interaction
@@ -1217,6 +1247,9 @@ exports.On = function (cl, name, doSomeThing) {
 				cl.on(Events?.InteractionCreate && "interactionCreate", doSomeThing);
 				break;
 			case "selectMenu":
+				cl.on(Events?.InteractionCreate && "interactionCreate", doSomeThing);
+				break;
+			case "context":
 				cl.on(Events?.InteractionCreate && "interactionCreate", doSomeThing);
 				break;
 		}
