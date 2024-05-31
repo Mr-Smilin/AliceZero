@@ -26,7 +26,7 @@ exports.DoBaseFunction = async (message, cmd, args = []) => {
 					await resetGlobal(message);
 					break;
 				case "sendMessage":
-					await sendMessage(message);
+					await sendMessage(message, args);
 					break;
 			}
 		}
@@ -55,7 +55,7 @@ async function resetGlobal(message) {
  *  Ex: ~ sendMessage {channelID} {message}
  * @param {*} message
  */
-async function sendMessage(message) {
+async function sendMessage(message, args) {
 	try {
 		let client = BDB.CGetClient();
 		const sendMessageChannelID = await client.channels
