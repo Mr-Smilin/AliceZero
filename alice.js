@@ -15,7 +15,7 @@ const myKiritoM = require("./manager/mykiritoManager/myKiritoM.js");
 const configJson = require("./baseJS/Config.json");
 // 健康狀態
 const cornTask = require("./baseJS/CronTask.js");
-require("./baseJS/HealthCheck.js").start();
+// require("./baseJS/HealthCheck.js").start();
 //#endregion
 
 //#region 參數
@@ -69,7 +69,7 @@ async function DoStart() {
 //#region 基本方法
 async function DiscordReady(client) {
 	// 定時自我呼叫
-	callMyself();
+	// callMyself();
 	initGlobal();
 	// 註冊斜線命令
 	await slashM.InsertSlash(client);
