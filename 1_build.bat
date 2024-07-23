@@ -1,0 +1,1 @@
+docker build -t="smile0301/my-alice" .
