@@ -29,7 +29,12 @@ exports.Start = async (msg) => {
 			(BDB.MGetChannelId(msg) === "716316365555761183" &&
 				BDB.MContent(msg).indexOf("掃地") > -1)
 		)
-			nineDatas.execute(msg, nineDatas.data);
+			if (probabilityGate()) {
+				BDB.MSend(msg, "其實Mykirito從來都沒存在過，只是網友的臆想");
+			} else {
+				BDB.MSend(msg, "2024/11/07 14:55(JST) 已關服");
+			}
+		// nineDatas.execute(msg, nineDatas.data);
 	} catch (err) {
 		CatchF.ErrorDo(err, "掃地方法出錯啦");
 	}
@@ -125,4 +130,16 @@ function findPowerFromConstant(msg, temp) {
 		if (a !== undefined) temp = -1;
 	}
 	return temp;
+}
+
+/**
+ * 機率邏輯閥 - 回傳 true 代表觸發 A 結果 (1% 機率)，false 代表觸發 B 結果 (99% 機率)
+ * @returns {boolean} 是否觸發 A 結果
+ */
+function probabilityGate() {
+	// 產生 0-1 之間的隨機數
+	const random = Math.random();
+
+	// 如果隨機數小於 0.01 (1%)，則觸發 A 結果
+	return random < 0.01;
 }
