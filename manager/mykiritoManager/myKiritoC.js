@@ -63,7 +63,7 @@ exports.DownloadData = async () => {
 				await getData(request.url, request.method, request?.callback);
 			} else {
 				CatchF.LogDo(
-					`[警告] ${filePath} 中的指令缺少必要的 "url" 或 "method" 屬性。`
+					`[警告] ${filePath} 中的指令缺少必要的 "url" 或 "method" 屬性。`,
 				);
 			}
 		}
@@ -85,7 +85,17 @@ exports.Start = async (msg, cmd, args) => {
 		.readdirSync(requestsPath)
 		.filter((file) => file.endsWith(".js"));
 
-	if (probabilityGate()) {
+	if (checkChannel(msg.guild?.id, msg.channel?.id)) {
+		for (const file of requestFiles) {
+			const filePath = path.join(requestsPath, file);
+			const request = require(filePath);
+
+			if (request.data.name === cmd) {
+				await request.execute(msg, cmd, args);
+				break;
+			}
+		}
+	} else if (probabilityGate()) {
 		await BDB.MSend(msg, "其實Mykirito從來都沒存在過，只是網友的臆想");
 	} else {
 		await BDB.MSend(msg, "2024/11/07 14:55(JST) 已關服");
@@ -112,4 +122,18 @@ function probabilityGate() {
 
 	// 如果隨機數小於 0.01 (1%)，則觸發 A 結果
 	return random < 0.01;
+}
+
+/**
+ * 只有在特定頻道開啟該功能
+ */
+function checkChannel(guildId = null, channelId = null) {
+	// 定義允許使用該功能的伺服器 ID
+	const allowedGuildId = ["716213468394553396"];
+	// 定義允許使用該功能的頻道 ID
+	const allowedChannels = ["815932181566324756"];
+
+	return (
+		allowedGuildId.includes(guildId) && allowedChannels.includes(channelId)
+	);
 }
