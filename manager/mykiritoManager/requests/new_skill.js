@@ -4,25 +4,26 @@ const BDB = require("../../../baseJS/BaseDiscordBot.js");
 // js
 const CatchF = require("../../../baseJS/CatchF.js");
 const componentM = require("../../componentManager/componentM.js");
+require("dotenv").config();
 //#endregion
 
-// 角色情報
+// 轉生點
 module.exports = {
 	data: {
 		name: "情報",
 	},
-	// 舊版資料已停止更新，url 指向 myKiritoData 內的本地 json
-	url: "skills.json",
-	ver: "old",
+	method: "GET",
+	url: process.env.GASURL_NEW_SKILLS,
+	ver: "new",
 	async callback(data) {
 		if (data === undefined) {
-			throw new Error("讀取角色情報時發生意外錯誤，通常是本地檔案不見了");
+			throw new Error("下載角色情報時發生意外錯誤，通常是google不開心了");
 		}
-		global.mkSkill = data;
+		global.newMkSkill = data;
 	},
 	async execute(msg, cmd, args) {
 		try {
-			const responseData = global.mkSkill;
+			const responseData = global.newMkSkill;
 			const roleData = responseData[args[0]];
 			if (roleData === undefined)
 				await BDB.MSend(msg, returnDefault(responseData));

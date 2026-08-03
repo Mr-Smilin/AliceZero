@@ -4,25 +4,26 @@ const BDB = require("../../../baseJS/BaseDiscordBot.js");
 // js
 const CatchF = require("../../../baseJS/CatchF.js");
 const componentM = require("../../componentManager/componentM.js");
+require("dotenv").config();
 //#endregion
 
-// 樓層
+// 轉生點
 module.exports = {
 	data: {
 		name: "樓層",
 	},
-	// 舊版資料已停止更新，url 指向 myKiritoData 內的本地 json
-	url: "bosses.json",
-	ver: "old",
+	method: "GET",
+	url: process.env.GASURL_NEW_BOSSES,
+	ver: "new",
 	async callback(data) {
 		if (data === undefined) {
-			throw new Error("讀取樓層資訊時發生意外錯誤，通常是本地檔案不見了");
+			throw new Error("下載樓層資訊時發生意外錯誤，通常是google不開心了");
 		}
-		global.mkBoss = data;
+		global.newMkBoss = data;
 	},
 	async execute(msg, cmd, args) {
 		try {
-			const responseData = global.mkBoss;
+			const responseData = global.newMkBoss;
 			const bossData = responseData[args[0]];
 			if (bossData === undefined) BDB.MSend(msg, returnDefault(responseData));
 			else

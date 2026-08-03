@@ -885,7 +885,8 @@ class EmbedMessage extends EmbedBuilder {
 	 * @returns {EmbedMessage}
 	 */
 	ESetAuthor(name, iconUrl, url) {
-		this.setAuthor({ name: name, iconUrl: iconUrl, url: url });
+		// discord.js v14 的欄位名為 iconURL，寫成 iconUrl 會被忽略導致頭像不顯示
+		this.setAuthor({ name: name, iconURL: iconUrl, url: url });
 		return this;
 	}
 	/** 設定標題，在頭像下方
@@ -903,7 +904,8 @@ class EmbedMessage extends EmbedBuilder {
 	 * @returns {EmbedMessage}
 	 */
 	ESetUrl(url) {
-		this.setUrl(url);
+		// discord.js v14 的方法名為 setURL
+		this.setURL(url);
 		return this;
 	}
 	/** 設定簡介，在標題下方

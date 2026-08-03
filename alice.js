@@ -46,6 +46,10 @@ global.mkLevel = undefined;
 global.mkSkill = undefined;
 // 樓層
 global.mkBoss = undefined;
+// 角色情報 - 經典服
+global.newMkSkill = undefined;
+// 樓層 - 經典服
+global.newMkBoss = undefined;
 // 掃地
 // global.ninePeople = new Map();
 //#endregion
@@ -109,6 +113,10 @@ function initGlobal() {
 	global.mkSkill = undefined;
 	// 樓層
 	global.mkBoss = undefined;
+	// 角色情報 - 經典服
+	global.newMkSkill = undefined;
+	// 樓層 - 經典服
+	global.newMkBoss = undefined;
 	// 掃地
 	// global.ninePeople = new Map();
 }

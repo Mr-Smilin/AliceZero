@@ -8,7 +8,8 @@
         "node": ">=18.17"
     },
     "scripts": {
-        "start": "node alice.js"
+        "start": "node alice.js",
+        "test": "node --test test/*.test.js"
     },
     "dependencies": {
         "@discordjs/builders": "^1.3.0",
