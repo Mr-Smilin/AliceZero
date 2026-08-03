@@ -104,8 +104,66 @@ exports.GetMyKiritoSkillMessage = (roleData, status = 0) => {
   }
 }
 
+/** myKirito 攻略組 指令選單
+ *  沒有指定指令時，用菜單列出這個頻道查得到的東西
+ * @param {*} requests 該頻道可用的 request 模組
+ */
+exports.GetMyKiritoCommandMessage = (requests = []) => {
+  try {
+    const returnMessage = BDB.MNewMessage(
+      "```攻略組查詢\n\n請從選單挑選要查詢的項目```"
+    );
+    const options = requests.map((request) =>
+      BDB.SMNewOption()
+        .SMSetLabel(request?.data?.name)
+        .SMSetDescription(request?.description)
+        .SMSetValue(request?.data?.name)
+    );
+    returnMessage.addComponents(
+      selectMenuC.GetHelpSelectMenu("mykirito", "攻略組指令", options)
+    );
+    return returnMessage.toMessage();
+  }
+  catch (err) {
+    CatchF.ErrorDo(err, "GetMyKiritoCommandMessage 方法異常!");
+  }
+}
+
+/** myKirito 攻略組 目標選單
+ *  沒有指定目標時，顯示指令效果並用菜單列出所有可查詢的目標
+ * @param {*} request request 模組
+ * @param {number} page 第幾頁，從 0 開始
+ */
+exports.GetMyKiritoTargetMessage = (request, page = 0) => {
+  try {
+    const targets = request?.targets?.() ?? [];
+    const returnMessage = BDB.MNewMessage(
+      "```" +
+      `${request?.data?.name}查詢\n` +
+      `語法: ${request?.usage}\n\n` +
+      `${request?.description}\n\n` +
+      (targets.length === 0 ? "目前沒有可查詢的資料" : "從選單挑選要查詢的目標") +
+      "```"
+    );
+    if (targets.length !== 0)
+      returnMessage.addComponents(
+        selectMenuC.GetPagedSelectMenu(
+          "mykiritoTarget",
+          request?.data?.name,
+          request?.data?.name,
+          targets,
+          page
+        )
+      );
+    return returnMessage.toMessage();
+  }
+  catch (err) {
+    CatchF.ErrorDo(err, "GetMyKiritoTargetMessage 方法異常!");
+  }
+}
+
 /** myKirito 攻略組 樓層
- * 
+ *
  */
 exports.GetMyKiritoBossMessage = (bossData) => {
   try {

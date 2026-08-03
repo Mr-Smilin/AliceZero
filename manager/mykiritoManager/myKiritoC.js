@@ -6,12 +6,23 @@ const fs = require("node:fs"); // 用於讀寫檔案
 const path = require("node:path"); // 用於處理路徑
 const axios = require("axios");
 const CatchF = require("../../baseJS/CatchF.js");
+const componentM = require("../componentManager/componentM.js");
 require("dotenv").config();
 // json
 //#endregion
 
 // 本地資料夾，存放已停止更新的舊版(ver: old)資料
 const dataPath = path.join(__dirname, "myKiritoData");
+// 查詢模組資料夾，一個檔案代表一個攻略組指令
+const requestsPath = path.join(__dirname, "requests");
+
+/** 讀取所有查詢模組 */
+const getRequests = () => {
+	return fs
+		.readdirSync(requestsPath)
+		.filter((file) => file.endsWith(".js"))
+		.map((file) => require(path.join(requestsPath, file)));
+};
 
 const selectMethod = async (url, method, body = {}) => {
 	switch (method) {
@@ -67,17 +78,9 @@ exports.CheckData = () => {
 exports.DownloadData = async () => {
 	try {
 		CatchF.LogDo("Started Dowload myKirito Data");
-		// 讀取 commands 資料夾下的 js 檔案
-		const requestsPath = path.join(__dirname, "requests");
-		const requestFiles = fs
-			.readdirSync(requestsPath)
-			.filter((file) => file.endsWith(".js"));
 
 		// 依 ver 決定資料來源，取得後交由各模組的 callback 存進 global
-		for (const file of requestFiles) {
-			const filePath = path.join(requestsPath, file);
-			const request = require(filePath);
-
+		for (const request of getRequests()) {
 			// url 對 ver: old 而言是 myKiritoData 內的檔名，對 ver: new 而言是 api 位址
 			if ("url" in request) {
 				const data =
@@ -86,7 +89,9 @@ exports.DownloadData = async () => {
 						: await getData(request.url, request.method);
 				await request?.callback?.(data);
 			} else {
-				CatchF.LogDo(`[警告] ${filePath} 中的指令缺少必要的 "url" 屬性。`);
+				CatchF.LogDo(
+					`[警告] ${request?.data?.name} 指令缺少必要的 "url" 屬性。`,
+				);
 			}
 		}
 		global.isMykirito = true;
@@ -100,32 +105,58 @@ exports.IsOk = () => {
 	return global.isMykirito;
 };
 
-exports.Start = async (msg, cmd, args) => {
-	// 讀取 commands 資料夾下的 js 檔案
-	const requestsPath = path.join(__dirname, "requests");
-	const requestFiles = fs
-		.readdirSync(requestsPath)
-		.filter((file) => file.endsWith(".js"));
+/** 判斷這個頻道能用哪個版本的攻略組
+ *
+ * @returns {string} "old" = 舊服 | "new" = 經典服 | undefined = 不開放
+ */
+exports.GetVer = (guildId = null, channelId = null) => {
+	if (checkChannel(guildId, channelId)) return "old";
+	if (checkChannelForNewMyKirito(guildId, channelId)) return "new";
+	return undefined;
+};
 
-	if (checkChannel(msg.guild?.id, msg.channel?.id)) {
-		await sendRequestForFile(msg, cmd, args, requestsPath, requestFiles, "old");
-	} else if (checkChannelForNewMyKirito(msg.guild?.id, msg.channel?.id)) {
-		await sendRequestForFile(msg, cmd, args, requestsPath, requestFiles, "new");
-	} else if (probabilityGate()) {
-		await BDB.MSend(msg, "其實Mykirito從來都沒存在過，只是網友的臆想");
-	} else {
-		await BDB.MSend(msg, "2024/11/07 14:55(JST) 已關服");
+/** 取得該版本的所有查詢模組
+ *
+ * @param {string} ver "old" | "new"
+ */
+exports.GetRequests = (ver) => {
+	try {
+		return getRequests().filter((request) => request?.ver === ver);
+	} catch (err) {
+		CatchF.ErrorDo(err, "GetRequests 方法異常!");
+		return [];
+	}
+};
+
+/** 取得該版本的指定查詢模組
+ *
+ * @param {string} ver "old" | "new"
+ * @param {string} name 指令名稱，Ex: 樓層
+ */
+exports.GetRequest = (ver, name) =>
+	this.GetRequests(ver).find((request) => request?.data?.name === name);
+
+exports.Start = async (msg, cmd, args) => {
+	const ver = this.GetVer(msg.guild?.id, msg.channel?.id);
+
+	// 不開放的頻道
+	if (ver === undefined) {
+		await BDB.MSend(
+			msg,
+			probabilityGate()
+				? "其實Mykirito從來都沒存在過，只是網友的臆想"
+				: "2024/11/07 14:55(JST) 已關服",
+		);
+		return;
 	}
 
-	// for (const file of requestFiles) {
-	// 	const filePath = path.join(requestsPath, file);
-	// 	const request = require(filePath);
+	// 沒有指定指令，用菜單列出這個頻道查得到的指令
+	if (!cmd) {
+		await BDB.MSend(msg, componentM.GetMyKiritoCommandMessage(this.GetRequests(ver)));
+		return;
+	}
 
-	// 	if (request.data.name === cmd) {
-	// 		await request.execute(msg, cmd, args);
-	// 		break;
-	// 	}
-	// }
+	await this.GetRequest(ver, cmd)?.execute(msg, cmd, args);
 };
 
 /**
@@ -168,21 +199,3 @@ function checkChannelForNewMyKirito(guildId = null, channelId = null) {
 	);
 }
 
-async function sendRequestForFile(
-	msg,
-	cmd,
-	args,
-	requestsPath,
-	requestFiles,
-	ver = "old",
-) {
-	for (const file of requestFiles) {
-		const filePath = path.join(requestsPath, file);
-		const request = require(filePath);
-
-		if (request.data.name === cmd && request?.ver === ver) {
-			await request.execute(msg, cmd, args);
-			break;
-		}
-	}
-}

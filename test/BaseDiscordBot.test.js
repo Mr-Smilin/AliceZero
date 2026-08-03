@@ -469,6 +469,13 @@ describe("I - interaction 回覆", () => {
 		assert.deepEqual(interaction.called, ["followUp"]);
 	});
 
+	it("IDeferUpdate 確認互動但不更動訊息", async () => {
+		const interaction = newFakeInteraction();
+		interaction.deferUpdate = async () => interaction.called.push("deferUpdate");
+		await BDB.IDeferUpdate(interaction);
+		assert.deepEqual(interaction.called, ["deferUpdate"]);
+	});
+
 	it("IEdit 依 replyType 呼叫 editReply 或 update", async () => {
 		const edit = newFakeInteraction();
 		await BDB.IEdit(edit, "訊息");

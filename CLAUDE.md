@@ -89,22 +89,28 @@ Manager 啟動時 `readdirSync` 掃自己的 `commands/` 資料夾，每種介�
 
 - **slash**（`slashManager/commands/*.js`）：需 `data`（`SNewSlashCommand` 產生的 builder）與 `execute`；有子指令時放在 `subcommand: { <name>: { data, execute } }`，`slashM` 會先看 `SGetOptionValue(interaction, "subcommand")` 再分派。`data.toJSON()` 會送去 REST 註冊。
 - **button**（`buttonManager/commands/*.js`）：需 `data`（`BNewButton(customId, label)`）與 `execute`，以 `data.data.custom_id` 當 key。
-- **selectMenu**（`selectMenuManager/commands/*.js`）：`data` 是含 select menu 的 ActionRow，key 取 `data.components[0].data.custom_id`；每個選項值是模組上的一個屬性（如 `music: { execute }`），由選中的 value 決定執行哪個。
+- **selectMenu**（`selectMenuManager/commands/*.js`）：`data` 是含 select menu 的 ActionRow，key 取 `data.components[0].data.custom_id`；選項值可以是模組上的一個屬性（如 `music: { execute }`），**若該屬性不存在則退回模組共用的 `execute`** —— 選項是動態產生（值就是資料本身）時走的就是這條。
 
 新增指令只要在對應 `commands/` 放檔案，不需改 manager。
 
+**動態選項與分頁**：discord 一個菜單最多 25 個選項，`selectMenuC.GetPagedSelectMenu(customId, placeholder, group, items, page)` 會自動切頁並補上下頁選項。選項值的格式是 `{group}|{item}`，換頁則是 `{group}|#page:{頁數}`，用 `selectMenuC.ParsePagedValue()` 解析——頁數編在**值**裡而不是 customId，才不會破壞「customId 必須與註冊時完全相同」的查表規則。
+
 ### 攻略組（mykirito）子系統
 
-`mykiritoManager/requests/*.js` 是同時兼任「資料來源宣告」與「查詢指令」的模組，欄位：`data.name`（中文指令名，如「樓層」）、`url`、`ver`（`"old"` 或 `"new"`）、`callback(data)`（啟動時把資料塞進對應的 global）、`execute(msg, cmd, args)`（查詢時讀 global 回覆）。
+`mykiritoManager/requests/*.js` 是同時兼任「資料來源宣告」與「查詢指令」的模組，欄位：`data.name`（中文指令名，如「樓層」）、`url`、`ver`（`"old"` 或 `"new"`）、`usage` / `description`（菜單上顯示的語法與效果）、`targets()`（回傳所有可查詢目標，菜單選項來源）、`callback(data)`（啟動時把資料塞進對應的 global）、`execute(discordObject, cmd, args)`（查詢時讀 global 回覆）。
+
+`execute` 的參數是 message 或 interaction 都可以（`BDB.MSend` type 0 走 `discordObject.channel.send`），菜單選完就是直接餵 interaction 進去，所以 embed 的呈現只有一份實作。
 
 **`ver` 同時決定資料來源與查詢分流**，這是這個子系統的核心：
 
 - `ver: "old"`（mykirito 本服，已關服停更）：`url` 是 `myKiritoData/` 內的**本地 json 檔名**，`DownloadData` 用 `fs.readFileSync` 讀取，不打 api。
 - `ver: "new"`（經典服）：`url` 是 .env 的 GAS api 位址，需要 `method`，由 axios 下載。
 
-`myKiritoC.Start` 依 guildId / channelId 決定要跑 `ver: "old"` 還是 `"new"` 的模組（允許清單硬編碼在 `checkChannel` / `checkChannelForNewMyKirito`，這兩個函式必須維持同步，寫成 async 會讓判斷式恆為 true）；不在名單內的頻道回覆關服訊息。
+`myKiritoC.GetVer(guildId, channelId)` 依允許清單（硬編碼在 `checkChannel` / `checkChannelForNewMyKirito`，這兩個函式必須維持同步，寫成 async 會讓判斷式恆為 true）回傳 `"old"` / `"new"` / `undefined`，`GetRequests(ver)` / `GetRequest(ver, name)` 再據此取模組。`Start` 的三條路：不在名單內 → 關服訊息；沒帶指令 → 指令菜單；帶了指令 → 該模組的 `execute`。
 
-新增查詢類型 = 在 `requests/` 加一個檔；若是經典服類型再加 .env URL 並更新 `CheckData()`。
+查詢入口是菜單，兩層都由 `selectMenuManager/commands/` 的 `mykirito.js`（指令菜單）與 `mykiritoTarget.js`（目標菜單，帶分頁）處理，訊息本身由 `componentM.GetMyKiritoCommandMessage` / `GetMyKiritoTargetMessage` 組。選到目標時先 `BDB.IDeferUpdate` 確認互動，再呼叫模組的 `execute` 輸出 embed；換頁則是 `BDB.IEdit(..., 1)` 更新原訊息。
+
+新增查詢類型 = 在 `requests/` 加一個檔（記得補 `usage` / `description` / `targets`）；若是經典服類型再加 .env URL 並更新 `CheckData()`。
 
 ### 回覆內容的組裝鏈
 

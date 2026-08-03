@@ -776,6 +776,19 @@ exports.IEdit = async function (interaction, message, replyType = 0) {
 	}
 };
 
+/** 確認互動但不更動原本的訊息
+ *  (選單選完之後要另外送訊息時使用，沒有確認的話 discord 會顯示互動失敗)
+ * @param {*} interaction
+ * @returns
+ */
+exports.IDeferUpdate = async function (interaction) {
+	try {
+		return await interaction.deferUpdate();
+	} catch (err) {
+		CatchF.ErrorDo(err, "IDeferUpdate 方法異常!");
+	}
+};
+
 /** 回傳 interaction 是否為斜線物件
  *
  * @param {*} interaction

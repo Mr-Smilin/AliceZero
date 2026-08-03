@@ -7,29 +7,36 @@ const componentM = require("../../componentManager/componentM.js");
 require("dotenv").config();
 //#endregion
 
-// 轉生點
-module.exports = {
+// 角色情報 - 經典服
+const request = {
 	data: {
 		name: "情報",
 	},
 	method: "GET",
 	url: process.env.GASURL_NEW_SKILLS,
 	ver: "new",
+	usage: "攻略組 情報 {角色名稱}",
+	description: "根據角色名稱，反饋此角色已記錄技能與簡介",
+	// 沒有指定角色時，菜單要列出來的選項
+	targets: () => Object.keys(global.newMkSkill ?? {}),
 	async callback(data) {
 		if (data === undefined) {
 			throw new Error("下載角色情報時發生意外錯誤，通常是google不開心了");
 		}
 		global.newMkSkill = data;
 	},
-	async execute(msg, cmd, args) {
+	async execute(discordObject, cmd, args) {
 		try {
-			const responseData = global.newMkSkill;
-			const roleData = responseData[args[0]];
+			const roleData = global.newMkSkill?.[args[0]];
+			// 沒指定角色或查不到，改用菜單讓使用者挑
 			if (roleData === undefined)
-				await BDB.MSend(msg, returnDefault(responseData));
+				await BDB.MSend(
+					discordObject,
+					componentM.GetMyKiritoTargetMessage(request),
+				);
 			else
 				await BDB.MSend(
-					msg,
+					discordObject,
 					componentM.GetMyKiritoSkillMessage(
 						{
 							name: args[0],
@@ -44,28 +51,4 @@ module.exports = {
 	},
 };
 
-function returnDefault(responseData) {
-	let message =
-		"```角色情報查詢\n" +
-		"語法: 攻略組 情報 {角色名稱}\n\n" +
-		"根據角色名稱，反饋此角色已記錄技能與簡介\n\n" +
-		"角色名稱需與表單完全一致\n目前的角色有...\n";
-	let count = 0;
-	const names = Object.keys(responseData);
-	for (nam of names) {
-		if (count >= 4) {
-			message += "\n";
-			count = 0;
-		}
-		message += paddingRightForCn(nam, 14);
-		count++;
-	}
-	message += "```";
-	return message;
-}
-
-//中文
-function paddingRightForCn(str, lenght) {
-	if (str.length >= lenght) return str;
-	else return paddingRightForCn(str + "　", lenght);
-}
+module.exports = request;

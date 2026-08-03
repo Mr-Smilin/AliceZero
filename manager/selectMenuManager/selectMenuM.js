@@ -27,10 +27,15 @@ exports.Start = async (interaction) => {
 		return;
 	}
 
-	const selectMenu = command[BDB.SMGetSelectValue(interaction)];
+	// 選項值有專屬的處理方法就用它，沒有的話交給模組共用的 execute (選項是動態產生時使用)
+	const selectValue = BDB.SMGetSelectValue(interaction);
+	const selectMenu =
+		typeof command[selectValue]?.execute === "function"
+			? command[selectValue]
+			: command;
 
-	if (!selectMenu) {
-		CatchF.ErrorDo(`找不到選項 ${BDB.SMGetSelectValue(interaction)}！`);
+	if (typeof selectMenu?.execute !== "function") {
+		CatchF.ErrorDo(`找不到選項 ${selectValue}！`);
 		return;
 	}
 
