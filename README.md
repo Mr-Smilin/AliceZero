@@ -41,6 +41,7 @@ C - Controller 行為的管理
 <pre>
 
 - [x] 攻略組改用菜單查詢，不用再重打一次文字指令
+- [x] 修正情報 embed 上的技能 / 能力 / 稱號按鈕固定拿舊服資料的問題，改成跟著頻道版本走
 - [x] 攻略組舊版資料改讀本地 json，不再依賴 api
 - [x] 補上 BaseDiscordBot 介面層、菜單系統與攻略組的測試(npm test)
 - [x] 修正 embed 的 ESetAuthor / ESetUrl 對不上 discord.js v14 的欄位與方法名

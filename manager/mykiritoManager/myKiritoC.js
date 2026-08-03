@@ -136,6 +136,17 @@ exports.GetRequests = (ver) => {
 exports.GetRequest = (ver, name) =>
 	this.GetRequests(ver).find((request) => request?.data?.name === name);
 
+/** 取得該頻道版本的指令資料
+ *  按鈕、菜單這類事後互動用的，資料要跟著發問的頻道走，不能寫死版本
+ * @param {*} discordObject message 或 interaction
+ * @param {string} name 指令名稱，Ex: 情報
+ */
+exports.GetData = (discordObject, name) =>
+	this.GetRequest(
+		this.GetVer(discordObject?.guild?.id, discordObject?.channel?.id),
+		name,
+	)?.getData();
+
 exports.Start = async (msg, cmd, args) => {
 	const ver = this.GetVer(msg.guild?.id, msg.channel?.id);
 

@@ -17,8 +17,10 @@ const request = {
 	usage: "攻略組 轉生點 {等級} [範圍]",
 	description:
 		"從選擇等級開始查詢，根據範圍返還查詢數量(等級1~100，範圍1~10，預設5)",
+	// 資料放在哪個 global，菜單與按鈕都靠這個拿資料
+	getData: () => global.mkLevel ?? {},
 	// 沒有指定等級時，菜單要列出來的選項
-	targets: () => Object.keys(global.mkLevel ?? {}),
+	targets: () => Object.keys(request.getData()),
 	async callback(data) {
 		if (data === undefined) {
 			throw new Error("讀取轉生點時發生意外錯誤，通常是本地檔案不見了");
@@ -53,7 +55,7 @@ const request = {
 module.exports = request;
 
 function returnLevelMessage(args) {
-	const responseData = global.mkLevel;
+	const responseData = request.getData();
 	const level = args[0];
 	// 範圍預設5
 	if (args[1] === undefined) {

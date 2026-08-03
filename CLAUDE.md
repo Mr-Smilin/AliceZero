@@ -97,7 +97,7 @@ Manager 啟動時 `readdirSync` 掃自己的 `commands/` 資料夾，每種介�
 
 ### 攻略組（mykirito）子系統
 
-`mykiritoManager/requests/*.js` 是同時兼任「資料來源宣告」與「查詢指令」的模組，欄位：`data.name`（中文指令名，如「樓層」）、`url`、`ver`（`"old"` 或 `"new"`）、`usage` / `description`（菜單上顯示的語法與效果）、`targets()`（回傳所有可查詢目標，菜單選項來源）、`callback(data)`（啟動時把資料塞進對應的 global）、`execute(discordObject, cmd, args)`（查詢時讀 global 回覆）。
+`mykiritoManager/requests/*.js` 是同時兼任「資料來源宣告」與「查詢指令」的模組，欄位：`data.name`（中文指令名，如「樓層」）、`url`、`ver`（`"old"` 或 `"new"`）、`usage` / `description`（菜單上顯示的語法與效果）、`getData()`（回傳這支模組的 global 資料，**模組是唯一知道自己資料放在哪個 global 的地方**）、`targets()`（回傳所有可查詢目標，菜單選項來源）、`callback(data)`（啟動時把資料塞進對應的 global）、`execute(discordObject, cmd, args)`（查詢時讀 global 回覆）。
 
 `execute` 的參數是 message 或 interaction 都可以（`BDB.MSend` type 0 走 `discordObject.channel.send`），菜單選完就是直接餵 interaction 進去，所以 embed 的呈現只有一份實作。
 
@@ -107,6 +107,8 @@ Manager 啟動時 `readdirSync` 掃自己的 `commands/` 資料夾，每種介�
 - `ver: "new"`（經典服）：`url` 是 .env 的 GAS api 位址，需要 `method`，由 axios 下載。
 
 `myKiritoC.GetVer(guildId, channelId)` 依允許清單（硬編碼在 `checkChannel` / `checkChannelForNewMyKirito`，這兩個函式必須維持同步，寫成 async 會讓判斷式恆為 true）回傳 `"old"` / `"new"` / `undefined`，`GetRequests(ver)` / `GetRequest(ver, name)` 再據此取模組。`Start` 的三條路：不在名單內 → 關服訊息；沒帶指令 → 指令菜單；帶了指令 → 該模組的 `execute`。
+
+**事後互動（按鈕、菜單）一律用 `myKiritoC.GetData(interaction, 指令名)` 取資料**，不要直接讀 `global.mkSkill` 這類全域 —— 同一個指令在舊服與經典服是不同的 global，寫死版本會讓另一版的頻道按鈕拿到錯的資料。
 
 查詢入口是菜單，兩層都由 `selectMenuManager/commands/` 的 `mykirito.js`（指令菜單）與 `mykiritoTarget.js`（目標菜單，帶分頁）處理，訊息本身由 `componentM.GetMyKiritoCommandMessage` / `GetMyKiritoTargetMessage` 組。選到目標時先 `BDB.IDeferUpdate` 確認互動，再呼叫模組的 `execute` 輸出 embed；換頁則是 `BDB.IEdit(..., 1)` 更新原訊息。
 

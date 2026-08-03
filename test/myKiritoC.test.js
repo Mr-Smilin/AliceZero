@@ -50,6 +50,20 @@ function newFakeMessage(guildId, channelId) {
 	};
 }
 
+/** 模擬 discord.js 的按鈕 interaction
+ *
+ * @param {string} customId 按鈕 id
+ * @param {string} author 原始訊息 embed 上的角色名稱
+ */
+function newFakeButtonInteraction(customId, author, guildId, channelId) {
+	const interaction = newFakeInteraction(customId, undefined, guildId, channelId);
+	return Object.assign(interaction, {
+		isButton: () => true,
+		isStringSelectMenu: () => false,
+		message: { embeds: [{ data: { author: { name: author } } }] },
+	});
+}
+
 /** 模擬 discord.js 的菜單 interaction */
 function newFakeInteraction(customId, value, guildId, channelId) {
 	const message = newFakeMessage(guildId, channelId);
@@ -347,5 +361,102 @@ describe("攻略組 - 菜單流程", () => {
 		assert.equal(interaction.sent.length, 0);
 		assert.equal(interaction.updated.length, 0);
 		assert.equal(interaction.deferred.length, 0);
+	});
+});
+
+describe("攻略組 - 情報按鈕", () => {
+	before(async () => {
+		// 經典服的角色資料換成只有一個角色，才分得出按鈕拿的是哪一版
+		const bosses = require("../manager/mykiritoManager/myKiritoData/bosses.json");
+		const skills = require("../manager/mykiritoManager/myKiritoData/skills.json");
+		mock.method(axios, "get", async (url) => ({
+			data:
+				url === process.env.GASURL_NEW_BOSSES
+					? bosses
+					: { 經典服限定: skills["桐人"] },
+		}));
+		await myKiritoC.DownloadData();
+		mock.restoreAll();
+
+		await buttonM.InsertButton(BDB.CGetClient());
+	});
+
+	it("舊服頻道的按鈕拿舊服資料", async () => {
+		const interaction = newFakeButtonInteraction(
+			"myKiritoSkillStatus",
+			"桐人",
+			...oldChannel
+		);
+		await buttonM.Start(interaction);
+
+		assert.equal(interaction.updated.length, 1);
+		assert.equal(
+			interaction.updated[0].embeds[0].toJSON().author.name,
+			"桐人"
+		);
+	});
+
+	it("經典服頻道的按鈕拿經典服資料", async () => {
+		const interaction = newFakeButtonInteraction(
+			"myKiritoSkillStatus",
+			"經典服限定",
+			...newChannel
+		);
+		await buttonM.Start(interaction);
+
+		assert.equal(interaction.updated.length, 1);
+		assert.equal(
+			interaction.updated[0].embeds[0].toJSON().author.name,
+			"經典服限定"
+		);
+	});
+
+	it("三顆按鈕各自切換到自己的頁面", async () => {
+		const buttons = [
+			"myKiritoSkillSkill",
+			"myKiritoSkillStatus",
+			"myKiritoSkillNicename",
+		];
+		const pages = [];
+
+		for (const button of buttons) {
+			const interaction = newFakeButtonInteraction(button, "桐人", ...oldChannel);
+			await buttonM.Start(interaction);
+			const embed = interaction.updated[0].embeds[0].toJSON();
+			pages.push(embed.fields.map((field) => field.name).join(","));
+			// 自己這一頁的按鈕會被停用
+			const disabled = interaction.updated[0].components[0]
+				.toJSON()
+				.components.filter((component) => component.disabled)
+				.map((component) => component.custom_id);
+			assert.deepEqual(disabled, [button]);
+		}
+
+		assert.equal(new Set(pages).size, pages.length, "三頁的內容應該不一樣");
+	});
+
+	it("這個頻道查不到的角色只確認互動，不會動到原本的訊息", async () => {
+		const interaction = newFakeButtonInteraction(
+			"myKiritoSkillStatus",
+			"桐人",
+			...newChannel
+		);
+		await buttonM.Start(interaction);
+
+		assert.equal(interaction.updated.length, 0);
+		assert.equal(interaction.deferred.length, 1);
+	});
+
+	it("非白名單頻道的按鈕不會回舊服資料", async () => {
+		const interaction = newFakeButtonInteraction(
+			"myKiritoSkillStatus",
+			"桐人",
+			"其他群組",
+			"其他頻道"
+		);
+		await buttonM.Start(interaction);
+
+		assert.equal(interaction.updated.length, 0);
+		assert.equal(interaction.deferred.length, 1);
 	});
 });
