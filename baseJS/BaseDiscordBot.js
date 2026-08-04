@@ -14,6 +14,7 @@ const {
 	EmbedBuilder,
 	ContextMenuCommandBuilder,
 	ApplicationCommandType,
+	MessageFlags,
 } = require("discord.js");
 const client = new Client({
 	intents: [
@@ -184,6 +185,37 @@ exports.CSetStatus = (statusMessage = "with discord.js", statusType = 3) => {
 
 //#endregion
 
+//#region 訊息格式轉換
+
+/** 專案內部的訊息格式帶著 ephemeral(是否只有自己看得到)，
+ *  但 discord.js v14.27 起這個欄位已被 deprecated，v15 會移除，改用 flags。
+ *  轉換集中在這裡，其餘程式碼繼續用 ephemeral 就好。
+ *
+ * @param {*} message 字串或訊息物件
+ */
+const toReplyMessage = (message) => {
+	if (typeof message !== "object" || message === null) return message;
+	if (!("ephemeral" in message)) return message;
+
+	const { ephemeral, ...replyMessage } = message;
+	if (ephemeral) replyMessage.flags = MessageFlags.Ephemeral;
+	return replyMessage;
+};
+
+/** 一般訊息與編輯訊息不吃 ephemeral，直接把欄位拿掉
+ *
+ * @param {*} message 字串或訊息物件
+ */
+const toPlainMessage = (message) => {
+	if (typeof message !== "object" || message === null) return message;
+	if (!("ephemeral" in message)) return message;
+
+	const { ephemeral, ...plainMessage } = message;
+	return plainMessage;
+};
+
+//#endregion
+
 //#region 訊息動作 M
 
 /** 定義 Discord.js 各種類型的訊息傳送
@@ -207,18 +239,19 @@ exports.MSend = async function (
 	try {
 		let guild;
 		let channel;
+		const sendMessage = toPlainMessage(message);
 		switch (type) {
 			case 0:
-				return await discordObject.channel.send(message);
+				return await discordObject.channel.send(sendMessage);
 			case 1:
-				return await discordObject.reply(message);
+				return await discordObject.reply(sendMessage);
 			case 2:
 				channel = await discordObject.channels.fetch(channelId);
-				return await channel.send(message);
+				return await channel.send(sendMessage);
 			case 3:
 				guild = await discordObject.guilds.fetch(guildId);
 				channel = await guild.channels.fetch(channelId);
-				return await channel.send(message);
+				return await channel.send(sendMessage);
 		}
 	} catch (err) {
 		CatchF.ErrorDo(err, "MSend 方法異常!");
@@ -736,20 +769,22 @@ exports.SMGetSelectMenuId = (interaction) =>
  */
 exports.ISend = async function (interaction, message, replyType = 0) {
 	try {
+		const replyMessage = toReplyMessage(message);
 		switch (replyType) {
 			case 0:
-				return await interaction.reply(message);
+				return await interaction.reply(replyMessage);
 			case 1:
 				if (interaction?.replied || interaction?.deferred)
 					try {
 						await interaction.deferReply();
-						return await interaction.reply(message);
+						return await interaction.reply(replyMessage);
 					} catch {
-						return await interaction.followUp(message);
+						return await interaction.followUp(replyMessage);
 					}
-				else return await interaction.reply(message);
+				else return await interaction.reply(replyMessage);
 			case 2:
-				return await interaction.channel.send(message);
+				// 頻道訊息不能只給自己看
+				return await interaction.channel.send(toPlainMessage(message));
 		}
 	} catch (err) {
 		CatchF.ErrorDo(err, "ISend 方法異常!");
@@ -766,11 +801,13 @@ exports.ISend = async function (interaction, message, replyType = 0) {
  */
 exports.IEdit = async function (interaction, message, replyType = 0) {
 	try {
+		// 編輯訊息無法改變只有自己看得到的狀態
+		const editMessage = toPlainMessage(message);
 		switch (replyType) {
 			case 0:
-				return await interaction.editReply(message);
+				return await interaction.editReply(editMessage);
 			case 1:
-				return await interaction.update(message);
+				return await interaction.update(editMessage);
 		}
 	} catch (err) {
 		CatchF.ErrorDo(err, "IEdit 方法異常!");
@@ -1271,27 +1308,29 @@ exports.MuGetAudioPlayerStatus = (status = 0) => {
  */
 exports.On = function (cl, name, doSomeThing) {
 	try {
+		// 事件名稱一律取自 discord.js 的 Events，改版更名時才不會踩到 deprecated
+		// (Ex: v14.27 把 ready 改名為 clientReady)
 		switch (name) {
 			case "ready":
-				cl.on(Events?.ClientReady && "ready", doSomeThing);
+				cl.on(Events.ClientReady, doSomeThing);
 				break;
 			case "message":
-				cl.on(Events?.MessageCreate && "messageCreate", doSomeThing);
+				cl.on(Events.MessageCreate, doSomeThing);
 				break;
 			case "messageUpdate":
-				cl.on(Events?.MessageUpdate && "messageUpdate", doSomeThing);
+				cl.on(Events.MessageUpdate, doSomeThing);
 				break;
 			case "slash":
-				cl.on(Events?.InteractionCreate && "interactionCreate", doSomeThing);
+				cl.on(Events.InteractionCreate, doSomeThing);
 				break;
 			case "button":
-				cl.on(Events?.InteractionCreate && "interactionCreate", doSomeThing);
+				cl.on(Events.InteractionCreate, doSomeThing);
 				break;
 			case "selectMenu":
-				cl.on(Events?.InteractionCreate && "interactionCreate", doSomeThing);
+				cl.on(Events.InteractionCreate, doSomeThing);
 				break;
 			case "context":
-				cl.on(Events?.InteractionCreate && "interactionCreate", doSomeThing);
+				cl.on(Events.InteractionCreate, doSomeThing);
 				break;
 		}
 	} catch (err) {

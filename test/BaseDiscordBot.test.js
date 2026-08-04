@@ -469,6 +469,45 @@ describe("I - interaction 回覆", () => {
 		assert.deepEqual(interaction.called, ["followUp"]);
 	});
 
+	it("回覆時把 ephemeral 換成 discord 要求的 flags", async () => {
+		// discord.js v14.27 起 ephemeral 已 deprecated，v15 會移除
+		const { MessageFlags } = require("discord.js");
+		const interaction = newFakeInteraction();
+		let replied;
+		interaction.reply = async (message) => (replied = message);
+
+		await BDB.ISend(interaction, BDB.MNewMessage("秘密").setEphemeral(true).toMessage());
+
+		assert.equal(replied.flags, MessageFlags.Ephemeral);
+		assert.equal("ephemeral" in replied, false, "不能再帶 ephemeral 欄位");
+		assert.equal(replied.content, "秘密");
+	});
+
+	it("大家都看得到的訊息不會被加上 flags", async () => {
+		const interaction = newFakeInteraction();
+		let replied;
+		interaction.reply = async (message) => (replied = message);
+
+		await BDB.ISend(interaction, BDB.MNewMessage("公開").toMessage());
+
+		assert.equal(replied.flags, undefined);
+		assert.equal("ephemeral" in replied, false);
+	});
+
+	it("編輯訊息與頻道訊息不會帶 ephemeral", async () => {
+		const edit = newFakeInteraction();
+		let edited;
+		edit.update = async (message) => (edited = message);
+		await BDB.IEdit(edit, BDB.MNewMessage("改一下").setEphemeral(true).toMessage(), 1);
+		assert.equal("ephemeral" in edited, false);
+		assert.equal(edited.flags, undefined, "編輯訊息不能改變只有自己看得到的狀態");
+
+		const msg = newFakeMessage();
+		await BDB.MSend(msg, BDB.MNewMessage("頻道訊息").setEphemeral(true).toMessage());
+		assert.equal("ephemeral" in msg.sent[0], false);
+		assert.equal(msg.sent[0].flags, undefined);
+	});
+
 	it("IDeferUpdate 確認互動但不更動訊息", async () => {
 		const interaction = newFakeInteraction();
 		interaction.deferUpdate = async () => interaction.called.push("deferUpdate");
@@ -631,8 +670,9 @@ describe("On - 事件綁定", () => {
 	}
 
 	it("專案自訂的事件名對應到 discord.js 的事件名", () => {
+		// 右邊是 discord.js Events 目前的值，改版更名時這裡要跟著壞才對
 		const cases = [
-			["ready", "ready"],
+			["ready", "clientReady"],
 			["message", "messageCreate"],
 			["messageUpdate", "messageUpdate"],
 			["slash", "interactionCreate"],
