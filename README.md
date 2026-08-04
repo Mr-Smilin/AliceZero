@@ -15,6 +15,11 @@ C - Controller 行為的管理
 測試主力放在 `baseJS/BaseDiscordBot.js`：它是全專案唯一直接接觸 discord.js 的介面層，
 測試比對的是 builder 產出的 json 欄位與列舉值，discord.js 改版時可以直接定位到壞掉的介面。
 
+## 環境需求
+
+- Node.js >= 22.12（`@discordjs/voice` 0.19 的要求）
+- yt-dlp（音樂系統用，見下方）
+
 ## 音樂系統
 
 音訊由 **yt-dlp** 取得，需要另外安裝：
@@ -53,6 +58,9 @@ yt-dlp 更新很勤，播不出來時先更新它：`yt-dlp -U`。
 <pre>
 
 - [x] 修復音樂系統，改用 yt-dlp 取得音訊(play-dl 已無法取得 youtube 音源)
+- [x] 升級 discord.js 14.27 / @discordjs/voice 0.19，修正只進得了語音頻道卻沒有聲音的問題
+- [x] Node 升到 22，容器改為自行安裝套件
+- [x] `!sp`(sleep) 改成只要 bot 在語音頻道就會退出，不再要求歌單有歌
 - [x] 攻略組改用菜單查詢，不用再重打一次文字指令
 - [x] 修正情報 embed 上的技能 / 能力 / 稱號按鈕固定拿舊服資料的問題，改成跟著頻道版本走
 - [x] 攻略組舊版資料改讀本地 json，不再依賴 api

@@ -259,15 +259,22 @@ exports.NowQueue = (guildId, discordObject, type) => {
  * @param {*} type
  */
 exports.Sleep = (guildId, discordObject, type) => {
-	// 存在語音頻道與播放器就退出
-	if (global.dispatcher.get(guildId) && global.connection.get(guildId)) {
-		global.dispatcher.get(guildId).stop();
-		global.connection.get(guildId).destroy();
-		this.InitMusicValue(guildId);
-		BDB.MuMessageSend(discordObject, { content: "晚安~" }, type);
-	} else {
-		BDB.MuMessageSend(discordObject, { content: "要先點歌喔:3..." }, type);
+	// 只看 bot 在不在語音頻道，歌單有沒有歌不影響
+	if (!BDB.MuIsVoicingMySelf(discordObject, type)) {
+		BDB.MuMessageSend(discordObject, { content: "小愛不在頻道裡喔:3..." }, type);
+		return;
 	}
+
+	try {
+		// 沒在播歌也要能把它請出去，所以播放器是有才停
+		global.dispatcher.get(guildId)?.stop();
+		global.connection.get(guildId)?.destroy();
+	} catch (err) {
+		CatchF.ErrorDo(err, "離開語音頻道時發生異常!");
+	}
+
+	this.InitMusicValue(guildId);
+	BDB.MuMessageSend(discordObject, { content: "晚安~" }, type);
 };
 
 exports.NowStatus = (guildId, discordObject, type) => {

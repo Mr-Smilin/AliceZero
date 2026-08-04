@@ -254,3 +254,78 @@ describe("musicM - 點歌流程", () => {
 		mock.restoreAll();
 	});
 });
+
+describe("musicC - 離開語音頻道", () => {
+	/** 模擬使用者訊息 */
+	function newFakeMessage() {
+		const sent = [];
+		return {
+			guild: { id: guildId },
+			channel: { id: "c-1", send: async (message) => sent.push(message) },
+			member: { voice: { channel: { id: "v-1" } } },
+			sent,
+		};
+	}
+
+	/** 讓 bot 看起來在語音頻道 */
+	function joinVoice() {
+		const destroyed = [];
+		global.connection.set(guildId, { destroy: () => destroyed.push(true) });
+		return destroyed;
+	}
+
+	before(() => {
+		global.isPlaying = new Map();
+		global.songList = new Map();
+		global.connection = new Map();
+		global.dispatcher = new Map();
+	});
+
+	it("歌單沒歌也照樣退出語音頻道", () => {
+		musicC.InitMusicValue(guildId);
+		const destroyed = joinVoice();
+		const msg = newFakeMessage();
+
+		musicC.Sleep(guildId, msg, 0);
+
+		assert.deepEqual(destroyed, [true], "應該離開語音頻道");
+		assert.deepEqual(msg.sent, [{ content: "晚安~" }]);
+		assert.equal(global.connection.get(guildId), undefined, "狀態要被清乾淨");
+	});
+
+	it("正在播歌時會先停掉播放器再退出", () => {
+		musicC.InitMusicValue(guildId);
+		const destroyed = joinVoice();
+		const stopped = [];
+		global.dispatcher.set(guildId, { stop: () => stopped.push(true) });
+
+		musicC.Sleep(guildId, newFakeMessage(), 0);
+
+		assert.deepEqual(stopped, [true]);
+		assert.deepEqual(destroyed, [true]);
+	});
+
+	it("本來就不在語音頻道時只回覆訊息", () => {
+		musicC.InitMusicValue(guildId);
+		const msg = newFakeMessage();
+
+		musicC.Sleep(guildId, msg, 0);
+
+		assert.match(msg.sent[0].content, /不在頻道/);
+	});
+
+	it("連線已經失效時不會讓 bot 掛掉，狀態一樣清乾淨", async () => {
+		musicC.InitMusicValue(guildId);
+		global.connection.set(guildId, {
+			destroy: () => {
+				throw new Error("已經斷線了");
+			},
+		});
+		const msg = newFakeMessage();
+
+		await silence(() => musicC.Sleep(guildId, msg, 0));
+
+		assert.deepEqual(msg.sent, [{ content: "晚安~" }]);
+		assert.equal(global.connection.get(guildId), undefined);
+	});
+});

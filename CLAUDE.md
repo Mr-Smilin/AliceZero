@@ -17,7 +17,7 @@ AliceZero 是一支 Discord 機器人（discord.js v14），功能分為音樂�
 ## 常用指令
 
 ```powershell
-npm install          # 安裝相依套件（Node >= 18.17，實測版本 18.17.1）
+npm install          # 安裝相依套件（Node >= 22.12，@discordjs/voice 0.19 的要求）
 npm start            # 等同 node alice.js，直接啟動 bot
 npm test             # 執行 test/ 下所有測試
 .\1_build.bat        # docker build -t smile0301/my-alice .
@@ -33,7 +33,7 @@ node --test --test-name-pattern "按鈕" test/*.test.js       # 只跑名稱符�
 
 測試不會對外連線：攻略組測試用 `node:test` 的 `mock.method(axios, "get", ...)` 攔截 api。
 
-Dockerfile 會直接把本機的 `node_modules/` COPY 進映像檔，所以改動相依套件後要先在本機 `npm install` 再 build。
+映像檔內用 `npm ci` 自己裝套件（**不要**改回 COPY 本機的 `node_modules/`：`ffmpeg-static` 這類套件會依作業系統下載不同執行檔，把 Windows 的複製進 linux 容器會壞掉）。repo 裡仍然有被版控的 `node_modules/`，那是給本機開發用的。
 
 ### .env（未進版控）
 
@@ -125,6 +125,8 @@ Manager 啟動時 `readdirSync` 掃自己的 `commands/` 資料夾，每種介�
 **`musicSourceC.js` 是唯一知道音訊怎麼來的檔案**（`GetSong` / `GetSongList` / `GetStream`），底層呼叫外部的 **yt-dlp**：youtube 會不定期改規則把純 JS 的抓取套件打死（play-dl、ytdl-core、youtubei.js 目前都拿不到音訊網址），所以相依集中在這一支，換工具只改這裡。`musicC` 只認得 `{id, name, url}` 的歌曲格式與 `{stream, type}` 的串流格式。
 
 yt-dlp 需要另外安裝（`.env` 的 `YTDLP_PATH` 可指定位置，預設找 PATH 上的 `yt-dlp`），Dockerfile 內已經裝好。優先挑 webm/opus 直接餵給 discord（`BDB.MuGetStreamType(0)`），其他音源退回 `Arbitrary` 讓 ffmpeg 轉檔。
+
+**`@discordjs/voice` 不能降回 0.16**：0.16 只支援 `xsalsa20_poly1305` 系列加密，而 discord 已經停用這些模式，結果是「連得進語音頻道但一點聲音都沒有」。0.18 起才有 `aead_aes256_gcm_rtpsize` / `aead_xchacha20_poly1305_rtpsize`。opus 編碼用純 JS 的 `opusscript`（只有非 opus 音源轉檔時才會用到），不用原生模組 `@discordjs/opus`，省掉跨平台編譯問題。
 
 `libs/play-dl/` 是舊版本地化留下的殘跡，已經沒有任何程式引用。
 
