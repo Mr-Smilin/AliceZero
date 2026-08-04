@@ -54,6 +54,7 @@ const {
 	createAudioResource,
 	AudioPlayerStatus,
 	NoSubscriberBehavior,
+	StreamType,
 } = require("@discordjs/voice");
 // js
 const CatchF = require("./CatchF.js");
@@ -1187,6 +1188,31 @@ exports.MuPlayMusic = (audioPlay, stream) => {
 		audioPlay.play(resource);
 	} catch (err) {
 		CatchF.ErrorDo(err, "MuPlayMusic 方法異常!");
+	}
+};
+
+/** 獲得音訊格式
+ *  webm/opus 這類 discord 認得的格式可以直接播，其餘要走 Arbitrary 讓 ffmpeg 轉檔
+ * url: https://discordjs.github.io/voice/enums/StreamType.html
+ * @param {number} type 0 = WebmOpus 1 = OggOpus 2 = Opus 3 = Arbitrary 4 = Raw
+ * @returns
+ */
+exports.MuGetStreamType = (type = 0) => {
+	try {
+		switch (type) {
+			case 0:
+				return StreamType.WebmOpus;
+			case 1:
+				return StreamType.OggOpus;
+			case 2:
+				return StreamType.Opus;
+			case 3:
+				return StreamType.Arbitrary;
+			case 4:
+				return StreamType.Raw;
+		}
+	} catch (err) {
+		CatchF.ErrorDo(err, "MuGetStreamType 方法異常!");
 	}
 };
 

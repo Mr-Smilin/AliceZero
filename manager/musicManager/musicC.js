@@ -1,6 +1,6 @@
 // Discord
 const BDB = require("../../baseJS/BaseDiscordBot.js");
-const pldl = require("play-dl");
+const musicSourceC = require("./musicSourceC.js");
 const CatchF = require("../../baseJS/CatchF.js");
 
 //#region 主要方法
@@ -30,14 +30,7 @@ exports.InitMusicValue = (guildId) => {
  */
 exports.AddSongList = async (guildId, musicUrl, type = 0) => {
 	try {
-		const res = await pldl.video_basic_info(musicUrl);
-		let musicId = res.video_details.id;
-		let musicName = res.video_details.title;
-		let listData = {
-			id: musicId,
-			name: musicName,
-			url: musicUrl,
-		};
+		const listData = await musicSourceC.GetSong(musicUrl);
 		if (type === 0) {
 			global.songList.get(guildId).push(listData);
 		} else if (type === 1) {
@@ -59,10 +52,9 @@ exports.AddSongList = async (guildId, musicUrl, type = 0) => {
  */
 exports.AddSongLists = async (guildId, musicListUrl) => {
 	try {
-		const res = await pldl.playlist_info(musicListUrl);
-		let musicId = res.id;
-		const videoTitles = res.videos
-			.map((v, i) => `[${i + 1}] ${v.title}`)
+		const res = await musicSourceC.GetSongList(musicListUrl);
+		const videoTitles = res.songs
+			.map((song, i) => `[${i + 1}] ${song.name}`)
 			.slice(0, 10)
 			.join("\n");
 		let returnStr =
@@ -70,14 +62,10 @@ exports.AddSongLists = async (guildId, musicListUrl) => {
 			`ID 識別碼：[${res.id}]\n` +
 			`==========================\n` +
 			`${videoTitles}`;
-		if (res.videos.length > 10)
-			returnStr += `\n……以及其他 ${res.videos.length - 10} 首歌`;
-		res.videos.forEach((v) => {
-			global.songList.get(guildId).push({
-				id: musicId,
-				name: v.title,
-				url: v.url,
-			});
+		if (res.songs.length > 10)
+			returnStr += `\n……以及其他 ${res.songs.length - 10} 首歌`;
+		res.songs.forEach((song) => {
+			global.songList.get(guildId).push(song);
 		});
 		return returnStr;
 	} catch (err) {
@@ -102,8 +90,8 @@ exports.PlayMusic = async (discordObject, nowSong, isReplied, type = 0) => {
 			await BDB.MuMessageSend(discordObject, content, type, 2);
 		}
 
-		// pldl 讀取資訊流
-		const stream = await pldl.stream(nowSong?.url);
+		// 讀取音訊串流
+		const stream = await musicSourceC.GetStream(nowSong?.url);
 		// 創建音樂器
 		const audioPlay = BDB.MuGetAudioPlay();
 		// 播放

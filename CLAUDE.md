@@ -37,7 +37,7 @@ Dockerfile 會直接把本機的 `node_modules/` COPY 進映像檔，所以改�
 
 ### .env（未進版控）
 
-啟動至少需要 `TOKEN`、`BOT_ID`、`MASTER_ID`。攻略組功能需要經典服的 2 個 Google Apps Script 端點：`GASURL_NEW_SKILLS`、`GASURL_NEW_BOSSES` — 任一缺少時 `myKiritoC.CheckData()` 回 false，攻略組功能整組停用（`global.isMykirito` 維持 false），bot 其餘功能照常運作。舊版的 `GASURL_LEVELS` / `GASURL_SKILLS` / `GASURL_BOSSES` 已不再使用（改讀本地 json）。`HOME_PAGE`、`PORT` 只給目前已註解掉的自我喚醒（`CronTask`）與健康檢查（`HealthCheck`）使用。
+啟動至少需要 `TOKEN`、`BOT_ID`、`MASTER_ID`。攻略組功能需要經典服的 2 個 Google Apps Script 端點：`GASURL_NEW_SKILLS`、`GASURL_NEW_BOSSES` — 任一缺少時 `myKiritoC.CheckData()` 回 false，攻略組功能整組停用（`global.isMykirito` 維持 false），bot 其餘功能照常運作。舊版的 `GASURL_LEVELS` / `GASURL_SKILLS` / `GASURL_BOSSES` 已不再使用（改讀本地 json）。`HOME_PAGE`、`PORT` 只給目前已註解掉的自我喚醒（`CronTask`）與健康檢查（`HealthCheck`）使用。`YTDLP_PATH` 是選填，指定 yt-dlp 執行檔位置。
 
 ## 架構
 
@@ -120,7 +120,13 @@ Manager 啟動時 `readdirSync` 掃自己的 `commands/` 資料夾，每種介�
 
 ### 音樂系統
 
-`musicM.DoMStart(msg, cmd, args, type)` 與 `DoSStart(interaction, ...)` 分別對應訊息指令與斜線指令，`type` 參數（0 = message、1 = interaction）會一路傳進 `BDB.Mu*` 系列，讓同一份邏輯處理兩種來源物件。串流由 `play-dl` 提供；`libs/play-dl/` 保留了本地化版本，但目前 `musicC.js` require 的是 node_modules 的套件（見 commit b02a81b：Node 18.17.1 下暫不使用自訂路徑）。
+`musicM.DoMStart(msg, cmd, args, type)` 與 `DoSStart(interaction, ...)` 分別對應訊息指令與斜線指令，`type` 參數（0 = message、1 = interaction）會一路傳進 `BDB.Mu*` 系列，讓同一份邏輯處理兩種來源物件。
+
+**`musicSourceC.js` 是唯一知道音訊怎麼來的檔案**（`GetSong` / `GetSongList` / `GetStream`），底層呼叫外部的 **yt-dlp**：youtube 會不定期改規則把純 JS 的抓取套件打死（play-dl、ytdl-core、youtubei.js 目前都拿不到音訊網址），所以相依集中在這一支，換工具只改這裡。`musicC` 只認得 `{id, name, url}` 的歌曲格式與 `{stream, type}` 的串流格式。
+
+yt-dlp 需要另外安裝（`.env` 的 `YTDLP_PATH` 可指定位置，預設找 PATH 上的 `yt-dlp`），Dockerfile 內已經裝好。優先挑 webm/opus 直接餵給 discord（`BDB.MuGetStreamType(0)`），其他音源退回 `Arbitrary` 讓 ffmpeg 轉檔。
+
+`libs/play-dl/` 是舊版本地化留下的殘跡，已經沒有任何程式引用。
 
 ## 程式碼慣例
 

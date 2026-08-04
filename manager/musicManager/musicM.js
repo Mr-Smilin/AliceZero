@@ -7,6 +7,9 @@ const musicC = require("./musicC.js");
 const componentM = require("../componentManager/componentM.js");
 //#endregion
 
+// 抓不到歌曲資訊時的回覆(網址壞掉，或是 yt-dlp 該更新了)
+const cantGetSongMessage = "這首歌讀不到耶..網址再確認一下喔:3...";
+
 //#region 主要動點
 
 /** message用的音樂指令入口
@@ -113,15 +116,20 @@ exports.DoPlayMusic = async (discordObject, musicUrl, type = 0) => {
 		BDB.MuJoinVoiceChannel(discordObject, type);
 	}
 
-	if (musicC.IsPlayList(musicUrl))
-		await BDB.MuMessageSend(
-			discordObject,
-			await musicC.AddSongLists(guildId, musicUrl),
-			type,
-			2
-		);
+	if (musicC.IsPlayList(musicUrl)) {
+		const listMessage = await musicC.AddSongLists(guildId, musicUrl);
+		// 讀不到就別往下走，不然會加入頻道後才發現沒歌可播
+		if (!listMessage) {
+			await BDB.MuMessageSend(discordObject, cantGetSongMessage, type);
+			return;
+		}
+		await BDB.MuMessageSend(discordObject, listMessage, type, 2);
+	}
 	// 添加歌單
-	else await musicC.AddSongList(guildId, musicUrl);
+	else if (!(await musicC.AddSongList(guildId, musicUrl))) {
+		await BDB.MuMessageSend(discordObject, cantGetSongMessage, type);
+		return;
+	}
 
 	// 判斷是否正在播放歌曲 是:將歌曲加入歌單 否:播放歌曲
 	if (musicC.IsPlaying(guildId)) {
@@ -157,7 +165,10 @@ exports.DoPlayMusicFirst = async (discordObject, musicUrl, type = 0) => {
 	}
 
 	// 添加歌單
-	await musicC.AddSongList(guildId, musicUrl, 1);
+	if (!(await musicC.AddSongList(guildId, musicUrl, 1))) {
+		await BDB.MuMessageSend(discordObject, cantGetSongMessage, type);
+		return;
+	}
 
 	// 判斷是否正在播放歌曲 是:將歌曲加入歌單 否:播放歌曲
 	if (musicC.IsPlaying(guildId)) {

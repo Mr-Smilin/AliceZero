@@ -15,6 +15,18 @@ C - Controller 行為的管理
 測試主力放在 `baseJS/BaseDiscordBot.js`：它是全專案唯一直接接觸 discord.js 的介面層，
 測試比對的是 builder 產出的 json 欄位與列舉值，discord.js 改版時可以直接定位到壞掉的介面。
 
+## 音樂系統
+
+音訊由 **yt-dlp** 取得，需要另外安裝：
+
+- Windows：到 [yt-dlp releases](https://github.com/yt-dlp/yt-dlp/releases/latest) 下載 `yt-dlp.exe`，放進 PATH，或在 `.env` 用 `YTDLP_PATH` 指定完整路徑。
+- Docker：映像檔內已經裝好，不用額外處理。
+- 非 opus 音源會用 ffmpeg 轉檔(選用，映像檔內已內建)。
+
+youtube 的規則會不定期變動，純 JS 的抓取套件(play-dl、ytdl-core、youtubei.js)目前都拿不到音訊網址，
+所以來源相依集中在 `manager/musicManager/musicSourceC.js`，之後要換工具只需要改這一支。
+yt-dlp 更新很勤，播不出來時先更新它：`yt-dlp -U`。
+
 ## 攻略組資料來源
 
 - 舊版(`ver: "old"`)：mykirito 已關服，資料不再更新，直接讀 `manager/mykiritoManager/myKiritoData/` 內的本地 json。
@@ -40,6 +52,7 @@ C - Controller 行為的管理
 <summary>未發布</summary>
 <pre>
 
+- [x] 修復音樂系統，改用 yt-dlp 取得音訊(play-dl 已無法取得 youtube 音源)
 - [x] 攻略組改用菜單查詢，不用再重打一次文字指令
 - [x] 修正情報 embed 上的技能 / 能力 / 稱號按鈕固定拿舊服資料的問題，改成跟著頻道版本走
 - [x] 攻略組舊版資料改讀本地 json，不再依賴 api
