@@ -52,8 +52,9 @@ exports.DoMStart = (msg, cmd, args, type = 0) => {
 				break;
 			// 無匹配指令
 			default:
+				// 只打前綴字時 cmd 會是 undefined，不能直接取值
 				// 是快速命令的話執行播歌指令
-				if (cmd.substring(0, 4) === "http")
+				if (cmd?.substring(0, 4) === "http")
 					this.DoPlayMusic(msg, cmd, type).catch((err) =>
 						CatchF.ErrorDo(err, "DoPlayMusic 方法異常!")
 					);

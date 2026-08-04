@@ -57,6 +57,8 @@ yt-dlp 更新很勤，播不出來時先更新它：`yt-dlp -U`。
 <summary>未發布</summary>
 <pre>
 
+- [x] 修復只輸入音樂前綴字(`!`)會跳錯誤的問題
+- [x] 錯誤日誌補上檔名行數、發生時間與呼叫堆疊
 - [x] 修復音樂系統，改用 yt-dlp 取得音訊(play-dl 已無法取得 youtube 音源)
 - [x] 升級 discord.js 14.27 / @discordjs/voice 0.19，修正只進得了語音頻道卻沒有聲音的問題
 - [x] Node 升到 22，容器改為自行安裝套件

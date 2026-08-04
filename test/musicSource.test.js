@@ -329,3 +329,65 @@ describe("musicC - 離開語音頻道", () => {
 		assert.equal(global.connection.get(guildId), undefined);
 	});
 });
+
+describe("musicM - 只打前綴字", () => {
+	const musicM = require("../manager/musicManager/musicM.js");
+
+	/** 攔下 console 輸出，用來確認有沒有跳錯誤 */
+	async function catchConsole(doSomeThing) {
+		const rawLog = console.log;
+		const rawError = console.error;
+		const lines = [];
+		console.log = (data) => lines.push(`${data}`);
+		console.error = (data) => lines.push(`${data}`);
+		try {
+			await doSomeThing();
+			return { lines };
+		} finally {
+			console.log = rawLog;
+			console.error = rawError;
+		}
+	}
+
+	/** 模擬使用者訊息 */
+	function newFakeMessage() {
+		const sent = [];
+		return {
+			guild: { id: guildId },
+			channel: { id: "c-1", send: async (message) => sent.push(message) },
+			member: { voice: { channel: { id: "v-1" } } },
+			sent,
+		};
+	}
+
+	before(() => {
+		global.isPlaying = new Map();
+		global.songList = new Map();
+		global.connection = new Map();
+		global.dispatcher = new Map();
+		musicC.InitMusicValue(guildId);
+	});
+
+	it("只打 ! 不會炸掉(指令是 undefined)", async () => {
+		const { lines } = await catchConsole(() =>
+			musicM.DoMStart(newFakeMessage(), undefined, [])
+		);
+
+		assert.equal(
+			lines.some((line) => line.includes("DoMStart 方法異常")),
+			false,
+			`不該有錯誤: ${lines.join(" / ")}`
+		);
+	});
+
+	it("不是網址的指令一樣安靜略過", async () => {
+		const { lines } = await catchConsole(() =>
+			musicM.DoMStart(newFakeMessage(), "隨便打的東西", [])
+		);
+
+		assert.equal(
+			lines.some((line) => line.includes("DoMStart 方法異常")),
+			false
+		);
+	});
+});

@@ -62,7 +62,7 @@ node --test --test-name-pattern "按鈕" test/*.test.js       # 只跑名稱符�
 
 `CInitCommand(n)` / `CGetCommand(n)` 的 n 是 command 種類：0 = slash、1 = selectMenu、2 = button。
 
-錯誤與日誌一律走 `baseJS/CatchF.js` 的 `ErrorDo` / `LogDo`，不要直接 console。
+錯誤與日誌一律走 `baseJS/CatchF.js` 的 `ErrorDo` / `LogDo`，不要直接 console。輸出格式為 `| 內容 | 說明 | 檔名:行數 | 時間`，位置是從呼叫堆疊取的；傳進去的若是 Error 物件會連堆疊一起印（所以 catch 時請傳 `err` 本身，不要只傳 `err.message`）。`ErrorDo` 的回傳值是印出來的字串，介面層取值失敗時直接拿它當回傳值。
 
 ### 啟動流程
 
