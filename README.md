@@ -32,6 +32,15 @@ youtube 的規則會不定期變動，純 JS 的抓取套件(play-dl、ytdl-core
 所以來源相依集中在 `manager/musicManager/musicSourceC.js`，之後要換工具只需要改這一支。
 yt-dlp 更新很勤，播不出來時先更新它：`yt-dlp -U`。
 
+### 語音連線
+
+加入語音頻道後由 `BDB.MuBindConnectionEvents` 接手連線的生命週期：
+
+- **error**：語音 websocket 握手失敗(Ex: discord 的語音伺服器回 521)時會 emit，沒人監聽的話 node 會直接把整支 bot 拋掛。
+  這個錯誤是非同步發生的，`MuJoinVoiceChannel` 的 try/catch 接不到，一定要靠監聽。重連交給 `@discordjs/voice` 自己處理，這裡只記錄。
+- **disconnected**：先等 5 秒看它會不會自己接回來(discord 換語音伺服器時會這樣)，接不回來才銷毀連線。
+- **destroyed**：清空歌單與 `global` 的音樂狀態。沒清的話 `MuIsVoicingMySelf` 會以為 bot 還在頻道裡，下次點歌不會重新 join，變成沒聲音也沒反應。
+
 ## 攻略組資料來源
 
 - 舊版(`ver: "old"`)：mykirito 已關服，資料不再更新，直接讀 `manager/mykiritoManager/myKiritoData/` 內的本地 json。
@@ -69,6 +78,8 @@ yt-dlp 更新很勤，播不出來時先更新它：`yt-dlp -U`。
 - [x] 補上 BaseDiscordBot 介面層、菜單系統與攻略組的測試(npm test)
 - [x] 修正 embed 的 ESetAuthor / ESetUrl 對不上 discord.js v14 的欄位與方法名
 - [x] 修正經典服頻道判斷恆為 true，導致頻道白名單失效的問題
+- [x] 修正語音連線出錯(Ex: discord 語音伺服器回 521)時沒人接住 error，整支 bot 跟著崩潰的問題
+- [x] 語音連線中斷後會清乾淨音樂狀態，不再卡在「以為自己還在頻道裡」而點歌沒反應
 
 </pre>
 </details>

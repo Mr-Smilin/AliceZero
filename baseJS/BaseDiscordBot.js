@@ -53,7 +53,9 @@ const {
 	joinVoiceChannel,
 	createAudioPlayer,
 	createAudioResource,
+	entersState,
 	AudioPlayerStatus,
+	VoiceConnectionStatus,
 	NoSubscriberBehavior,
 	StreamType,
 } = require("@discordjs/voice");
@@ -1108,6 +1110,7 @@ exports.MuJoinVoiceChannel = (discordObject, type = 0) => {
 			// 	newNetworking?.on('stateChange', networkStateChangeHandler)
 			// });
 			//#endregion
+			this.MuBindConnectionEvents(connection, discordObject?.guild?.id);
 			global.connection.set(discordObject?.guild?.id, connection);
 			return connection;
 		} else {
@@ -1117,11 +1120,109 @@ exports.MuJoinVoiceChannel = (discordObject, type = 0) => {
 				guildId: discordObject?.guild?.id,
 				adapterCreator: discordObject?.guild?.voiceAdapterCreator,
 			});
+			this.MuBindConnectionEvents(connection, discordObject?.guild?.id);
 			global.connection.set(discordObject?.guild?.id, connection);
 			return connection;
 		}
 	} catch (err) {
 		CatchF.ErrorDo(err, "type = " + type + " MuJoinVoiceChannel 方法異常!");
+	}
+};
+
+/** 獲得語音連線狀態
+ * url: https://discordjs.guide/voice/voice-connections.html#life-cycle
+ * @param {number} status 0 = Signalling 1 = Connecting 2 = Ready 3 = Disconnected 4 = Destroyed
+ * @returns
+ */
+exports.MuGetVoiceConnectionStatus = (status = 0) => {
+	try {
+		switch (status) {
+			case 0:
+				// 已經送出加入請求，正在等 discord 指派語音伺服器
+				if (VoiceConnectionStatus?.Signalling === undefined)
+					throw new Error("State Signalling Error");
+				return VoiceConnectionStatus.Signalling;
+			case 1:
+				// 拿到語音伺服器位址了，正在建立 websocket 與 udp 連線
+				if (VoiceConnectionStatus?.Connecting === undefined)
+					throw new Error("State Connecting Error");
+				return VoiceConnectionStatus.Connecting;
+			case 2:
+				// 連線完成，可以開始播放音訊
+				if (VoiceConnectionStatus?.Ready === undefined)
+					throw new Error("State Ready Error");
+				return VoiceConnectionStatus.Ready;
+			case 3:
+				// 與語音頻道失去連線，有可能自己接回來，也有可能是真的被踢出去了
+				if (VoiceConnectionStatus?.Disconnected === undefined)
+					throw new Error("State Disconnected Error");
+				return VoiceConnectionStatus.Disconnected;
+			case 4:
+				// 連線已銷毀，不會再有任何動作，要再播必須重新 join
+				if (VoiceConnectionStatus?.Destroyed === undefined)
+					throw new Error("State Destroyed Error");
+				return VoiceConnectionStatus.Destroyed;
+		}
+	} catch (err) {
+		CatchF.ErrorDo(err, "MuGetVoiceConnectionStatus 方法異常!");
+	}
+};
+
+/** 監聽語音連線的生命週期
+ *
+ *  VoiceConnection 是 EventEmitter，node 的規則是「emit 了 error 卻沒有人監聽就直接 throw」，
+ *  而語音 websocket 握手失敗(Ex: discord 的語音伺服器回 521)就會走到這條。
+ *  這個錯誤是非同步 emit 的，MuJoinVoiceChannel 的 try/catch 接不到，
+ *  沒人監聽的話整支 bot 會被一起拖死，所以 join 完一定要掛上這裡。
+ *
+ *  連線銷毀時也要把全域清乾淨，否則 MuIsVoicingMySelf 會誤判 bot 還在頻道裡，
+ *  下次點歌就不會重新 join，變成沒聲音也沒反應。
+ *
+ * @param {*} connection joinVoiceChannel 回傳的連線
+ * @param {*} guildId
+ * @returns {boolean} 有沒有掛上監聽
+ */
+exports.MuBindConnectionEvents = (connection, guildId) => {
+	try {
+		if (connection === undefined || connection === null) return false;
+
+		// 網路層的錯誤，@discordjs/voice 自己會重連，這裡只負責記錄不讓它炸掉
+		connection.on("error", (err) =>
+			CatchF.ErrorDo(err, "語音連線發生異常! guildId = " + guildId)
+		);
+
+		connection.on(this.MuGetVoiceConnectionStatus(3), async () => {
+			try {
+				// 有可能只是 discord 換語音伺服器，給它 5 秒自己接回來。
+				// 兩邊共用同一個 signal，entersState 收到數字會自己開一個沒有 unref 的
+				// setTimeout，race 輸的那一邊會留著計時器把 process 卡住
+				const timeout = AbortSignal.timeout(5000);
+				await Promise.race([
+					entersState(connection, this.MuGetVoiceConnectionStatus(0), timeout),
+					entersState(connection, this.MuGetVoiceConnectionStatus(1), timeout),
+				]);
+			} catch (err) {
+				// 接不回來就是真的斷了，銷毀連線讓下次點歌重新 join
+				CatchF.LogDo("語音連線已中斷，離開頻道", "guildId = " + guildId);
+				if (connection?.state?.status !== this.MuGetVoiceConnectionStatus(4))
+					connection.destroy();
+			}
+		});
+
+		connection.on(this.MuGetVoiceConnectionStatus(4), () => {
+			// 歌單要先清掉再停播放器：stop() 會讓播放器進 Idle 進而播下一首，
+			// 沒清的話整份歌單會對著空氣播完，訊息也會一直洗出來
+			global.songList?.set(guildId, []);
+			global.isPlaying?.set(guildId, false);
+			global.dispatcher?.get(guildId)?.stop();
+			global.connection?.set(guildId, undefined);
+			global.dispatcher?.set(guildId, undefined);
+		});
+
+		return true;
+	} catch (err) {
+		CatchF.ErrorDo(err, "MuBindConnectionEvents 方法異常!");
+		return false;
 	}
 };
 

@@ -14,6 +14,7 @@
 //#region import
 const { describe, it, beforeEach } = require("node:test");
 const assert = require("node:assert/strict");
+const { EventEmitter } = require("node:events");
 const BDB = require("../baseJS/BaseDiscordBot.js");
 const buttonType = require("../manager/buttonManager/buttonType.json");
 //#endregion
@@ -602,7 +603,20 @@ describe("Mu - 音樂系統", () => {
 	beforeEach(() => {
 		global.connection = new Map();
 		global.isPlaying = new Map();
+		global.songList = new Map();
+		global.dispatcher = new Map();
 	});
+
+	/** 模擬 VoiceConnection，只保留 MuBindConnectionEvents 會用到的部分 */
+	function newFakeConnection(status = "ready") {
+		const connection = new EventEmitter();
+		connection.state = { status };
+		connection.destroyed = false;
+		connection.destroy = () => {
+			connection.destroyed = true;
+		};
+		return connection;
+	}
 
 	it("MuIsVoicing 在使用者不在語音頻道時回傳 true", () => {
 		const inVoice = { member: { voice: { channel: { id: "v-1" } } } };
@@ -655,6 +669,68 @@ describe("Mu - 音樂系統", () => {
 		const interaction = newFakeInteraction();
 		await BDB.MuMessageSend(interaction, "訊息", 1);
 		assert.deepEqual(interaction.called, ["reply"]);
+	});
+
+	it("MuGetVoiceConnectionStatus 對應 @discordjs/voice 的狀態值", () => {
+		assert.equal(BDB.MuGetVoiceConnectionStatus(0), "signalling");
+		assert.equal(BDB.MuGetVoiceConnectionStatus(1), "connecting");
+		assert.equal(BDB.MuGetVoiceConnectionStatus(2), "ready");
+		assert.equal(BDB.MuGetVoiceConnectionStatus(3), "disconnected");
+		assert.equal(BDB.MuGetVoiceConnectionStatus(4), "destroyed");
+	});
+
+	it("MuBindConnectionEvents 接住語音連線的 error，不讓整支 bot 被拖死", async () => {
+		// discord 的語音伺服器回 521 時 VoiceConnection 會 emit error，
+		// 沒人監聽的話 node 會直接往上拋，整個 process 都會死掉
+		const wsError = new Error("Unexpected server response: 521");
+
+		const naked = newFakeConnection();
+		assert.throws(() => naked.emit("error", wsError));
+
+		const connection = newFakeConnection();
+		assert.equal(BDB.MuBindConnectionEvents(connection, "g-1"), true);
+		await silence(() =>
+			assert.doesNotThrow(() => connection.emit("error", wsError))
+		);
+	});
+
+	it("MuBindConnectionEvents 沒拿到連線時不做事", () => {
+		assert.equal(BDB.MuBindConnectionEvents(undefined, "g-1"), false);
+		assert.equal(BDB.MuBindConnectionEvents(null, "g-1"), false);
+	});
+
+	it("連線銷毀時清掉音樂全域，下次點歌才會重新 join", () => {
+		const connection = newFakeConnection();
+		const stopped = [];
+		global.connection.set("g-1", connection);
+		global.isPlaying.set("g-1", true);
+		global.songList.set("g-1", [{ name: "歌" }]);
+		global.dispatcher.set("g-1", {
+			// 停播放器的當下歌單必須已經是空的，否則會接著播下一首
+			stop: () => stopped.push(global.songList.get("g-1").length),
+		});
+		BDB.MuBindConnectionEvents(connection, "g-1");
+
+		connection.emit(BDB.MuGetVoiceConnectionStatus(4));
+
+		const msg = newFakeMessage({ guildId: "g-1" });
+		assert.equal(BDB.MuIsVoicingMySelf(msg), false);
+		assert.equal(BDB.MuGetConnection("g-1"), undefined);
+		assert.equal(global.dispatcher.get("g-1"), undefined);
+		assert.equal(global.isPlaying.get("g-1"), false);
+		assert.deepEqual(global.songList.get("g-1"), []);
+		assert.deepEqual(stopped, [0]);
+	});
+
+	it("斷線後自己接回來就不銷毀連線", async () => {
+		// discord 換語音伺服器時會先斷線再接回來，這種不算真的離開頻道
+		const connection = newFakeConnection(BDB.MuGetVoiceConnectionStatus(1));
+		BDB.MuBindConnectionEvents(connection, "g-1");
+
+		connection.emit(BDB.MuGetVoiceConnectionStatus(3));
+		await new Promise((resolve) => setImmediate(resolve));
+
+		assert.equal(connection.destroyed, false);
 	});
 });
 

@@ -126,6 +126,8 @@ Manager 啟動時 `readdirSync` 掃自己的 `commands/` 資料夾，每種介�
 
 yt-dlp 需要另外安裝（`.env` 的 `YTDLP_PATH` 可指定位置，預設找 PATH 上的 `yt-dlp`），Dockerfile 內已經裝好。優先挑 webm/opus 直接餵給 discord（`BDB.MuGetStreamType(0)`），其他音源退回 `Arbitrary` 讓 ffmpeg 轉檔。
 
+**`joinVoiceChannel` 之後一定要呼叫 `MuBindConnectionEvents`**：`VoiceConnection` 是 EventEmitter，語音 websocket 握手失敗（Ex: discord 的語音伺服器回 521）會 emit `error`，沒人監聽 node 就直接把整支 bot 拋掛，而且這是非同步 emit 的，`MuJoinVoiceChannel` 的 try/catch 接不到。同一支還負責 `disconnected`（等 5 秒看會不會自己接回來）與 `destroyed`（清空 `global` 的音樂狀態，否則 `MuIsVoicingMySelf` 會誤判 bot 還在頻道裡，下次點歌不重新 join 就沒聲音）。
+
 **`@discordjs/voice` 不能降回 0.16**：0.16 只支援 `xsalsa20_poly1305` 系列加密，而 discord 已經停用這些模式，結果是「連得進語音頻道但一點聲音都沒有」。0.18 起才有 `aead_aes256_gcm_rtpsize` / `aead_xchacha20_poly1305_rtpsize`。opus 編碼用純 JS 的 `opusscript`（只有非 opus 音源轉檔時才會用到），不用原生模組 `@discordjs/opus`，省掉跨平台編譯問題。
 
 `libs/play-dl/` 是舊版本地化留下的殘跡，已經沒有任何程式引用。
