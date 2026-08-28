@@ -171,7 +171,7 @@ exports.MykiritoSkillMessage = (roleData, status) => {
 	switch (status) {
 		// 技能
 		case 0:
-			for (let i = 1; i <= 10; i++) {
+			for (let i = 1; i <= 20; i++) {
 				if (roleData?.data[`skill${i}`] === "") break;
 				else
 					embedMessage.EAddField(
@@ -207,7 +207,7 @@ exports.MykiritoSkillMessage = (roleData, status) => {
 			);
 			for (let i = 2; i <= 7; i++) {
 				if (roleData?.data[`nickname${i}`] === "") break;
-				else
+				else {
 					embedMessage
 						.EAddField(
 							roleData?.data[`nickname${i}`],
@@ -216,6 +216,9 @@ exports.MykiritoSkillMessage = (roleData, status) => {
 						)
 						.EAddField("效果", roleData?.data[`nicknameData${i}`], true)
 						.EAddEmptyField();
+					if (roleData?.data[`nicknamePic${i}`] !== "")
+						embedMessage.ESetThumbnail(roleData?.data[`nicknamePic${i}`]);
+				}
 			}
 			break;
 	}
